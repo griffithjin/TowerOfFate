@@ -1,0 +1,22 @@
+<!-- client/public/index.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>命运塔：首登者</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transform: translateZ(0);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <!-- 关键在这里：确保路径是 /src/main.tsx -->
+    <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
