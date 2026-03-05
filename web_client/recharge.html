@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命运之塔 - 首充福利</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 返回按钮 */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            z-index: 100;
+            transition: transform 0.3s;
+        }
+        
+        .back-btn:hover { transform: scale(1.05); }
+        
+        /* 头部 */
+        .header {
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .header h1 {
+            font-size: 48px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #888;
+            font-size: 18px;
+        }
+        
+        /* 首充区 */
+        .first-recharge-section {
+            background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,107,107,0.1));
+            border: 3px solid #ffd700;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .first-recharge-section::before {
+            content: '首充';
+            position: absolute;
+            top: 20px;
+            right: -35px;
+            background: linear-gradient(135deg, #ff4444, #ff6666);
+            color: #fff;
+            padding: 8px 50px;
+            transform: rotate(45deg);
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            color: #ffd700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .recharge-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .price-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .price-tag small {
+            font-size: 16px;
+            opacity: 0.7;
+        }
+        
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .reward-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .reward-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .reward-name {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .reward-value {
+            font-size: 20px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .reward-value.double {
+            color: #ff6b6b;
+            position: relative;
+        }
+        
+        .reward-value.double::after {
+            content: '双倍';
+            position: absolute;
+            top: -10px;
+            right: -30px;
+            background: #ff4444;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+        }
+        
+        .buy-btn-large {
+            display: inline-block;
+            padding: 20px 80px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            border: none;
+            border-radius: 40px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        
+        .buy-btn-large:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.4);
+        }
+        
+        .buy-btn-large:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* 累充区 */
+        .cumulative-section {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,215,0,0.2);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .progress-bar {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #ffd700, #ffed4e);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+        
+        .progress-text {
+            text-align: center;
+            color: #ffd700;
+            margin-top: 10px;
+        }
+        
+        .reward-levels {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .reward-level {
+            flex: 1;
+            min-width: 150px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,215,0,0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .reward-level.completed {
+            border-color: #0f0;
+            background: rgba(0,255,0,0.1);
+        }
+        
+        .reward-level.can-claim {
+            border-color: #ffd700;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,215,0,0.4); }
+            50% { box-shadow: 0 0 20px 5px rgba(255,215,0,0.2); }
+        }
+        
+        .level-amount {
+            font-size: 18px;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .level-reward {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 15px;
+        }
+        
+        .claim-btn {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .claim-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        
+        /* 限时礼包 */
+        .limited-packs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .pack-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border: 2px solid rgba(255,215,0,0.2);
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+        }
+        
+        .pack-tag {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: linear-gradient(135deg, #ff4444, #ff6666);
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .pack-name {
+            font-size: 20px;
+            color: #ffd700;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+        
+        .pack-price {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .pack-price .current {
+            font-size: 28px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .pack-price .original {
+            font-size: 16px;
+            color: #888;
+            text-decoration: line-through;
+        }
+        
+        .pack-rewards {
+            font-size: 14px;
+            color: #888;
+            line-height: 1.8;
+        }
+        
+        .pack-btn {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <a href="new_index.html" class="back-btn">🏠 返回首页</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>💎 充值中心</h1>
+            <p>首充双倍，累充送豪礼</p>
+        </div>
+        
+        <!-- 首充区 -->
+        <div class="first-recharge-section" id="firstRechargeSection">
+            <div class="section-title">🎁 首充大礼包</div>
+            
+            <div class="recharge-card">
+                <div class="price-tag">
+                    ¥6 <small>首充专享</small>
+                </div>
+                
+                <div class="rewards-grid">
+                    <div class="reward-item">
+                        <div class="reward-icon">💎</div>
+                        <div class="reward-name">钻石</div>
+                        <div class="reward-value double">120</div>
+                    </div>
+                    
+                    <div class="reward-item">
+                        <div class="reward-icon">💰</div>
+                        <div class="reward-name">金币</div>
+                        <div class="reward-value">600</div>
+                    </div>
+                    
+                    <div class="reward-item">
+                        <div class="reward-icon">🎨</div>
+                        <div class="reward-name">限定皮肤</div>
+                        <div class="reward-value">x1</div>
+                    </div>
+                    
+                    <div class="reward-item">
+                        <div class="reward-icon">👤</div>
+                        <div class="reward-name">头像框</div>
+                        <div class="reward-value">x1</div>
+                    </div>
+                    
+                    <div class="reward-item">
+                        <div class="reward-icon">🏆</div>
+                        <div class="reward-name">专属称号</div>
+                        <div class="reward-value">尊贵玩家</div>
+                    </div>
+                </div>
+                
+                <button class="buy-btn-large" id="firstRechargeBtn" onclick="doFirstRecharge()">
+                    立即充值
+                </button>
+            </div>
+        </div>
+        
+        <!-- 累充区 -->
+        <div class="cumulative-section">
+            <div class="section-title">📈 累充奖励</div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+            </div>
+            <div class="progress-text">
+                已充值: ¥<span id="totalRecharged">0</span> / 下一档: ¥<span id="nextLevel">100</span>
+            </div>
+            
+            <div class="reward-levels" id="rewardLevels">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 限时礼包 -->
+        <div class="cumulative-section">
+            <div class="section-title">⏰ 限时礼包</div>
+            
+            <div class="limited-packs">
+                <div class="pack-card">
+                    <div class="pack-tag">每日</div>
+                    <div class="pack-name">每日特惠</div>
+                    <div class="pack-price">
+                        <span class="current">¥12</span>
+                        <span class="original">¥30</span>
+                    </div>
+                    <div class="pack-rewards">
+                        💎 钻石 x120<br>
+                        💰 金币 x1200
+                    </div>
+                    <button class="pack-btn" onclick="buyPack('daily')">购买</button>
+                </div>
+                
+                <div class="pack-card">
+                    <div class="pack-tag">新手</div>
+                    <div class="pack-name">新手超值包</div>
+                    <div class="pack-price">
+                        <span class="current">¥6</span>
+                        <span class="original">¥60</span>
+                    </div>
+                    <div class="pack-rewards">
+                        💎 钻石 x60<br>
+                        💰 金币 x600<br>
+                        🎨 新手皮肤
+                    </div>
+                    <button class="pack-btn" onclick="buyPack('starter')">购买</button>
+                </div>
+                
+                <div class="pack-card">
+                    <div class="pack-tag">热销</div>
+                    <div class="pack-name">超值月卡</div>
+                    <div class="pack-price">
+                        <span class="current">¥30</span>
+                    </div>
+                    <div class="pack-rewards">
+                        💎 立即获得300<br>
+                        📅 每日30钻x30天<br>
+                        💰 每日300金币
+                    </div>
+                    <button class="pack-btn" onclick="buyPack('monthly')">购买</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 用户数据
+        let userData = {
+            coins: 1000,
+            diamonds: 0,
+            totalRecharged: 0,
+            firstRechargeDone: false,
+            claimedRewards: []
+        };
+        
+        // 累充奖励配置
+        const cumulativeRewards = [
+            { amount: 100, reward: '钻石x100 + 金币x1000' },
+            { amount: 300, reward: '钻石x300 + 蓝框皮肤' },
+            { amount: 500, reward: '钻石x500 + 专属头像' },
+            { amount: 1000, reward: '钻石x1000 + 传说卡背' },
+            { amount: 2000, reward: '钻石x2000 + 屠龙者皮肤' },
+            { amount: 5000, reward: '钻石x5000 + 卡牌之神' }
+        ];
+        
+        // 加载数据
+        function loadData() {
+            const saved = localStorage.getItem('towerOfFate_rechargeData');
+            if (saved) {
+                userData = JSON.parse(saved);
+            }
+            updateUI();
+        }
+        
+        // 保存数据
+        function saveData() {
+            localStorage.setItem('towerOfFate_rechargeData', JSON.stringify(userData));
+        }
+        
+        // 更新UI
+        function updateUI() {
+            // 首充状态
+            if (userData.firstRechargeDone) {
+                document.getElementById('firstRechargeBtn').disabled = true;
+                document.getElementById('firstRechargeBtn').textContent = '已完成首充';
+                document.getElementById('firstRechargeSection').style.opacity = '0.6';
+            }
+            
+            // 累充进度
+            const nextLevel = cumulativeRewards.find(r => r.amount > userData.totalRecharged);
+            document.getElementById('totalRecharged').textContent = userData.totalRecharged;
+            document.getElementById('nextLevel').textContent = nextLevel ? nextLevel.amount : '已达最高';
+            
+            // 进度条
+            const maxLevel = cumulativeRewards[cumulativeRewards.length - 1].amount;
+            const progress = Math.min(100, (userData.totalRecharged / maxLevel) * 100);
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            // 累充奖励列表
+            renderRewardLevels();
+        }
+        
+        // 渲染累充奖励
+        function renderRewardLevels() {
+            const container = document.getElementById('rewardLevels');
+            container.innerHTML = '';
+            
+            cumulativeRewards.forEach((level, index) => {
+                const claimed = userData.claimedRewards.includes(level.amount);
+                const canClaim = userData.totalRecharged >= level.amount && !claimed;
+                
+                const div = document.createElement('div');
+                div.className = `reward-level ${claimed ? 'completed' : ''} ${canClaim ? 'can-claim' : ''}`;
+                div.innerHTML = `
+                    <div class="level-amount">累计¥${level.amount}</div>
+                    <div class="level-reward">${level.reward}</div>
+                    ${canClaim ? 
+                        `<button class="claim-btn" onclick="claimReward(${level.amount})">领取</button>` :
+                        claimed ? 
+                        '<button class="claim-btn" disabled>已领取</button>' :
+                        `<button class="claim-btn" disabled>未达成</button>`
+                    }
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        // 首充
+        function doFirstRecharge() {
+            if (userData.firstRechargeDone) {
+                alert('您已经完成首充！');
+                return;
+            }
+            
+            userData.diamonds += 120;
+            userData.coins += 600;
+            userData.totalRecharged += 6;
+            userData.firstRechargeDone = true;
+            
+            saveData();
+            updateUI();
+            
+            alert('🎉 首充成功！获得120钻石（双倍）+ 限定皮肤！');
+        }
+        
+        // 领取累充奖励
+        function claimReward(amount) {
+            if (userData.claimedRewards.includes(amount)) {
+                alert('已经领取过了！');
+                return;
+            }
+            
+            userData.claimedRewards.push(amount);
+            
+            // 根据档位给奖励
+            if (amount === 100) {
+                userData.diamonds += 100;
+                userData.coins += 1000;
+            } else if (amount === 300) {
+                userData.diamonds += 300;
+            } else if (amount === 500) {
+                userData.diamonds += 500;
+            } else if (amount === 1000) {
+                userData.diamonds += 1000;
+            }
+            
+            saveData();
+            updateUI();
+            alert(`🎉 成功领取累计充值¥${amount}奖励！`);
+        }
+        
+        // 购买礼包
+        function buyPack(type) {
+            const packs = {
+                'daily': { price: 12, diamonds: 120, coins: 1200 },
+                'starter': { price: 6, diamonds: 60, coins: 600 },
+                'monthly': { price: 30, diamonds: 300 }
+            };
+            
+            const pack = packs[type];
+            if (!pack) return;
+            
+            userData.diamonds += pack.diamonds;
+            if (pack.coins) userData.coins += pack.coins;
+            userData.totalRecharged += pack.price;
+            
+            saveData();
+            updateUI();
+            
+            alert(`🎉 购买成功！获得${pack.diamonds}钻石！`);
+        }
+        
+        // 页面加载
+        window.onload = loadData;
+    </script>
+</body>
+</html>

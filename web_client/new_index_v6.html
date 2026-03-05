@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>命运塔·首登者</title>
+    <script src="app_framework_v6.js"></script>
+    <link rel="stylesheet" href="app_styles_v6.css">
+    <style>
+        /* 首页特定样式 */
+        .home-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-3);
+            background: linear-gradient(180deg, rgba(255,215,0,0.1), transparent);
+        }
+        
+        .logo {
+            font-size: var(--font-xl);
+            font-weight: bold;
+            background: linear-gradient(45deg, #FFD700, #FF6B6B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .user-info {
+            display: flex;
+            gap: var(--space-2);
+        }
+        
+        .currency-pill {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            font-size: var(--font-sm);
+        }
+        
+        /* 连胜模式横幅 - 重点推荐 */
+        .streak-banner {
+            margin: var(--space-2) var(--space-3);
+            padding: var(--space-3);
+            background: linear-gradient(135deg, #FF4757, #FF6348);
+            border-radius: var(--radius-lg);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .streak-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%); }
+            100% { transform: translateX(100%) translateY(100%); }
+        }
+        
+        .streak-banner-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .streak-badge {
+            display: inline-block;
+            background: #FFD700;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: var(--font-xs);
+            font-weight: bold;
+            margin-bottom: var(--space-1);
+        }
+        
+        .streak-title {
+            font-size: var(--font-lg);
+            font-weight: bold;
+            margin-bottom: var(--space-1);
+        }
+        
+        .streak-desc {
+            font-size: var(--font-sm);
+            opacity: 0.9;
+            margin-bottom: var(--space-2);
+        }
+        
+        .streak-btn {
+            width: 100%;
+            padding: var(--space-3);
+            background: #FFD700;
+            color: #000;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--font-base);
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* 游戏模式网格 */
+        .game-modes {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            overflow-y: auto;
+        }
+        
+        .mode-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: var(--radius-lg);
+            padding: var(--space-3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .mode-card:active {
+            transform: scale(0.96);
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .mode-card.featured {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,107,107,0.1));
+            border-color: #FFD700;
+        }
+        
+        .mode-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .mode-card:nth-child(1) .mode-icon { background: linear-gradient(135deg, #3498DB, #2980B9); }
+        .mode-card:nth-child(2) .mode-icon { background: linear-gradient(135deg, #E74C3C, #C0392B); }
+        .mode-card:nth-child(3) .mode-icon { background: linear-gradient(135deg, #9B59B6, #8E44AD); }
+        .mode-card:nth-child(4) .mode-icon { background: linear-gradient(135deg, #1ABC9C, #16A085); }
+        .mode-card:nth-child(5) .mode-icon { background: linear-gradient(135deg, #F39C12, #E67E22); }
+        .mode-card:nth-child(6) .mode-icon { background: linear-gradient(135deg, #E91E63, #C2185B); }
+        
+        .mode-name {
+            font-size: var(--font-sm);
+            font-weight: bold;
+        }
+        
+        .mode-desc {
+            font-size: var(--font-xs);
+            color: var(--color-text-muted);
+            text-align: center;
+        }
+        
+        /* VIP横幅 */
+        .vip-banner {
+            margin: 0 var(--space-3) var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            background: linear-gradient(90deg, #FFD700, #FFA502);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .vip-text {
+            color: #000;
+            font-size: var(--font-sm);
+            font-weight: bold;
+        }
+        
+        .vip-btn {
+            padding: 6px 12px;
+            background: #000;
+            color: #FFD700;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-xs);
+            font-weight: bold;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            display: flex;
+            background: rgba(0,0,0,0.5);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-2);
+            color: var(--color-text-muted);
+            font-size: 10px;
+            gap: 4px;
+        }
+        
+        .nav-item.active {
+            color: #FFD700;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 头部 -->
+        <header class="home-header">
+            <div class="logo">🐍 命运塔</div>
+            <div class="user-info">
+                <div class="currency-pill">
+                    <span>💎</span>
+                    <span id="diamonds">500</span>
+                </div>
+                <div class="currency-pill">
+                    <span>🪙</span>
+                    <span id="coins">5000</span>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 连胜模式横幅 - 重点推荐 -->
+        <div class="streak-banner" onclick="location.href='streak_challenge_v6.html'">
+            <div class="streak-banner-content">
+                <div class="streak-badge">🔥 热门推荐</div>
+                <div class="streak-title">连胜挑战</div>
+                <div class="streak-desc">连续成功13次！守卫模式下登顶后防御13次！</div>
+                <button class="streak-btn">立即挑战</button>
+            </div>
+        </div>
+        
+        <!-- VIP横幅 -->
+        <div class="vip-banner">
+            <div class="vip-text">👑 成为VIP，解锁专属塔皮肤</div>
+            <button class="vip-btn" onclick="location.href='shop_v2.html'">去开通</button>
+        </div>
+        
+        <!-- 游戏模式 -->
+        <div class="game-modes">
+            <div class="mode-card" onclick="location.href='solo_game_v6.html'">
+                <div class="mode-icon">👤</div>
+                <div class="mode-name">个人赛</div>
+                <div class="mode-desc">1v1 AI对战</div>
+            </div>
+            
+            <div class="mode-card featured" onclick="location.href='streak_challenge_v6.html'">
+                <div class="mode-icon">🔥</div>
+                <div class="mode-name">连胜挑战</div>
+                <div class="mode-desc">连续13次成功</div>
+            </div>
+            
+            <div class="mode-card" onclick="location.href='team_battle_v6.html'">
+                <div class="mode-icon">⚔️</div>
+                <div class="mode-name">团队赛</div>
+                <div class="mode-desc">3v3 团队竞技</div>
+            </div>
+            
+            <div class="mode-card" onclick="location.href='tournament.html'">
+                <div class="mode-icon">🏆</div>
+                <div class="mode-name">锦标赛</div>
+                <div class="mode-desc">全球570+场</div>
+            </div>
+            
+            <div class="mode-card" onclick="location.href='shop_v2.html'">
+                <div class="mode-icon">🛒</div>
+                <div class="mode-name">商城</div>
+                <div class="mode-desc">皮肤道具</div>
+            </div>
+            
+            <div class="mode-card" onclick="location.href='season_honors.html'">
+                <div class="mode-icon">🎖️</div>
+                <div class="mode-name">赛季</div>
+                <div class="mode-desc">排位段位</div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="location.reload()">
+                <div class="nav-icon">🏠</div>
+                <div>首页</div>
+            </div>
+            <div class="nav-item" onclick="location.href='shop_v2.html'">
+                <div class="nav-icon">🛒</div>
+                <div>商城</div>
+            </div>
+            <div class="nav-item" onclick="location.href='tournament.html'">
+                <div class="nav-icon">🏆</div>
+                <div>赛事</div>
+            </div>
+            <div class="nav-item" onclick="location.href='profile.html'">
+                <div class="nav-icon">👤</div>
+                <div>我的</div>
+            </div>
+        </nav>
+    </div>
+</body>
+</html>

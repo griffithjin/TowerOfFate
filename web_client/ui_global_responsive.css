@@ -1,0 +1,592 @@
+/**
+ * 命运塔·首登者 - 全局UI响应式样式
+ * 所有界面元素使用CSS变量，无固定像素
+ * 适配：375px-800px+ 所有机型
+ */
+
+/* ==========================================
+   CSS变量定义
+   ========================================== */
+:root {
+    /* 基础单位 */
+    --ui-scale: 1;
+    --rem-base: 16px;
+    
+    /* 天命牌 */
+    --destiny-width: 5rem;        /* 80px */
+    --destiny-height: 6.25rem;    /* 100px */
+    --destiny-icon: 1.5rem;       /* 24px */
+    --destiny-font: 0.75rem;      /* 12px */
+    --destiny-gap: 0.5rem;        /* 8px */
+    
+    /* 手牌 */
+    --hand-width: 4.375rem;       /* 70px */
+    --hand-height: 5.9375rem;     /* 95px */
+    --hand-suit: 1.75rem;         /* 28px */
+    --hand-rank: 1.125rem;        /* 18px */
+    --hand-gap: 0.5rem;           /* 8px */
+    
+    /* 守卫牌 */
+    --guard-width: 4.375rem;      /* 70px */
+    --guard-height: 5.9375rem;    /* 95px */
+    --guard-shield: 2.5rem;       /* 40px */
+    
+    /* 塔 */
+    --tower-level-h: 1rem;        /* 16px */
+    --tower-gap: 0.125rem;        /* 2px */
+    --tower-font: 0.625rem;       /* 10px */
+    
+    /* 嘲讽浮窗 */
+    --taunt-max-w: 11.25rem;      /* 180px */
+    --taunt-padding: 0.625rem;    /* 10px */
+    --taunt-font: 0.75rem;        /* 12px */
+    --taunt-radius: 0.75rem;      /* 12px */
+    
+    /* 倒计时 */
+    --countdown-w: 5rem;          /* 80px */
+    --countdown-h: 2.5rem;        /* 40px */
+    --countdown-font: 1.25rem;    /* 20px */
+    
+    /* 音乐按钮 */
+    --music-btn-size: 2.5rem;     /* 40px */
+    --music-btn-icon: 1.25rem;    /* 20px */
+    
+    /* 赛名显示 */
+    --title-font: 1.25rem;        /* 20px */
+    --title-sub-font: 0.75rem;    /* 12px */
+    
+    /* 层数显示 */
+    --level-badge-size: 2rem;     /* 32px */
+    --level-font: 0.875rem;       /* 14px */
+    --level-num-font: 1rem;       /* 16px */
+    
+    /* 布局框 */
+    --panel-padding: 0.75rem;     /* 12px */
+    --panel-gap: 0.5rem;          /* 8px */
+    --panel-radius: 0.75rem;      /* 12px */
+    
+    /* 游戏区域 */
+    --game-area-padding: 0.625rem;/* 10px */
+    --grid-gap: 0.625rem;         /* 10px */
+    
+    /* 金币钻石栏 */
+    --currency-h: 2.5rem;         /* 40px */
+    --currency-icon: 1.125rem;    /* 18px */
+    --currency-font: 0.875rem;    /* 14px */
+    --currency-gap: 0.75rem;      /* 12px */
+    
+    /* 按钮 */
+    --btn-h: 2.75rem;             /* 44px */
+    --btn-px: 1.5rem;             /* 24px */
+    --btn-py: 0.75rem;            /* 12px */
+    --btn-font: 0.875rem;         /* 14px */
+    --btn-radius: 0.5rem;         /* 8px */
+    
+    /* 头部 */
+    --header-h: 3.5rem;           /* 56px */
+    --header-logo: 1.5rem;        /* 24px */
+    
+    /* 间距 */
+    --sp-xs: 0.25rem;             /* 4px */
+    --sp-sm: 0.5rem;              /* 8px */
+    --sp-md: 1rem;                /* 16px */
+    --sp-lg: 1.5rem;              /* 24px */
+    --sp-xl: 2rem;                /* 32px */
+    
+    /* 圆角 */
+    --rd-sm: 0.375rem;            /* 6px */
+    --rd-md: 0.5rem;              /* 8px */
+    --rd-lg: 0.75rem;             /* 12px */
+    --rd-xl: 1rem;                /* 16px */
+}
+
+/* ==========================================
+   设备特定缩放
+   ========================================== */
+
+/* iPhone SE/8 (375px) */
+@media (max-width: 23.4375rem) {
+    :root {
+        --ui-scale: 0.85;
+        --hand-width: 3.75rem;     /* 60px */
+        --hand-height: 5rem;       /* 80px */
+        --hand-suit: 1.5rem;       /* 24px */
+        --hand-rank: 1rem;         /* 16px */
+        --destiny-width: 4.25rem;  /* 68px */
+        --destiny-height: 5.25rem; /* 84px */
+        --currency-h: 2.125rem;    /* 34px */
+        --btn-h: 2.375rem;         /* 38px */
+        --sp-md: 0.75rem;          /* 12px */
+    }
+}
+
+/* iPhone 14/15/16 标准版 (390-402px) */
+@media (min-width: 23.5rem) and (max-width: 25.125rem) {
+    :root {
+        --ui-scale: 0.92;
+        --hand-width: 4rem;        /* 64px */
+        --hand-height: 5.5rem;     /* 88px */
+        --hand-suit: 1.625rem;     /* 26px */
+        --hand-rank: 1.0625rem;    /* 17px */
+        --destiny-width: 4.5rem;   /* 72px */
+        --destiny-height: 5.75rem; /* 92px */
+        --sp-md: 0.875rem;         /* 14px */
+    }
+}
+
+/* Android标准 (360-390px) */
+@media (min-width: 22.5rem) and (max-width: 24.375rem) {
+    :root {
+        --ui-scale: 0.88;
+        --hand-width: 3.875rem;    /* 62px */
+        --hand-height: 5.125rem;   /* 82px */
+        --hand-suit: 1.5625rem;    /* 25px */
+        --hand-rank: 1rem;         /* 16px */
+        --sp-md: 0.75rem;          /* 12px */
+    }
+}
+
+/* Android大屏 (412px) & iPhone Pro Max (430px) */
+@media (min-width: 25.75rem) and (max-width: 26.875rem) {
+    :root {
+        --ui-scale: 0.96;
+    }
+}
+
+/* 折叠屏展开态 (700-800px+) */
+@media (min-width: 43.75rem) and (max-width: 50rem) {
+    :root {
+        --ui-scale: 1.15;
+        --hand-width: 5rem;        /* 80px */
+        --hand-height: 6.875rem;   /* 110px */
+        --hand-suit: 2rem;         /* 32px */
+        --hand-rank: 1.375rem;     /* 22px */
+        --destiny-width: 5.75rem;  /* 92px */
+        --destiny-height: 7.25rem; /* 116px */
+    }
+}
+
+/* 桌面端 (1024px+) */
+@media (min-width: 64rem) {
+    :root {
+        --ui-scale: 1.05;
+        --hand-width: 4.625rem;    /* 74px */
+        --hand-height: 6.25rem;    /* 100px */
+    }
+}
+
+/* ==========================================
+   UI组件样式 (无固定像素)
+   ========================================== */
+
+/* 天命牌 */
+.destiny-card {
+    width: var(--destiny-width);
+    height: var(--destiny-height);
+    border-radius: var(--rd-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.destiny-card .icon {
+    font-size: var(--destiny-icon);
+    margin-bottom: var(--sp-xs);
+}
+
+.destiny-card .name {
+    font-size: var(--destiny-font);
+    font-weight: bold;
+}
+
+/* 手牌 */
+.hand-card {
+    width: var(--hand-width);
+    height: var(--hand-height);
+    border-radius: var(--rd-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s;
+    border: 2px solid transparent;
+}
+
+.hand-card .suit {
+    font-size: var(--hand-suit);
+    line-height: 1;
+}
+
+.hand-card .rank {
+    font-size: var(--hand-rank);
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* 守卫牌 */
+.guard-card {
+    width: var(--guard-width);
+    height: var(--guard-height);
+    border-radius: var(--rd-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.guard-card .shield {
+    font-size: var(--guard-shield);
+}
+
+/* 倒计时 */
+.countdown-display {
+    width: var(--countdown-w);
+    height: var(--countdown-h);
+    font-size: var(--countdown-font);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--rd-md);
+    font-weight: bold;
+}
+
+/* 音乐控制 */
+.music-control {
+    width: var(--music-w);
+    height: var(--music-h);
+    border-radius: calc(var(--music-h) / 2);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--sp-sm);
+    gap: var(--sp-sm);
+}
+
+.music-control .icon {
+    width: var(--music-icon);
+    height: var(--music-icon);
+    font-size: var(--music-icon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.music-control .text {
+    font-size: var(--music-font);
+}
+
+/* 金币钻石栏 */
+.currency-bar {
+    height: var(--currency-h);
+    display: flex;
+    align-items: center;
+    gap: var(--currency-gap);
+    padding: 0 var(--sp-sm);
+    border-radius: calc(var(--currency-h) / 2);
+}
+
+.currency-bar .item {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--currency-gap) / 2);
+    font-size: var(--currency-font);
+}
+
+.currency-bar .icon {
+    font-size: var(--currency-icon);
+}
+
+/* 按钮 */
+.game-btn {
+    min-height: var(--btn-h);
+    padding: var(--btn-py) var(--btn-px);
+    font-size: var(--btn-font);
+    border-radius: var(--btn-radius);
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-xs);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.game-btn:active {
+    transform: scale(0.95);
+}
+
+/* 头部 */
+.game-header {
+    height: var(--header-h);
+    padding: 0 var(--sp-sm);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.game-header .logo {
+    font-size: var(--header-logo);
+    font-weight: bold;
+}
+
+/* 嘲讽浮窗 */
+.taunt-bubble {
+    max-width: var(--taunt-max-w);
+    padding: var(--taunt-padding);
+    border-radius: var(--taunt-radius);
+    font-size: var(--taunt-font);
+    animation: bubblePop 3s ease-out forwards;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* 塔层 */
+.tower-level {
+    height: var(--tower-level-h);
+    margin: var(--tower-gap) 0;
+    border-radius: var(--rd-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--tower-font);
+    font-weight: bold;
+}
+
+/* 间距工具类 */
+.gap-xs { gap: var(--sp-xs); }
+.gap-sm { gap: var(--sp-sm); }
+.gap-md { gap: var(--sp-md); }
+.gap-lg { gap: var(--sp-lg); }
+.gap-xl { gap: var(--sp-xl); }
+
+.p-xs { padding: var(--sp-xs); }
+.p-sm { padding: var(--sp-sm); }
+.p-md { padding: var(--sp-md); }
+.p-lg { padding: var(--sp-lg); }
+.p-xl { padding: var(--sp-xl); }
+
+.m-xs { margin: var(--sp-xs); }
+.m-sm { margin: var(--sp-sm); }
+.m-md { margin: var(--sp-md); }
+.m-lg { margin: var(--sp-lg); }
+.m-xl { margin: var(--sp-xl); }
+
+/* 字体工具类 */
+.text-xs { font-size: var(--font-xs, 0.75rem); }
+.text-sm { font-size: var(--font-sm, 0.875rem); }
+.text-md { font-size: var(--font-md, 1rem); }
+.text-lg { font-size: var(--font-lg, 1.125rem); }
+.text-xl { font-size: var(--font-xl, 1.25rem); }
+
+/* ==========================================
+   触摸设备优化
+   ========================================== */
+
+@media (pointer: coarse) {
+    .game-btn, .hand-card, .destiny-card {
+        min-height: calc(var(--btn-h) * 1.1);
+        min-width: calc(var(--btn-h) * 1.1);
+    }
+    
+    .hand-card {
+        min-width: var(--hand-width);
+    }
+    
+    .destiny-card {
+        min-width: var(--destiny-width);
+    }
+}
+
+/* ==========================================
+   安全区适配
+   ========================================== */
+
+@supports (padding-top: env(safe-area-inset-top)) {
+    .safe-top {
+        padding-top: env(safe-area-inset-top, var(--sp-md));
+    }
+    
+    .safe-bottom {
+        padding-bottom: env(safe-area-inset-bottom, var(--sp-md));
+    }
+}
+
+/* ==========================================
+   新增UI元素 - 音乐按钮、赛名、层数、布局框
+   ========================================== */
+
+/* 音乐循环按钮 */
+.music-toggle-btn {
+    width: var(--music-btn-size);
+    height: var(--music-btn-size);
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: var(--music-btn-icon);
+}
+
+.music-toggle-btn:hover {
+    background: rgba(255,215,0,0.2);
+    border-color: #ffd700;
+}
+
+.music-toggle-btn.active {
+    background: linear-gradient(135deg, #ffd700, #ff6b6b);
+    border-color: #ffd700;
+}
+
+/* 赛名显示 */
+.game-title {
+    font-size: var(--title-font);
+    font-weight: bold;
+    background: linear-gradient(45deg, #ffd700, #ff6b6b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.game-title-sub {
+    font-size: var(--title-sub-font);
+    color: #888;
+    text-align: center;
+    margin-top: var(--sp-xs);
+}
+
+/* 层数显示徽章 */
+.level-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--level-badge-size);
+    height: var(--level-badge-size);
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: var(--rd-md);
+    font-size: var(--level-font);
+    font-weight: bold;
+    padding: 0 var(--sp-xs);
+}
+
+.level-badge .number {
+    font-size: var(--level-num-font);
+    margin-right: 0.125rem;
+}
+
+/* 布局面板 */
+.game-panel {
+    background: rgba(255,255,255,0.05);
+    border-radius: var(--panel-radius);
+    padding: var(--panel-padding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--panel-gap);
+}
+
+.game-panel-title {
+    font-size: var(--font-sm);
+    color: #ffd700;
+    text-align: center;
+    padding-bottom: var(--sp-xs);
+    border-bottom: 1px solid rgba(255,215,0,0.2);
+}
+
+/* 游戏区域网格 */
+.game-grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    gap: var(--grid-gap);
+    padding: var(--game-area-padding);
+}
+
+/* 弹性布局容器 */
+.flex-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--panel-gap);
+    padding: var(--panel-padding);
+}
+
+.flex-layout.col {
+    flex-direction: column;
+}
+
+.flex-layout.row {
+    flex-direction: row;
+    align-items: center;
+}
+
+/* ==========================================
+   设备特定UI调整
+   ========================================== */
+
+/* iPhone SE (375px) */
+@media (max-width: 23.4375rem) {
+    :root {
+        --music-btn-size: 2.125rem;
+        --music-btn-icon: 1rem;
+        --title-font: 1rem;
+        --title-sub-font: 0.625rem;
+        --level-badge-size: 1.75rem;
+        --level-font: 0.75rem;
+        --panel-padding: 0.5rem;
+        --panel-gap: 0.375rem;
+    }
+    
+    .game-title {
+        font-size: 1rem;
+    }
+}
+
+/* 折叠屏展开态 (700-800px) */
+@media (min-width: 43.75rem) and (max-width: 50rem) {
+    :root {
+        --music-btn-size: 2.75rem;
+        --music-btn-icon: 1.5rem;
+        --title-font: 1.5rem;
+        --title-sub-font: 0.875rem;
+        --level-badge-size: 2.5rem;
+        --level-font: 1rem;
+        --panel-padding: 1rem;
+        --panel-gap: 0.75rem;
+    }
+}
+
+/* 桌面端 (1024px+) */
+@media (min-width: 64rem) {
+    :root {
+        --music-btn-size: 2.75rem;
+        --music-btn-icon: 1.375rem;
+        --title-font: 1.375rem;
+        --panel-padding: 1rem;
+    }
+}
+
+/* ==========================================
+   动画
+   ========================================== */
+
+@keyframes bubblePop {
+    0% { opacity: 0; transform: translateY(0.625rem) scale(0.8); }
+    20% { opacity: 1; transform: translateY(0) scale(1); }
+    80% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-0.625rem) scale(0.9); }
+}
+
+/* ==========================================
+   减少动画 (无障碍)
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

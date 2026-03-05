@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>命运塔·首登者 - 个人赛</title>
+    <script src="pixel_tower_system.js"></script>
+    <script src="unified_tower_system.js"></script>
+    <script src="taunt_system.js"></script>
+    <script src="app_framework_v6.js"></script>
+    <link rel="stylesheet" href="app_styles_v6.css">
+    <style>
+        /* 个人赛特定样式 */
+        .opponent-bar {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2);
+            background: rgba(231,76,60,0.1);
+            border-radius: var(--radius-md);
+            flex-shrink: 0;
+        }
+        
+        .opponent-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #E74C3C, #C0392B);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            position: relative;
+        }
+        
+        .opponent-info {
+            flex: 1;
+        }
+        
+        .opponent-name {
+            font-size: var(--font-sm);
+            font-weight: bold;
+        }
+        
+        .opponent-status {
+            font-size: var(--font-xs);
+            color: var(--color-text-muted);
+        }
+        
+        .taunt-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #9B59B6, #8E44AD);
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .main-game-area {
+            flex: 1;
+            display: flex;
+            gap: var(--space-2);
+            min-height: 0;
+        }
+        
+        .tower-section {
+            flex: 0 0 35%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .battle-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+        
+        .guard-card-area {
+            background: rgba(255,215,0,0.1);
+            border: 2px solid var(--color-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-3);
+            text-align: center;
+        }
+        
+        .guard-label {
+            font-size: var(--font-xs);
+            color: var(--color-text-muted);
+            margin-bottom: var(--space-1);
+        }
+        
+        .guard-card {
+            width: 60px;
+            height: 84px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #FFD700, #FFA502);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-xl);
+        }
+        
+        .countdown-timer {
+            text-align: center;
+            font-size: var(--font-2xl);
+            font-weight: bold;
+            color: var(--color-danger);
+        }
+        
+        .action-bar {
+            display: flex;
+            gap: var(--space-2);
+            flex-shrink: 0;
+        }
+        
+        .btn-confirm {
+            flex: 2;
+        }
+        
+        .btn-skip {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 头部 -->
+        <header class="app-header">
+            <div class="app-header-action" onclick="history.back()">←</div>
+            <div class="app-header-title">👤 个人赛</div>
+            <div class="currency-display">
+                <span class="icon">💎</span>
+                <span id="diamonds">500</span>
+            </div>
+        </header>
+        
+        <!-- 主内容 -->
+        <main class="app-content">
+            <!-- 对手信息 -->
+            <div class="opponent-bar">
+                <div class="opponent-avatar" id="opponentAvatar">🤖</div>
+                <div class="opponent-info">
+                    <div class="opponent-name">AI对手</div>
+                    <div class="opponent-status">当前: 第<span id="aiLevel">2</span>层</div>
+                </div>
+                <button class="taunt-btn" onclick="sendTaunt()">💬</button>
+            </div>
+            
+            <!-- 游戏主区域 -->
+            <div class="main-game-area">
+                <!-- 左侧：塔 -->
+                <div class="tower-section">
+                    <div class="tower-widget">
+                        <div class="tower-header" id="towerName">🏰 埃菲尔铁塔 🇫🇷</div>
+                        <div class="tower-body" id="tower"></div>
+                    </div>
+                </div>
+                
+                <!-- 右侧：对战区 -->
+                <div class="battle-section">
+                    <!-- 守卫牌 -->
+                    <div class="guard-card-area">
+                        <div class="guard-label">🛡️ 守卫牌</div>
+                        <div class="guard-card" id="guardCard">
+                            <div>?</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 倒计时 -->
+                    <div class="countdown-timer" id="countdown">15</div>
+                    
+                    <!-- 天命牌 -->
+                    <div class="destiny-cards">
+                        <div class="destiny-card" onclick="useDestiny(0)">
+                            <div class="icon">⚡</div>
+                            <div>突击</div>
+                        </div>
+                        <div class="destiny-card" onclick="useDestiny(1)">
+                            <div class="icon">🔄</div>
+                            <div>换牌</div>
+                        </div>
+                        <div class="destiny-card" onclick="useDestiny(2)">
+                            <div class="icon">👁️</div>
+                            <div>透视</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 手牌 -->
+            <div class="hand-widget">
+                <div class="hand-header">
+                    <span>🎴 手牌 (<span id="cardCount">5</span>张)</span>
+                    <span style="font-size: var(--font-xs); color: var(--color-text-muted);">点击选择</span>
+                </div>
+                <div class="hand-cards" id="handCards"></div>
+            </div>
+            
+            <!-- 操作按钮 -->
+            <div class="action-bar">
+                <button class="btn btn-secondary btn-skip" onclick="skipTurn()">跳过</button>
+                <button class="btn btn-primary btn-confirm" onclick="confirmPlay()">✅ 确认出牌</button>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // 游戏状态
+        const gameState = {
+            playerLevel: 1,
+            aiLevel: 1,
+            streak: 0,
+            handCards: [],
+            selectedCard: null,
+            currentTower: null,
+            countdown: 15,
+            gameActive: true
+        };
+        
+        // 初始化
+        function init() {
+            // 选择随机塔
+            const allTowers = [
+                ...PixelTowerSystem.library.basic,
+                ...PixelTowerSystem.library.rare,
+                ...PixelTowerSystem.library.epic
+            ];
+            gameState.currentTower = allTowers[Math.floor(Math.random() * allTowers.length)];
+            
+            // 生成手牌
+            gameState.handCards = generateCards(5);
+            
+            // 渲染UI
+            renderTower();
+            renderHandCards();
+            updateTowerName();
+            
+            // 开始倒计时
+            startCountdown();
+        }
+        
+        // 生成卡牌
+        function generateCards(count) {
+            const suits = ['♥', '♦', '♣', '♠'];
+            const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+            const cards = [];
+            
+            for (let i = 0; i < count; i++) {
+                const suit = suits[Math.floor(Math.random() * suits.length)];
+                const rank = ranks[Math.floor(Math.random() * ranks.length)];
+                const color = (suit === '♥' || suit === '♦') ? '#d00' : '#000';
+                cards.push({ suit, rank, color });
+            }
+            return cards;
+        }
+        
+        // 渲染塔（使用统一系统）
+        function renderTower() {
+            const tower = gameState.currentTower || PixelTowerSystem.library.basic[0];
+            
+            // 构建玩家数据
+            const players = [];
+            
+            // 添加自己
+            if (gameState.playerLevel >= 1) {
+                players.push({
+                    id: 'me',
+                    level: gameState.playerLevel,
+                    avatar: '😊',
+                    team: 'me',
+                    isMe: true
+                });
+            }
+            
+            // 添加AI
+            if (gameState.aiLevel >= 1) {
+                players.push({
+                    id: 'ai',
+                    level: gameState.aiLevel,
+                    avatar: '🤖',
+                    team: 'enemy',
+                    isMe: false
+                });
+            }
+            
+            UnifiedTowerSystem.currentPlayers = players;
+            UnifiedTowerSystem.currentTower = tower;
+            UnifiedTowerSystem.currentContainerId = 'tower';
+            
+            UnifiedTowerSystem.renderTower('tower', {
+                tower: tower,
+                players: players,
+                config: { showName: false }
+            });
+        }
+        
+        // 渲染手牌
+        function renderHandCards() {
+            const container = document.getElementById('handCards');
+            container.innerHTML = gameState.handCards.map((card, index) => `
+                <div class="game-card ${gameState.selectedCard === index ? 'selected' : ''}" 
+                     onclick="selectCard(${index})">
+                    <div class="suit" style="color: ${card.color}">${card.suit}</div>
+                    <div class="rank">${card.rank}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('cardCount').textContent = gameState.handCards.length;
+        }
+        
+        // 选择卡牌
+        function selectCard(index) {
+            gameState.selectedCard = index;
+            renderHandCards();
+        }
+        
+        // 确认出牌
+        function confirmPlay() {
+            if (gameState.selectedCard === null) {
+                alert('请先选择手牌');
+                return;
+            }
+            
+            const playerCard = gameState.handCards[gameState.selectedCard];
+            const guardCard = generateCards(1)[0];
+            
+            const isMatch = (playerCard.suit === guardCard.suit) || 
+                           (playerCard.rank === guardCard.rank);
+            
+            // 显示守卫牌
+            document.getElementById('guardCard').innerHTML = `
+                <div style="font-size: 24px;">${guardCard.suit}</div>
+                <div style="font-size: 14px;">${guardCard.rank}</div>
+            `;
+            
+            gameState.handCards.splice(gameState.selectedCard, 1);
+            gameState.selectedCard = null;
+            
+            if (isMatch) {
+                gameState.playerLevel++;
+                gameState.streak++;
+                
+                // 奖励新牌
+                if (gameState.handCards.length < 18) {
+                    const newCard = generateCards(1)[0];
+                    gameState.handCards.push(newCard);
+                }
+                
+                renderHandCards();
+                renderTower();
+                
+                if (gameState.playerLevel >= 13) {
+                    alert('🎉 恭喜登顶！你获胜了！');
+                    gameState.gameActive = false;
+                }
+            } else {
+                gameState.streak = 0;
+                alert('❌ 匹配失败！连胜清零');
+                renderHandCards();
+            }
+            
+            document.getElementById('guardCard').innerHTML = '<div>?</div>';
+            resetCountdown();
+        }
+        
+        // 跳过回合
+        function skipTurn() {
+            resetCountdown();
+        }
+        
+        // 使用天命牌
+        function useDestiny(index) {
+            alert('使用天命牌: ' + index);
+        }
+        
+        // 发送嘲讽
+        function sendTaunt() {
+            const taunts = ['你太慢了！', '追不上我！', '13层见！', '认输吧！'];
+            const taunt = taunts[Math.floor(Math.random() * taunts.length)];
+            
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(taunt);
+                utterance.lang = 'zh-CN';
+                utterance.rate = 1.2;
+                speechSynthesis.speak(utterance);
+            }
+            
+            const avatar = document.getElementById('opponentAvatar');
+            const bubble = document.createElement('div');
+            bubble.className = 'taunt-bubble';
+            bubble.textContent = taunt;
+            avatar.appendChild(bubble);
+            setTimeout(() => bubble.remove(), 3000);
+        }
+        
+        // 更新塔名
+        function updateTowerName() {
+            const tower = gameState.currentTower;
+            if (tower) {
+                document.getElementById('towerName').innerHTML = 
+                    `🏰 ${tower.name} <span style="font-size: 10px; color: #888;">${tower.country}</span>`;
+            }
+        }
+        
+        // 倒计时
+        let countdownTimer = null;
+        function startCountdown() {
+            let count = 15;
+            document.getElementById('countdown').textContent = count;
+            
+            countdownTimer = setInterval(() => {
+                count--;
+                document.getElementById('countdown').textContent = count;
+                
+                if (count <= 0) {
+                    clearInterval(countdownTimer);
+                    autoPlay();
+                }
+            }, 1000);
+        }
+        
+        function resetCountdown() {
+            clearInterval(countdownTimer);
+            startCountdown();
+        }
+        
+        function autoPlay() {
+            if (gameState.handCards.length > 0) {
+                selectCard(Math.floor(Math.random() * gameState.handCards.length));
+                confirmPlay();
+            }
+        }
+        
+        // 启动
+        init();
+    </script>
+</body>
+</html>

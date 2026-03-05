@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>命运塔·首登者 - 商城</title>
+    <link rel="stylesheet" href="card_skins.css">
+    <link rel="stylesheet" href="mobile_expert_framework.css">
+    <link rel="stylesheet" href="ui_global_responsive.css">
+    <link rel="stylesheet" href="device_adaptive.css">
+    <link rel="stylesheet" href="global_responsive.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        .container { max-width: 87.5rem; margin: 0 auto; padding: var(--sp-lg); }
+        
+        /* 头部 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--sp-lg) 0;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: var(--sp-md);
+        }
+        
+        .logo {
+            font-size: var(--destiny-icon);
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+        }
+        
+        .currency-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .currency-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.1);
+            padding: var(--sp-sm) 20px;
+            border-radius: 20px;
+            font-size: var(--hand-rank);
+        }
+        
+        .currency-item.diamonds { color: #0ff; }
+        .currency-item.coins { color: #ffd700; }
+        
+        /* 标签页 */
+        .tabs {
+            display: flex;
+            gap: var(--sp-sm);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        
+        .tab {
+            padding: var(--sp-md) 30px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: var(--font-md);
+            color: #888;
+            white-space: nowrap;
+        }
+        
+        .tab:hover, .tab.active {
+            background: rgba(255,215,0,0.1);
+            border-color: #ffd700;
+            color: #ffd700;
+        }
+        
+        /* 内容区 */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 充值套餐 */
+        .recharge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .package-card {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .package-card:hover {
+            transform: translateY(-5px);
+            border-color: #ffd700;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+        }
+        
+        .package-tag {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: var(--font-xs);
+            font-weight: bold;
+        }
+        
+        .tag-hot { background: #ff4757; color: #fff; }
+        .tag-popular { background: #ffa502; color: #000; }
+        .tag-recommend { background: #2ed573; color: #fff; }
+        .tag-vip { background: #9b59b6; color: #fff; }
+        .tag-legend { background: #e74c3c; color: #fff; animation: pulse 2s infinite; }
+        .tag-mythical { background: linear-gradient(45deg, #f39c12, #e74c3c); color: #fff; animation: pulse 1s infinite; }
+        
+        .package-price {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 15px 0;
+        }
+        
+        .package-price span {
+            font-size: var(--font-md);
+            color: #888;
+        }
+        
+        .package-diamonds {
+            font-size: var(--destiny-icon);
+            color: #0ff;
+            margin: 10px 0;
+        }
+        
+        .package-bonus {
+            color: #2ed573;
+            font-size: var(--font-sm);
+            margin: 5px 0;
+        }
+        
+        .package-gifts {
+            margin: 15px 0;
+            padding: var(--sp-sm);
+            background: rgba(0,0,0,0.3);
+            border-radius: var(--rd-md);
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .btn-buy {
+            width: 100%;
+            padding: var(--sp-md);
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-size: var(--hand-rank);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-buy:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.4);
+        }
+        
+        /* 扑克牌皮肤 */
+        .skins-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+        }
+        
+        .skin-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: var(--sp-lg);
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .skin-card:hover {
+            border-color: rgba(255,215,0,0.5);
+            background: rgba(255,215,0,0.05);
+        }
+        
+        .skin-preview {
+            width: 100px;
+            height: 140px;
+            margin: 0 auto 15px;
+            border-radius: var(--rd-lg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--destiny-icon);
+        }
+        
+        .skin-name {
+            font-size: var(--hand-rank);
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+        
+        .skin-desc {
+            font-size: var(--font-xs);
+            color: #888;
+            margin-bottom: 10px;
+        }
+        
+        .skin-price {
+            font-size: var(--title-font);
+            color: #0ff;
+            margin-bottom: 15px;
+        }
+        
+        .skin-price .original {
+            text-decoration: line-through;
+            color: #666;
+            font-size: var(--font-sm);
+            margin-left: 10px;
+        }
+        
+        .skin-rarity {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            margin-bottom: 10px;
+        }
+        
+        .rarity-common { background: #95a5a6; color: #fff; }
+        .rarity-rare { background: #3498db; color: #fff; }
+        .rarity-epic { background: #9b59b6; color: #fff; }
+        .rarity-legendary { background: #f39c12; color: #fff; }
+        .rarity-mythical { background: linear-gradient(45deg, #e74c3c, #f39c12); color: #fff; }
+        
+        .btn-purchase {
+            padding: var(--sp-sm) 30px;
+            background: rgba(255,215,0,0.2);
+            border: 2px solid #ffd700;
+            border-radius: var(--rd-md);
+            color: #ffd700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-purchase:hover {
+            background: #ffd700;
+            color: #000;
+        }
+        
+        .btn-purchase:disabled {
+            background: rgba(100,100,100,0.2);
+            border-color: #666;
+            color: #666;
+            cursor: not-allowed;
+        }
+        
+        /* 嘲讽包 */
+        .taunt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .taunt-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,107,107,0.3);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .taunt-card:hover {
+            border-color: #ff6b6b;
+            box-shadow: 0 10px 30px rgba(255,107,107,0.2);
+        }
+        
+        .taunt-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .taunt-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--sp-sm);
+            margin: 15px 0;
+            justify-content: center;
+        }
+        
+        .taunt-item {
+            padding: 5px 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            font-size: var(--font-sm);
+        }
+        
+        /* 直接购买 */
+        .direct-buy-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .direct-buy-title {
+            font-size: var(--title-font);
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .coins-packages {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: var(--sp-md);
+        }
+        
+        .coin-package {
+            background: rgba(255,215,0,0.1);
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 10px;
+            padding: var(--sp-lg);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .coin-package:hover {
+            background: rgba(255,215,0,0.2);
+            transform: scale(1.05);
+        }
+        
+        .coin-amount {
+            font-size: var(--hand-suit);
+            color: #ffd700;
+            margin: 10px 0;
+        }
+        
+        .coin-cost {
+            color: #0ff;
+            font-size: var(--font-md);
+        }
+        
+        /* 动画 */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* 响应式 */
+        @media (max-width: 48rem) {
+            .recharge-grid { grid-template-columns: 1fr; }
+            .skins-grid { grid-template-columns: repeat(2, 1fr); }
+            .tabs { flex-wrap: nowrap; }
+        }
+    
+        /* iPhone SE 特定优化 - 375px */
+        @media (max-width: 23.4375rem) {
+            .container, body {
+                padding: 4px;
+            }
+            
+            .header, .game-header {
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 4px 0;
+                margin-bottom: 4px;
+                gap: 4px;
+            }
+            
+            .logo, .game-title {
+                font-size: 14px !important;
+            }
+            
+            .game-info, .currency-bar {
+                gap: 4px;
+                flex-wrap: wrap;
+            }
+            
+            .info-item {
+                padding: 3px 6px !important;
+                font-size: 11px !important;
+            }
+            
+            .btn, .game-btn, .btn-confirm {
+                padding: 6px 10px !important;
+                font-size: 11px !important;
+            }
+        }
+    </style>
+    <script src="music_system.js"></script>
+    <script src="responsive_adapter.js"></script>
+</head>
+<body class="safe-top safe-bottom" class="game-container touch-device-support">
+    <div class="container">
+        <div class="header game-header">
+            <div class="logo">🏰 命运塔·首登者商城</div>
+            <div class="currency-bar">
+                <div class="currency-item diamonds">
+                    <span>💎</span>
+                    <span id="diamondCount">1,280</span>
+                </div>
+                <div class="currency-item coins">
+                    <span>🪙</span>
+                    <span id="coinCount">25,600</span>
+                </div>
+                <a href="new_index.html" style="color: #888; text-decoration: none; margin-left: 20px;">← 返回</a>
+            </div>
+        </div>
+        
+        <!-- 标签页 -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('recharge')">💎 充值套餐</div>
+            <div class="tab" onclick="switchTab('skins')">🎨 扑克牌皮肤</div>
+            <div class="tab" onclick="switchTab('taunt')">🎭 嘲讽包</div>
+            <div class="tab" onclick="switchTab('direct')">🛒 快速购买</div>
+        </div>
+        
+        <!-- 充值套餐 -->
+        <div id="tab-recharge" class="tab-content active">
+            <div class="recharge-grid">
+                <!-- 29元 -->
+                <div class="package-card">
+                    <div class="package-tag tag-hot">HOT</div>
+                    <div class="package-price">¥29</div>
+                    <div class="package-diamonds">💎 330</div>
+                    <div class="package-bonus">首充额外送300钻</div>
+                    <div class="package-gifts">🎁 经验卡×3 + 幸运符×1</div>
+                    <button class="btn-buy" onclick="buyPackage(29)">立即购买</button>
+                </div>
+                
+                <!-- 39元 -->
+                <div class="package-card">
+                    <div class="package-price">¥39</div>
+                    <div class="package-diamonds">💎 450</div>
+                    <div class="package-bonus">首充额外送400钻</div>
+                    <div class="package-gifts">🎁 经验卡×5 + 幸运符×2</div>
+                    <button class="btn-buy" onclick="buyPackage(39)">立即购买</button>
+                </div>
+                
+                <!-- 88元 -->
+                <div class="package-card">
+                    <div class="package-tag tag-popular">人气</div>
+                    <div class="package-price">¥88</div>
+                    <div class="package-diamonds">💎 1,050</div>
+                    <div class="package-bonus">首充额外送900钻 + 周卡</div>
+                    <div class="package-gifts">🎁 经验卡×10 + 幸运符×5 + 嘲讽包</div>
+                    <button class="btn-buy" onclick="buyPackage(88)">立即购买</button>
+                </div>
+                
+                <!-- 99元 -->
+                <div class="package-card">
+                    <div class="package-tag" style="background: #3498db; color: #fff;">月卡</div>
+                    <div class="package-price">¥99</div>
+                    <div class="package-diamonds">💎 1,200</div>
+                    <div class="package-bonus">首充额外送1000钻 + 月卡</div>
+                    <div class="package-gifts">🎁 经验卡×15 + 幸运符×8 + 嘲讽包</div>
+                    <button class="btn-buy" onclick="buyPackage(99)">立即购买</button>
+                </div>
+                
+                <!-- 128元 -->
+                <div class="package-card">
+                    <div class="package-tag tag-recommend">推荐</div>
+                    <div class="package-price">¥128</div>
+                    <div class="package-diamonds">💎 1,600</div>
+                    <div class="package-bonus">首充额外送1280钻</div>
+                    <div class="package-gifts">🎁 经验卡×20 + 幸运符×10 + 进阶嘲讽包 + 随机皮肤</div>
+                    <button class="btn-buy" onclick="buyPackage(128)">立即购买</button>
+                </div>
+                
+                <!-- 288元 -->
+                <div class="package-card">
+                    <div class="package-tag tag-vip">VIP</div>
+                    <div class="package-price">¥288</div>
+                    <div class="package-diamonds">💎 3,744</div>
+                    <div class="package-bonus">首充额外送2880钻 + VIP经验</div>
+                    <div class="package-gifts">🎁 经验卡×50 + 幸运符×25 + 进阶嘲讽包 + 史诗皮肤 + 头像框</div>
+                    <button class="btn-buy" onclick="buyPackage(288)">立即购买</button>
+                </div>
+                
+                <!-- 599元 -->
+                <div class="package-card">
+                    <div class="package-tag tag-legend">传奇</div>
+                    <div class="package-price">¥599</div>
+                    <div class="package-diamonds">💎 8,386</div>
+                    <div class="package-bonus">首充额外送5990钻 + 富豪徽章</div>
+                    <div class="package-gifts">🎁 全套礼包 + 传说皮肤 + VIP头像框 + 富豪称号</div>
+                    <button class="btn-buy" onclick="buyPackage(599)">立即购买</button>
+                </div>
+                
+                <!-- 999元 -->
+                <div class="package-card">
+                    <div class="package-tag" style="background: linear-gradient(45deg, #9b59b6, #e74c3c); color: #fff;">至尊</div>
+                    <div class="package-price">¥999</div>
+                    <div class="package-diamonds">💎 14,985</div>
+                    <div class="package-bonus">首充额外送9990钻 + 传奇徽章</div>
+                    <div class="package-gifts">🎁 全套礼包 + 传说皮肤×2 + 传奇头像框 + 专属客服</div>
+                    <button class="btn-buy" onclick="buyPackage(999)">立即购买</button>
+                </div>
+                
+                <!-- 2999元 -->
+                <div class="package-card" style="border-color: #e74c3c; background: linear-gradient(135deg, rgba(231,76,60,0.1), rgba(243,156,18,0.1));">
+                    <div class="package-tag tag-mythical">神话</div>
+                    <div class="package-price" style="color: #e74c3c;">¥2,999</div>
+                    <div class="package-diamonds">💎 47,984</div>
+                    <div class="package-bonus">首充额外送29990钻 + 神话徽章</div>
+                    <div class="package-gifts">🎁 全部嘲讽包 + 神话皮肤 + 定制服务 + 永久加成</div>
+                    <button class="btn-buy" style="background: linear-gradient(135deg, #e74c3c, #f39c12); color: #fff;" onclick="buyPackage(2999)">立即购买</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 扑克牌皮肤 -->
+        <div id="tab-skins" class="tab-content">
+            <div class="skins-grid">
+                <!-- 经典款 -->
+                <div class="skin-card">
+                    <div class="skin-preview" style="background: linear-gradient(135deg, #fff, #f0f0f0); border: 2px solid #333;">
+                        <span style="font-size: 32px;">♥</span>
+                        <span style="font-size: var(--title-font); color: #000;">A</span>
+                    </div>
+                    <div class="skin-rarity rarity-common">普通</div>
+                    <div class="skin-name">经典款</div>
+                    <div class="skin-desc">传统扑克牌设计</div>
+                    <div class="skin-price">免费</div>
+                    <button class="btn-purchase" disabled>已拥有</button>
+                </div>
+                
+                <!-- 粉色萌猫 -->
+                <div class="skin-card">
+                    <div class="skin-preview border-glow-pink" style="background: linear-gradient(135deg, #fff0f5, #ffe4e1);">
+                        <span style="font-size: 32px;">🐱</span>
+                        <span style="font-size: var(--font-md); color: #ff69b4;">萌猫</span>
+                    </div>
+                    <div class="skin-rarity rarity-rare">稀有</div>
+                    <div class="skin-name">粉色萌猫</div>
+                    <div class="skin-desc">软萌粉色猫咪主题</div>
+                    <div class="skin-price">💎 188</div>
+                    <button class="btn-purchase" onclick="buySkin('kawaii_pink', 188)">购买</button>
+                </div>
+                
+                <!-- 水晶魔法 -->
+                <div class="skin-card">
+                    <div class="skin-preview border-crystal" style="background: linear-gradient(135deg, #fff, #f0f8ff);">
+                        <span style="font-size: 32px;">💎</span>
+                        <span style="font-size: var(--font-md); background: linear-gradient(45deg, #ff1493, #00ffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">水晶</span>
+                    </div>
+                    <div class="skin-rarity rarity-epic">史诗</div>
+                    <div class="skin-name">水晶魔法</div>
+                    <div class="skin-desc">璀璨水晶，流光溢彩</div>
+                    <div class="skin-price">💎 388</div>
+                    <button class="btn-purchase" onclick="buySkin('magic_crystal', 388)">购买</button>
+                </div>
+                
+                <!-- 东方神龙 -->
+                <div class="skin-card">
+                    <div class="skin-preview border-fire" style="background: linear-gradient(135deg, #fff5f0, #ffe4e1);">
+                        <span style="font-size: 32px;">🐲</span>
+                        <span style="font-size: var(--font-md); color: #ff4500; text-shadow: 0 0 10px #ffd700;">神龙</span>
+                    </div>
+                    <div class="skin-rarity rarity-legendary">传说</div>
+                    <div class="skin-name">东方神龙</div>
+                    <div class="skin-desc">威严霸气的东方龙</div>
+                    <div class="skin-price">💎 588</div>
+                    <button class="btn-purchase" onclick="buySkin('magic_dragon', 588)">购买</button>
+                </div>
+                
+                <!-- 樱花飞舞 -->
+                <div class="skin-card">
+                    <div class="skin-preview border-sakura" style="background: linear-gradient(135deg, #fff, #fff0f5);">
+                        <span style="font-size: 32px;">🌸</span>
+                        <span style="font-size: var(--font-md); color: #ffb7c5;">樱花</span>
+                    </div>
+                    <div class="skin-rarity rarity-epic">史诗</div>
+                    <div class="skin-name">樱花飞舞</div>
+                    <div class="skin-desc">春日樱花，浪漫唯美</div>
+                    <div class="skin-price">💎 288</div>
+                    <button class="btn-purchase" onclick="buySkin('nature_sakura', 288)">购买</button>
+                </div>
+                
+                <!-- 赛博朋克 -->
+                <div class="skin-card">
+                    <div class="skin-preview border-neon" style="background: linear-gradient(135deg, #f0ffff, #e0ffff);">
+                        <span style="font-size: 32px;">🤖</span>
+                        <span style="font-size: var(--font-md); color: #0ff; text-shadow: 0 0 10px #0ff;">赛博</span>
+                    </div>
+                    <div class="skin-rarity rarity-legendary">传说</div>
+                    <div class="skin-name">赛博朋克</div>
+                    <div class="skin-desc">霓虹灯光，未来科技</div>
+                    <div class="skin-price">💎 488</div>
+                    <button class="btn-purchase" onclick="buySkin('tech_cyber', 488)">购买</button>
+                </div>
+                
+                <!-- 至尊黄金 -->
+                <div class="skin-card" style="border-color: #ffd700;">
+                    <div class="skin-preview border-glow-gold" style="background: linear-gradient(135deg, #fff, #fffacd);">
+                        <span style="font-size: 32px;">👑</span>
+                        <span style="font-size: var(--font-md); color: #b8860b;">至尊</span>
+                    </div>
+                    <div class="skin-rarity rarity-mythical">神话</div>
+                    <div class="skin-name">至尊黄金</div>
+                    <div class="skin-desc">纯金打造，尊贵典雅</div>
+                    <div class="skin-price">VIP8专属</div>
+                    <button class="btn-purchase" onclick="buySkin('vip_golden', 0)">查看</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 嘲讽包 -->
+        <div id="tab-taunt" class="tab-content">
+            <div class="taunt-grid">
+                <div class="taunt-card">
+                    <div class="taunt-icon">🎭</div>
+                    <h3 style="text-align: center; color: #ffd700; margin-bottom: 10px;">初级嘲讽包</h3>
+                    <div class="taunt-items">
+                        <span class="taunt-item">😏 得意</span>
+                        <span class="taunt-item">🤭 偷笑</span>
+                        <span class="taunt-item">👏 鼓掌</span>
+                        <span class="taunt-item">运气不错嘛~</span>
+                        <span class="taunt-item">下一把加油哦</span>
+                    </div>
+                    <div style="text-align: center; color: #0ff; font-size: var(--destiny-icon); margin: 15px 0;">💎 188</div>
+                    <button class="btn-buy" onclick="buyTaunt('taunt_pack_1', 188)">购买</button>
+                </div>
+                
+                <div class="taunt-card">
+                    <div class="taunt-icon">🎭🎭</div>
+                    <h3 style="text-align: center; color: #ffd700; margin-bottom: 10px;">进阶嘲讽包</h3>
+                    <div class="taunt-items">
+                        <span class="taunt-item">😎 酷</span>
+                        <span class="taunt-item">🤣 大笑</span>
+                        <span class="taunt-item">🎯 命中</span>
+                        <span class="taunt-item">🔥 火热</span>
+                        <span class="taunt-item">这波操作666</span>
+                        <span class="taunt-item">守卫？不存在的</span>
+                        <span class="taunt-item">🎤 扔麦</span>
+                    </div>
+                    <div style="text-align: center; color: #0ff; font-size: var(--destiny-icon); margin: 15px 0;">💎 388</div>
+                    <button class="btn-buy" onclick="buyTaunt('taunt_pack_2', 388)">购买</button>
+                </div>
+                
+                <div class="taunt-card">
+                    <div class="taunt-icon">👑🎭</div>
+                    <h3 style="text-align: center; color: #ffd700; margin-bottom: 10px;">大师嘲讽包</h3>
+                    <div class="taunt-items">
+                        <span class="taunt-item">👑 王者</span>
+                        <span class="taunt-item">🏆 冠军</span>
+                        <span class="taunt-item">💯 满分</span>
+                        <span class="taunt-item">首登者在此！</span>
+                        <span class="taunt-item">这就是实力的差距</span>
+                        <span class="taunt-item">认输吧，凡人</span>
+                        <span class="taunt-item">💃 胜利舞</span>
+                    </div>
+                    <div style="text-align: center; color: #0ff; font-size: var(--destiny-icon); margin: 15px 0;">💎 688</div>
+                    <button class="btn-buy" onclick="buyTaunt('taunt_pack_3', 688)">购买</button>
+                </div>
+                
+                <div class="taunt-card" style="border-color: #ffd700; background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));">
+                    <div class="taunt-icon">🎭👑</div>
+                    <h3 style="text-align: center; color: #ffd700; margin-bottom: 10px;">嘲讽大师全集</h3>
+                    <p style="text-align: center; color: #888; margin-bottom: 15px;">包含所有嘲讽包内容</p>
+                    <div class="taunt-items">
+                        <span class="taunt-item" style="background: #ffd700; color: #000;">⭐ 专属嘲讽框</span>
+                        <span class="taunt-item" style="background: #ffd700; color: #000;">🎬 传说嘲讽动画</span>
+                        <span class="taunt-item">+ 全部表情</span>
+                    </div>
+                    <div style="text-align: center; color: #0ff; font-size: var(--destiny-icon); margin: 15px 0;">💎 1,288</div>
+                    <button class="btn-buy" onclick="buyTaunt('taunt_pack_all', 1288)">购买</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 快速购买 -->
+        <div id="tab-direct" class="tab-content">
+            <div class="direct-buy-section">
+                <div class="direct-buy-title">🪙 用钻石购买金币</div>
+                <div class="coins-packages">
+                    <div class="coin-package" onclick="buyCoins('small')">
+                        <div style="font-size: 32px;">🪙</div>
+                        <div class="coin-amount">1,000</div>
+                        <div class="coin-cost">💎 10</div>
+                    </div>
+                    <div class="coin-package" onclick="buyCoins('medium')">
+                        <div style="font-size: 32px;">🪙🪙</div>
+                        <div class="coin-amount">5,500</div>
+                        <div class="coin-cost">💎 50</div>
+                        <div style="color: #2ed573; font-size: var(--font-xs);">+500赠送</div>
+                    </div>
+                    <div class="coin-package" onclick="buyCoins('large')">
+                        <div style="font-size: 32px;">🪙🪙🪙</div>
+                        <div class="coin-amount">12,000</div>
+                        <div class="coin-cost">💎 100</div>
+                        <div style="color: #2ed573; font-size: var(--font-xs);">+2,000赠送</div>
+                    </div>
+                    <div class="coin-package" onclick="buyCoins('xlarge')">
+                        <div style="font-size: 32px;">💰</div>
+                        <div class="coin-amount">65,000</div>
+                        <div class="coin-cost">💎 500</div>
+                        <div style="color: #2ed573; font-size: var(--font-xs);">+15,000赠送</div>
+                    </div>
+                    <div class="coin-package" onclick="buyCoins('mega')">
+                        <div style="font-size: 32px;">💰💰</div>
+                        <div class="coin-amount">140,000</div>
+                        <div class="coin-cost">💎 1,000</div>
+                        <div style="color: #2ed573; font-size: var(--font-xs);">+40,000赠送</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="direct-buy-section">
+                <div class="direct-buy-title">💎 紧急补充钻石</div>
+                <div style="text-align: center; padding: 40px; background: rgba(0,255,255,0.05); border-radius: 10px;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">💎 60</div>
+                    <div style="font-size: var(--destiny-icon); color: #ffd700; margin-bottom: 10px;">¥6</div>
+                    <div style="color: #888; font-size: var(--font-sm); margin-bottom: 20px;">每日限购10次，应急使用</div>
+                    <button class="btn-buy" onclick="buyEmergencyDiamonds()">立即补充</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 切换标签页
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+        
+        // 购买套餐
+        function buyPackage(price) {
+            alert(`正在调起支付...\n金额: ¥${price}\n\n(演示模式 - 实际接入支付宝/微信支付)`);
+        }
+        
+        // 购买皮肤
+        function buySkin(skinId, price) {
+            if (price === 0) {
+                alert('VIP8专属皮肤，请先升级VIP等级！');
+                return;
+            }
+            alert(`确认购买皮肤?\n需要: 💎 ${price}\n\n(演示模式)`);
+        }
+        
+        // 购买嘲讽包
+        function buyTaunt(packId, price) {
+            alert(`确认购买嘲讽包?\n需要: 💎 ${price}\n\n(演示模式)`);
+        }
+        
+        // 购买金币
+        function buyCoins(size) {
+            const sizes = {
+                'small': { coins: 1000, diamonds: 10 },
+                'medium': { coins: 5500, diamonds: 50 },
+                'large': { coins: 12000, diamonds: 100 },
+                'xlarge': { coins: 65000, diamonds: 500 },
+                'mega': { coins: 140000, diamonds: 1000 }
+            };
+            const info = sizes[size];
+            alert(`确认购买金币?\n获得: 🪙 ${info.coins.toLocaleString()}\n消耗: 💎 ${info.diamonds}\n\n(演示模式)`);
+        }
+        
+        // 紧急补充钻石
+        function buyEmergencyDiamonds() {
+            alert('正在调起支付...\n金额: ¥6\n获得: 💎 60\n\n(演示模式)');
+        }
+    </script>
+    <script src="ui_components_system.js"></script>
+    <script src="device_adaptive_framework.js"></script>
+    <script src="global_responsive.js"></script>
+    <script src="touch_support.js"></script>
+</body>
+</html>

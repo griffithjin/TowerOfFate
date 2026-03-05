@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>命运塔·首登者 - 🔥连胜挑战</title>
+    <script src="pixel_pixel_tower_system.js"></script>
+    <script src="music_system.js"></script>
+    <script src="responsive_adapter_2026.js"></script>
+    <script src="taunt_system.js"></script>
+    <link rel="stylesheet" href="mobile_expert_framework.css">
+    <link rel="stylesheet" href="ui_global_responsive.css">
+    <link rel="stylesheet" href="device_adaptive.css">
+    <link rel="stylesheet" href="global_responsive.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #1a0a0a 0%, #3e1a1a 50%, #2a0d0d 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .container { 
+            max-width: 75rem; 
+            margin: 0 auto; 
+            padding: var(--sp-sm);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 头部 - 连胜特色 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--sp-sm) 0;
+            border-bottom: 3px solid #ff4757;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+            background: linear-gradient(90deg, rgba(255,71,71,0.2), transparent);
+        }
+        
+        .logo {
+            font-size: 22px;
+            background: linear-gradient(45deg, #ff4757, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+        
+        .game-info {
+            display: flex;
+            gap: var(--sp-md);
+            align-items: center;
+        }
+        
+        .info-item {
+            background: rgba(255,71,71,0.2);
+            border: 1px solid #ff4757;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: var(--font-sm);
+        }
+        
+        .streak-display {
+            background: linear-gradient(135deg, #ff4757, #ff6348);
+            padding: var(--sp-sm) 20px;
+            border-radius: 25px;
+            font-size: var(--hand-rank);
+            font-weight: bold;
+            animation: streakPulse 1s infinite;
+        }
+        
+        @keyframes streakPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,71,71,0.5); }
+            50% { box-shadow: 0 0 40px rgba(255,71,71,0.8); }
+        }
+        
+        /* 模式选择 */
+        .mode-selector {
+            display: flex;
+            gap: var(--sp-sm);
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+        
+        .mode-btn {
+            padding: var(--sp-sm) 25px;
+            border: 2px solid #ff4757;
+            background: rgba(255,71,71,0.1);
+            color: #fff;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: var(--font-sm);
+        }
+        
+        .mode-btn:hover, .mode-btn.active {
+            background: linear-gradient(135deg, #ff4757, #ff6348);
+            border-color: #ffd700;
+        }
+        
+        /* 连胜进度条 - 重点 */
+        .streak-progress-section {
+            background: rgba(0,0,0,0.4);
+            border: 2px solid #ff4757;
+            border-radius: 15px;
+            padding: var(--sp-md);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .streak-title {
+            font-size: var(--title-font);
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .streak-subtitle {
+            font-size: var(--font-xs);
+            color: #ff6b6b;
+            margin-bottom: 15px;
+        }
+        
+        .streak-bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 5px;
+            padding: 0 10px;
+        }
+        
+        .streak-node {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-xs);
+            font-weight: bold;
+            transition: all 0.5s;
+        }
+        
+        .streak-node.active {
+            background: linear-gradient(135deg, #ffd700, #ff4757);
+            border-color: #ffd700;
+            box-shadow: 0 0 15px #ffd700;
+            animation: nodeGlow 1s infinite;
+        }
+        
+        .streak-node.current {
+            background: #ff4757;
+            border-color: #fff;
+            animation: currentPulse 0.5s infinite;
+        }
+        
+        @keyframes nodeGlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        @keyframes currentPulse {
+            0%, 100% { box-shadow: 0 0 10px #ff4757; }
+            50% { box-shadow: 0 0 25px #ff4757; }
+        }
+        
+        .streak-connector {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            position: relative;
+        }
+        
+        .streak-connector-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ff4757);
+            border-radius: 2px;
+            transition: width 0.5s;
+        }
+        
+        /* 田字形布局 */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: var(--sp-sm);
+            flex: 1;
+            min-height: 0;
+        }
+        
+        .quadrant {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: var(--sp-sm);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(255,71,71,0.3);
+        }
+        
+        .quadrant-title {
+            font-size: 13px;
+            color: #ff4757;
+            margin-bottom: 8px;
+            text-align: center;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        
+        /* 第一象限：守卫牌 + 信息 */
+        .guard-section {
+            height: 45%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(255,71,71,0.1), rgba(255,107,107,0.05));
+            border-radius: 10px;
+            margin-bottom: 8px;
+            padding: 8px;
+        }
+        
+        .guard-card-display {
+            width: var(--hand-width);
+            height: var(--hand-height);
+            background: linear-gradient(135deg, #1a1a2e, #0f3460);
+            border: 2px solid #ff4757;
+            border-radius: var(--rd-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .guard-card-display.revealed {
+            background: linear-gradient(135deg, #fff, #f8f8f8);
+        }
+        
+        .guard-shield {
+            font-size: 32px;
+        }
+        
+        .info-box {
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            border-radius: var(--rd-md);
+            padding: 8px;
+            font-size: 11px;
+            overflow-y: auto;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .info-label {
+            color: #888;
+        }
+        
+        .info-value {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        /* 第二象限：塔 */
+        .tower-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .tower-name {
+            font-size: var(--font-sm);
+            color: #ff4757;
+            text-align: center;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .tower {
+            flex: 1;
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tower-level {
+            height: 16px;
+            margin: 1px 0;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .tower-level.current {
+            box-shadow: 0 0 10px currentColor;
+            animation: levelPulse 1s infinite;
+            z-index: 10;
+        }
+        
+        .tower-level.passed {
+            opacity: 0.8;
+        }
+        
+        @keyframes levelPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        @keyframes neonPulse {
+            0%, 100% { box-shadow: 0 0 10px currentColor; }
+            50% { box-shadow: 0 0 25px currentColor; filter: brightness(1.2); }
+        }
+        
+        .level-symbol {
+            font-size: 11px;
+        }
+        
+        .level-avatar {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .level-avatar.player {
+            right: -20px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .pixel-art {
+            font-family: monospace;
+            font-size: 8px;
+            letter-spacing: -1px;
+            margin-left: 8px;
+            opacity: 0.7;
+        }
+        
+        /* 第三象限：手牌 */
+        .hand-section-full {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .hand-scroll-container {
+            flex: 1;
+            overflow-x: auto;
+            overflow-y: hidden;
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .hand-cards-row {
+            display: flex;
+            gap: 8px;
+            padding: 0 8px;
+        }
+        
+        .hand-card {
+            flex-shrink: 0;
+            width: var(--hand-width);
+            height: var(--hand-height);
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            border-radius: var(--rd-sm);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .hand-card:hover {
+            transform: translateY(-3px);
+            border-color: #ff4757;
+        }
+        
+        .hand-card.selected {
+            border-color: #2ed573;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(46,213,115,0.4);
+        }
+        
+        .hand-card .suit {
+            font-size: var(--destiny-icon);
+        }
+        
+        .hand-card .rank {
+            font-size: var(--font-md);
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .card-count {
+            text-align: center;
+            font-size: 11px;
+            color: #888;
+            margin-top: 3px;
+        }
+        
+        .action-area {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            padding: 8px;
+            flex-shrink: 0;
+        }
+        
+        .btn-confirm, .btn-taunt {
+            padding: var(--sp-sm) 20px;
+            border: none;
+            border-radius: var(--rd-sm);
+            font-size: var(--font-sm);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-confirm {
+            background: linear-gradient(135deg, #ff4757, #ff6348);
+            color: #fff;
+        }
+        
+        .btn-taunt {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #000;
+        }
+        
+        .btn-confirm:hover, .btn-taunt:hover {
+            transform: scale(1.05);
+        }
+        
+        /* 第四象限：记录 */
+        .log-section {
+            flex: 1;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.3);
+            border-radius: var(--rd-sm);
+            padding: 8px;
+            font-size: 11px;
+        }
+        
+        .log-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .log-entry.success { color: #2ed573; }
+        .log-entry.fail { color: #ff4757; font-weight: bold; }
+        .log-entry.streak-break { color: #ff0000; background: rgba(255,0,0,0.1); padding: 8px; border-radius: 4px; }
+        .log-entry.guard { color: #ffd700; }
+        
+        /* 倒计时 */
+        .countdown-display {
+            position: fixed;
+            top: 60px;
+            left: 10px;
+            padding: 8px 16px;
+            background: rgba(255,71,71,0.3);
+            border: 2px solid #ff4757;
+            border-radius: var(--rd-md);
+            font-size: var(--title-font);
+            color: #ff4757;
+            font-weight: bold;
+            z-index: 100;
+        }
+        
+        /* 连胜打破弹窗 - 变小以便看到游戏界面 */
+        .streak-break-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 30000;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 80px;
+        }
+        
+        .streak-break-content {
+            text-align: center;
+            padding: 25px 35px;
+            background: linear-gradient(135deg, #1a0a0a, #2a0d0d);
+            border: 3px solid #ff4757;
+            border-radius: 20px;
+            max-width: 320px;
+            box-shadow: 0 10px 40px rgba(255,71,71,0.5);
+        }
+        
+        .streak-break-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+        
+        .streak-break-title {
+            font-size: 22px;
+            color: #ff4757;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+        
+        .streak-break-msg {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .streak-break-record {
+            font-size: var(--hand-rank);
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+        
+        /* 连胜成功弹窗 */
+        .streak-victory-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 30000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .streak-victory-content {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #1a0a0a, #2a0d0d);
+            border: 3px solid #ffd700;
+            border-radius: 25px;
+            animation: victoryPulse 2s infinite;
+        }
+        
+        @keyframes victoryPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* 警告提示 */
+        .warning-banner {
+            background: linear-gradient(90deg, #ff4757, #ff6348);
+            color: #fff;
+            text-align: center;
+            padding: 8px;
+            font-size: var(--font-xs);
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-radius: var(--rd-md);
+            animation: warningFlash 2s infinite;
+        }
+        
+        @keyframes warningFlash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        /* 响应式 */
+        @media (max-width: 48rem) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(4, 1fr);
+            }
+            .streak-node {
+                width: 22px;
+                height: 22px;
+                font-size: 9px;
+            }
+        }
+    
+        /* iPhone SE 特定优化 - 375px */
+        @media (max-width: 23.4375rem) {
+            .container, body {
+                padding: 4px;
+            }
+            
+            .header, .game-header {
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 4px 0;
+                margin-bottom: 4px;
+                gap: 4px;
+            }
+            
+            .logo, .game-title {
+                font-size: 14px !important;
+            }
+            
+            .game-info, .currency-bar {
+                gap: 4px;
+                flex-wrap: wrap;
+            }
+            
+            .info-item {
+                padding: 3px 6px !important;
+                font-size: 11px !important;
+            }
+            
+            .btn, .game-btn, .btn-confirm {
+                padding: 6px 10px !important;
+                font-size: 11px !important;
+            }
+        }
+    </style>
+</head>
+<body class="safe-top safe-bottom" class="game-container touch-device-support">
+    <div class="container">
+        <!-- 警告横幅 -->
+        <div class="warning-banner">
+            🔥 连胜模式：必须连续成功13次！一旦失败立即结束！🔥
+        </div>
+        
+        <!-- 头部 -->
+        <div class="header game-header">
+            <div class="logo game-title">🔥 连胜挑战</div>
+            <div class="game-info">
+                <div class="info-item">💎 <span id="diamonds">500</span></div>
+                <div class="info-item">🪙 <span id="coins">5000</span></div>
+                <div class="streak-display">🔥 <span id="streakCount">0</span>/13</div>
+                <a href="new_index.html" style="color: #888; text-decoration: none; font-size: var(--font-sm);">← 返回</a>
+            </div>
+        </div>
+        
+        <!-- 模式选择 -->
+        <div class="mode-selector">
+            <button class="mode-btn active" id="modeNormal" onclick="setMode('normal')">
+                🎯 普通连胜
+            </button>
+            <button class="mode-btn" id="modeGuard" onclick="setMode('guard')">
+                🛡️ 守卫连胜
+            </button>
+        </div>
+        
+        <!-- 连胜进度条 -->
+        <div class="streak-progress-section">
+            <div class="streak-title">🔥 连胜进度 🔥</div>
+            <div class="streak-subtitle" id="modeDescription">
+                普通模式：连续匹配成功13次守卫牌
+            </div>
+            <div class="streak-bar-container" id="streakBar">
+                <!-- 动态生成13个节点 -->
+            </div>
+        </div>
+        
+        <!-- 倒计时 -->
+        <div class="countdown-display" id="countdownDisplay">
+            ⏱️ <span id="countdownValue">15</span>
+        </div>
+        
+        <!-- 田字形主布局 -->
+        <div class="main-grid">
+            <!-- 第一象限：守卫牌 + 信息 -->
+            <div class="quadrant">
+                <div class="quadrant-title">🛡️ 守卫牌</div>
+                <div class="guard-section">
+                    <div class="guard-card-display" id="guardCard">
+                        <div class="guard-shield">🛡️</div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <div class="info-row">
+                        <span class="info-label">当前模式</span>
+                        <span class="info-value" id="currentMode">普通连胜</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">当前连胜</span>
+                        <span class="info-value" id="infoStreak">0</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">最高记录</span>
+                        <span class="info-value" id="bestRecord">0</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">成功率</span>
+                        <span class="info-value" id="successRate">--</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 第二象限：塔 -->
+            <div class="quadrant">
+                <div class="tower-name">🏰 <span id="towerName">连胜之塔</span></div>
+                <div class="tower-container">
+                    <div class="tower" id="tower">
+                        <!-- 动态生成13层 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 第三象限：手牌 -->
+            <div class="quadrant hand-section-full">
+                <div class="quadrant-title">🎴 手牌 (<span id="cardCount">5</span>张)</div>
+                <div class="hand-scroll-container">
+                    <div class="hand-cards-row" id="handCards">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+                <div class="action-area">
+                    <button class="btn-confirm game-btn" onclick="confirmPlay()">
+                        ✅ 确认出牌
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 第四象限：记录 -->
+            <div class="quadrant">
+                <div class="quadrant-title">📜 对局记录</div>
+                <div class="log-section" id="gameLog">
+                    <div class="log-entry">
+                        <span>🔥 连胜挑战开始！目标：连续13次！</span>
+                        <span>--:--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 游戏模式
+        const GAME_MODES = {
+            normal: {
+                name: '普通连胜',
+                desc: '普通模式：连续匹配成功13次守卫牌',
+                type: 'climb'
+            },
+            guard: {
+                name: '守卫连胜',
+                desc: '守卫模式：成为守卫后连续成功防御13次',
+                type: 'defend'
+            }
+        };
+        
+        // 游戏状态
+        let gameState = {
+            mode: 'normal',  // 'normal' 或 'guard'
+            streak: 0,       // 当前连胜次数
+            bestRecord: parseInt(localStorage.getItem('streakBest') || '0'),
+            handCards: [],
+            selectedCard: null,
+            isGuard: false,  // 是否已成为守卫（仅在guard模式）
+            countdown: 15,
+            countdownTimer: null,
+            totalAttempts: 0,
+            totalSuccess: 0,
+            diamonds: 500,
+            coins: 5000,
+            gameActive: true,
+            currentTower: null  // 当前塔
+        };
+
+        // 世界名塔列表（像素塔系统会覆盖这个）
+        const FAMOUS_TOWERS = [];
+        
+        // 设置模式
+        function setMode(mode) {
+            if (!gameState.gameActive) {
+                location.reload();
+                return;
+            }
+            
+            gameState.mode = mode;
+            
+            // 更新按钮样式
+            document.getElementById('modeNormal').classList.toggle('active', mode === 'normal');
+            document.getElementById('modeGuard').classList.toggle('active', mode === 'guard');
+            
+            // 更新描述
+            document.getElementById('modeDescription').textContent = GAME_MODES[mode].desc;
+            document.getElementById('currentMode').textContent = GAME_MODES[mode].name;
+            
+            addLog(`🔄 切换到${GAME_MODES[mode].name}`, 'info');
+            
+            // 重置连胜
+            resetStreak();
+        }
+        
+        // 重置连胜
+        function resetStreak() {
+            gameState.streak = 0;
+            gameState.isGuard = false;
+            gameState.gameActive = true;
+            updateStreakDisplay();
+            renderStreakBar();
+            addLog('🔄 连胜计数已重置', 'info');
+        }
+        
+        // 初始化连胜进度条
+        function initStreakBar() {
+            const bar = document.getElementById('streakBar');
+            let html = '';
+            
+            for (let i = 1; i <= 13; i++) {
+                html += `
+                    <div class="streak-node" id="node${i}" data-index="${i}">${i}</div>
+                `;
+                if (i < 13) {
+                    html += `
+                        <div class="streak-connector">
+                            <div class="streak-connector-fill" id="connector${i}" style="width: 0%"></div>
+                        </div>
+                    `;
+                }
+            }
+            
+            bar.innerHTML = html;
+        }
+        
+        // 渲染连胜进度条
+        function renderStreakBar() {
+            for (let i = 1; i <= 13; i++) {
+                const node = document.getElementById(`node${i}`);
+                const connector = document.getElementById(`connector${i}`);
+                
+                if (node) {
+                    node.classList.remove('active', 'current');
+                    if (i <= gameState.streak) {
+                        node.classList.add('active');
+                    } else if (i === gameState.streak + 1) {
+                        node.classList.add('current');
+                    }
+                }
+                
+                if (connector) {
+                    if (i <= gameState.streak) {
+                        connector.style.width = '100%';
+                    } else {
+                        connector.style.width = '0%';
+                    }
+                }
+            }
+        }
+        
+        // 初始化游戏
+        function initGame() {
+            // 从像素塔库中随机选择一座塔
+            const allTowers = [
+                ...PixelTowerSystem.library.basic,
+                ...PixelTowerSystem.library.rare,
+                ...PixelTowerSystem.library.epic
+            ];
+            gameState.currentTower = allTowers[Math.floor(Math.random() * allTowers.length)];
+            
+            addLog(`🏰 欢迎来到${gameState.currentTower.name}！`, 'info');
+            addLog(`📍 ${gameState.currentTower.country}`, 'info');
+            
+            // 初始化连胜进度条
+            initStreakBar();
+            
+            // 生成初始5张手牌
+            gameState.handCards = generateCards(5);
+            renderHandCards();
+            
+            // 渲染塔
+            renderTower();
+            
+            // 更新显示
+            updateStreakDisplay();
+            document.getElementById('bestRecord').textContent = gameState.bestRecord;
+            
+            // 开始倒计时
+            startCountdown();
+            
+            addLog('🔥 连胜挑战开始！连续成功13次！', 'info');
+            addLog('⚠️ 一旦失败，连胜立即清零！', 'guard');
+        }
+        
+        // 生成卡牌
+        function generateCards(count) {
+            const suits = ['♥', '♦', '♣', '♠'];
+            const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+            const cards = [];
+            
+            for (let i = 0; i < count; i++) {
+                const suit = suits[Math.floor(Math.random() * suits.length)];
+                const rank = ranks[Math.floor(Math.random() * ranks.length)];
+                const color = (suit === '♥' || suit === '♦') ? '#d00' : '#000';
+                cards.push({ suit, rank, color, id: i });
+            }
+            return cards;
+        }
+        
+        // 渲染手牌
+        function renderHandCards() {
+            const container = document.getElementById('handCards');
+            container.innerHTML = gameState.handCards.map((card, index) => `
+                <div class="hand-card ${gameState.selectedCard === index ? 'selected' : ''}" 
+                     onclick="selectCard(${index})" id="card_${index}">
+                    <div class="suit" style="color: ${card.color}">${card.suit}</div>
+                    <div class="rank">${card.rank}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('cardCount').textContent = gameState.handCards.length;
+        }
+        
+        // 渲染塔（与个人赛完全相同的结构）
+        function renderTower() {
+            const container = document.getElementById('tower');
+            if (!container) return;
+            
+            // 获取塔数据
+            let tower = gameState.currentTower;
+            if (!tower || !tower.pixels) {
+                tower = PixelTowerSystem.library.basic[0];
+            }
+            
+            let html = '';
+            
+            // 从下到上渲染：第1层(2️⃣)在最底部，第13层(A)在最顶部
+            for (let i = 1; i <= 13; i++) {
+                const isCurrentLevel = i === gameState.streak + 1;
+                const isPassed = i <= gameState.streak;
+                const levelName = PixelTowerSystem.getLevelSymbol(i);
+                
+                // 获取像素行
+                let pixelLine = '';
+                if (tower.pixels && tower.pixels.length >= (14 - i)) {
+                    pixelLine = tower.pixels[13 - (i - 1)];
+                }
+                
+                const bgColor = isCurrentLevel ? tower.color : 
+                               isPassed ? 'rgba(46,213,115,0.5)' : 
+                               'rgba(255,255,255,0.1)';
+                const textColor = isCurrentLevel || isPassed ? '#fff' : '#888';
+                
+                // 霓虹效果
+                const glowStyle = tower.neon && isCurrentLevel ? 
+                    `box-shadow: 0 0 15px ${tower.color}, 0 0 30px ${tower.color}; animation: neonPulse 1.5s infinite;` : '';
+                
+                html += `
+                    <div class="tower-level ${isCurrentLevel ? 'current' : ''}" 
+                         style="background: ${bgColor}; color: ${textColor}; ${glowStyle}"
+                         id="level_${i}">
+                        <span class="level-symbol">${levelName}</span>
+                        ${pixelLine ? `<span class="pixel-art">${pixelLine}</span>` : ''}
+                        ${isCurrentLevel ? '<div class="level-avatar player">😊</div>' : ''}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+            
+            // 更新塔名显示（与个人赛相同格式）
+            const nameEl = document.getElementById('towerName');
+            if (nameEl && tower) {
+                nameEl.innerHTML = `🏰 ${tower.name} <span style="font-size:11px;color:#888">${tower.country}</span>`;
+            }
+        }
+            const nameEl = document.getElementById('towerName');
+            if (nameEl && tower) {
+                nameEl.innerHTML = `🏰 ${tower.name} <span style="font-size:11px;color:#888">${tower.country}</span>`;
+            }
+        }
+        
+        // 获取层名
+        function getLevelName(level) {
+            return PixelTowerSystem.getLevelSymbol(level);
+        }
+        
+        // 选择卡牌
+        function selectCard(index) {
+            gameState.selectedCard = index;
+            renderHandCards();
+        }
+        
+        // 开始倒计时
+        function startCountdown() {
+            gameState.countdown = 15;
+            document.getElementById('countdownValue').textContent = gameState.countdown;
+            
+            if (gameState.countdownTimer) clearInterval(gameState.countdownTimer);
+            
+            gameState.countdownTimer = setInterval(() => {
+                gameState.countdown--;
+                document.getElementById('countdownValue').textContent = gameState.countdown;
+                
+                if (gameState.countdown <= 0) {
+                    clearInterval(gameState.countdownTimer);
+                    autoPlay();
+                }
+            }, 1000);
+        }
+        
+        // 自动出牌
+        function autoPlay() {
+            if (!gameState.gameActive) return;
+            
+            if (gameState.selectedCard === null && gameState.handCards.length > 0) {
+                selectCard(Math.floor(Math.random() * gameState.handCards.length));
+            }
+            if (gameState.selectedCard !== null) {
+                confirmPlay();
+            }
+        }
+        
+        // 确认出牌 - 核心逻辑
+        function confirmPlay() {
+            if (!gameState.gameActive) return;
+            if (gameState.selectedCard === null) {
+                addLog('❌ 请先选择一张手牌！', 'fail');
+                return;
+            }
+            
+            clearInterval(gameState.countdownTimer);
+            
+            const myCard = gameState.handCards[gameState.selectedCard];
+            
+            // 普通模式：比对守卫牌晋级
+            if (gameState.mode === 'normal') {
+                playNormalMode(myCard);
+            }
+            // 守卫模式：先登顶，然后守卫
+            else if (gameState.mode === 'guard') {
+                playGuardMode(myCard);
+            }
+        }
+        
+        // 普通模式游戏逻辑
+        function playNormalMode(playerCard) {
+            // 生成守卫牌
+            const suits = ['♥', '♦', '♣', '♠'];
+            const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+            const guardCard = {
+                suit: suits[Math.floor(Math.random() * suits.length)],
+                rank: ranks[Math.floor(Math.random() * ranks.length)]
+            };
+            
+            // 显示守卫牌
+            showGuardCard(guardCard);
+            
+            // 判定
+            const isMatch = (playerCard.suit === guardCard.suit) || (playerCard.rank === guardCard.rank);
+            gameState.totalAttempts++;
+            
+            if (isMatch) {
+                // ✅ 连胜成功！
+                gameState.streak++;
+                gameState.totalSuccess++;
+                addLog(`✅ 第${gameState.streak}次连胜成功！`, 'success');
+                
+                // 检查是否达到13次
+                if (gameState.streak >= 13) {
+                    showStreakVictory();
+                    return;
+                }
+                
+                // 继续下一轮
+                nextRound(true);
+            } else {
+                // ❌ 连胜失败！
+                addLog(`❌ 连胜失败！守卫牌是${guardCard.suit}${guardCard.rank}`, 'fail');
+                showStreakBreak();
+            }
+        }
+        
+        // 守卫模式游戏逻辑
+        function playGuardMode(playerCard) {
+            // 阶段1：还未成为守卫，先登顶
+            if (!gameState.isGuard) {
+                const suits = ['♥', '♦', '♣', '♠'];
+                const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+                const guardCard = {
+                    suit: suits[Math.floor(Math.random() * suits.length)],
+                    rank: ranks[Math.floor(Math.random() * ranks.length)]
+                };
+                
+                showGuardCard(guardCard);
+                
+                const isMatch = (playerCard.suit === guardCard.suit) || (playerCard.rank === guardCard.rank);
+                
+                if (isMatch) {
+                    gameState.streak++;
+                    addLog(`✅ 晋级！当前连胜：${gameState.streak}`, 'success');
+                    
+                    // 达到13次成为守卫
+                    if (gameState.streak >= 13) {
+                        gameState.isGuard = true;
+                        gameState.streak = 0; // 重置连胜计数，开始守卫连胜
+                        addLog('🏰 你已登顶成为守卫！开始守卫连胜！', 'guard');
+                        showGuardModeStart();
+                    }
+                    
+                    nextRound(true);
+                } else {
+                    addLog(`❌ 晋级失败！`, 'fail');
+                    showStreakBreak();
+                }
+            }
+            // 阶段2：已成为守卫，进行守卫连胜
+            else {
+                // AI出牌攻击
+                const suits = ['♥', '♦', '♣', '♠'];
+                const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+                const aiCard = {
+                    suit: suits[Math.floor(Math.random() * suits.length)],
+                    rank: ranks[Math.floor(Math.random() * ranks.length)]
+                };
+                
+                // 玩家出的牌就是守卫牌
+                showGuardCard(playerCard);
+                addLog(`🛡️ 你的守卫牌：${playerCard.suit}${playerCard.rank}`, 'guard');
+                addLog(`🤖 AI攻击：${aiCard.suit}${aiCard.rank}`, 'info');
+                
+                // AI是否匹配
+                const aiMatched = (aiCard.suit === playerCard.suit) || (aiCard.rank === playerCard.rank);
+                
+                if (!aiMatched) {
+                    // ✅ 守卫成功！
+                    gameState.streak++;
+                    addLog(`✅ 守卫成功！(${gameState.streak}/13)`, 'success');
+                    
+                    if (gameState.streak >= 13) {
+                        showGuardStreakVictory();
+                        return;
+                    }
+                    
+                    nextRound(true);
+                } else {
+                    // ❌ 守卫被突破！
+                    addLog(`❌ 守卫被突破！AI匹配成功！`, 'fail');
+                    showStreakBreak();
+                }
+            }
+        }
+        
+        // 显示守卫牌
+        function showGuardCard(card) {
+            const display = document.getElementById('guardCard');
+            display.classList.add('revealed');
+            display.innerHTML = `
+                <div style="font-size: var(--hand-suit); color: ${(card.suit === '♥' || card.suit === '♦') ? '#d00' : '#000'};">${card.suit}</div>
+                <div style="font-size: var(--font-md); font-weight: bold; color: ${(card.suit === '♥' || card.suit === '♦') ? '#d00' : '#000'};">${card.rank}</div>
+            `;
+        }
+        
+        // 下一轮
+        function nextRound(success) {
+            gameState.selectedCard = null;
+            
+            // 补充手牌
+            if (gameState.handCards.length < 5) {
+                const newCards = generateCards(1);
+                gameState.handCards.push(newCards[0]);
+            }
+            
+            renderHandCards();
+            renderTower();
+            updateStreakDisplay();
+            renderStreakBar();
+            
+            // 重置守卫牌显示
+            const display = document.getElementById('guardCard');
+            display.classList.remove('revealed');
+            display.innerHTML = '<div class="guard-shield">🛡️</div>';
+            
+            if (gameState.gameActive) {
+                startCountdown();
+            }
+        }
+        
+        // 更新连胜显示
+        function updateStreakDisplay() {
+            document.getElementById('streakCount').textContent = gameState.streak;
+            document.getElementById('infoStreak').textContent = gameState.streak;
+            
+            // 更新成功率
+            if (gameState.totalAttempts > 0) {
+                const rate = (gameState.totalSuccess / gameState.totalAttempts * 100).toFixed(1);
+                document.getElementById('successRate').textContent = rate + '%';
+            }
+        }
+        
+        // 显示连胜打破
+        function showStreakBreak() {
+            gameState.gameActive = false;
+            
+            // 更新最高记录
+            if (gameState.streak > gameState.bestRecord) {
+                gameState.bestRecord = gameState.streak;
+                localStorage.setItem('streakBest', gameState.bestRecord);
+                document.getElementById('bestRecord').textContent = gameState.bestRecord;
+            }
+            
+            const modal = document.createElement('div');
+            modal.className = 'streak-break-modal';
+            modal.innerHTML = `
+                <div class="streak-break-content">
+                    <div class="streak-break-icon">💔</div>
+                    <div class="streak-break-title">连胜被打破！</div>
+                    <div class="streak-break-msg">
+                        ${gameState.mode === 'guard' && gameState.isGuard 
+                            ? '你的守卫被突破了！' 
+                            : '匹配失败，连胜清零！'}<br>
+                        连胜模式要求连续成功，一旦失败立即结束！
+                    </div>
+                    <div class="streak-break-record">
+                        本次记录：${gameState.streak} 次<br>
+                        最高记录：${gameState.bestRecord} 次
+                    </div>
+                    <button onclick="location.reload()" style="padding: 12px 30px; font-size: var(--font-md); background: linear-gradient(135deg, #ff4757, #ff6348); border: none; border-radius: var(--rd-md); color: #fff; font-weight: bold; cursor: pointer; margin-right: 10px;">
+                        🔄 重新开始
+                    </button>
+                    <button onclick="this.parentElement.parentElement.remove(); gameState.gameActive = true; resetStreak(); startCountdown();" style="padding: 12px 30px; font-size: var(--font-md); background: linear-gradient(135deg, #666, #888); border: none; border-radius: var(--rd-md); color: #fff; font-weight: bold; cursor: pointer;">
+                        💪 继续挑战
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            addLog(`💔 连胜结束！记录：${gameState.streak}次`, 'streak-break');
+        }
+        
+        // 显示普通连胜胜利
+        function showStreakVictory() {
+            gameState.gameActive = false;
+            
+            // 更新最高记录
+            gameState.bestRecord = 13;
+            localStorage.setItem('streakBest', 13);
+            document.getElementById('bestRecord').textContent = 13;
+            
+            const modal = document.createElement('div');
+            modal.className = 'streak-victory-modal';
+            modal.innerHTML = `
+                <div class="streak-victory-content">
+                    <div style="font-size: 100px; margin-bottom: 20px;">👑</div>
+                    <div style="font-size: 36px; background: linear-gradient(45deg, #ffd700, #ff4757); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; font-weight: bold;">🔥 连胜挑战成功！🔥</div>
+                    <div style="font-size: var(--title-font); color: #ffd700; margin-bottom: 15px;">
+                        你连续成功了13次！<br>
+                        这是极高的成就！
+                    </div>
+                    <div style="font-size: var(--font-md); color: #888; margin-bottom: 30px;">
+                        成功率：${(gameState.totalSuccess / gameState.totalAttempts * 100).toFixed(1)}%<br>
+                        总尝试：${gameState.totalAttempts}次
+                    </div>
+                    <div style="font-size: 48px; color: #ffd700; margin-bottom: 30px;">
+                        💎 +1000 🪙 +10000
+                    </div>
+                    <button onclick="location.reload()" style="padding: var(--sp-md) 40px; font-size: var(--hand-rank); background: linear-gradient(135deg, #ffd700, #ff4757); border: none; border-radius: 10px; color: #fff; font-weight: bold; cursor: pointer;">
+                        🎮 再次挑战
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            addLog('🎉 恭喜完成13连胜挑战！', 'success');
+        }
+        
+        // 显示守卫模式开始
+        function showGuardModeStart() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.9); z-index: 20000;
+                display: flex; align-items: center; justify-content: center;
+            `;
+            modal.innerHTML = `
+                <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #1a0a0a, #2a0d0d); border: 3px solid #ffd700; border-radius: 20px; max-width: 400px;">
+                    <div style="font-size: 80px; margin-bottom: 20px;">🛡️</div>
+                    <div style="font-size: var(--hand-suit); color: #ffd700; margin-bottom: 15px; font-weight: bold;">守卫模式开始！</div>
+                    <div style="font-size: var(--font-md); color: #888; margin-bottom: 25px;">
+                        你已成功登顶！<br>
+                        现在需要连续成功守卫13次！<br>
+                        <span style="color: #ff4757;">（守卫连胜独立于晋级连胜）</span>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove();" style="padding: 12px 30px; font-size: var(--font-md); background: linear-gradient(135deg, #ffd700, #ffaa00); border: none; border-radius: var(--rd-md); color: #000; font-weight: bold; cursor: pointer;">
+                        🛡️ 开始守卫
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        // 显示守卫连胜胜利
+        function showGuardStreakVictory() {
+            gameState.gameActive = false;
+            
+            const modal = document.createElement('div');
+            modal.className = 'streak-victory-modal';
+            modal.innerHTML = `
+                <div class="streak-victory-content">
+                    <div style="font-size: 100px; margin-bottom: 20px;">🏆</div>
+                    <div style="font-size: 36px; background: linear-gradient(45deg, #ffd700, #ff4757); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; font-weight: bold;">🛡️ 守卫连胜成功！🛡️</div>
+                    <div style="font-size: var(--title-font); color: #ffd700; margin-bottom: 15px;">
+                        你连续成功守卫了13次！<br>
+                        成为不败的守护者！
+                    </div>
+                    <div style="font-size: var(--font-md); color: #888; margin-bottom: 30px;">
+                        这是最高难度的挑战！
+                    </div>
+                    <div style="font-size: 48px; color: #ffd700; margin-bottom: 30px;">
+                        💎 +2000 🪙 +20000
+                    </div>
+                    <button onclick="location.reload()" style="padding: var(--sp-md) 40px; font-size: var(--hand-rank); background: linear-gradient(135deg, #ffd700, #ff4757); border: none; border-radius: 10px; color: #fff; font-weight: bold; cursor: pointer;">
+                        🎮 再次挑战
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            addLog('🎉 恭喜完成守卫13连胜！', 'success');
+        }
+        
+        // 添加日志
+        function addLog(message, type) {
+            const log = document.getElementById('gameLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const time = new Date().toLocaleTimeString('zh-CN', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            entry.innerHTML = `
+                <span>${message}</span>
+                <span style="color: #666;">${time}</span>
+            `;
+            log.insertBefore(entry, log.firstChild);
+            
+            while (log.children.length > 20) {
+                log.removeChild(log.lastChild);
+            }
+        }
+        
+        // 初始化
+        initGame();
+    </script>
+    <script src="ui_components_system.js"></script>
+    <script src="device_adaptive_framework.js"></script>
+    <script src="global_responsive.js"></script>
+    <script src="touch_support.js"></script>
+</body>
+</html>

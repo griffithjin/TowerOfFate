@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>命运塔·首登者 - 设备适配测试</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+        
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .device-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .device-card:hover {
+            border-color: #ffd700;
+            transform: translateY(-2px);
+        }
+        
+        .device-card.active {
+            background: rgba(255,215,0,0.1);
+            border-color: #ffd700;
+        }
+        
+        .device-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .device-spec {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        
+        .checklist {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .checklist h2 {
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+        
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .check-item:last-child {
+            border-bottom: none;
+        }
+        
+        .check-box {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #666;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .check-box.checked {
+            background: #2ed573;
+            border-color: #2ed573;
+        }
+        
+        .iframe-container {
+            width: 100%;
+            height: 600px;
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .iframe-container.active {
+            display: block;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        .btn.active {
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+        }
+    </style>
+</head>
+<body class="safe-top safe-bottom">
+    <div class="container">
+        <h1>📱 设备适配测试中心</h1>
+        
+        <div class="controls">
+            <button class="btn" onclick="loadPage('solo_game.html')">个人赛</button>
+            <button class="btn" onclick="loadPage('streak_challenge.html')">连胜挑战</button>
+            <button class="btn" onclick="loadPage('shop_v2.html')">商城</button>
+            <button class="btn" onclick="loadPage('tournament.html')">锦标赛</button>
+        </div>
+        
+        <div class="device-grid">
+            <div class="device-card" onclick="setDevice(375, 667, 'iPhone SE')">
+                <div class="device-name">📱 iPhone SE/8</div>
+                <div class="device-spec">375 × 667 px</div>
+                <div class="device-spec">缩放: 0.85x</div>
+            </div>
+            
+            <div class="device-card" onclick="setDevice(390, 844, 'iPhone 14/15/16')">
+                <div class="device-name">📱 iPhone 14/15/16</div>
+                <div class="device-spec">390 × 844 px</div>
+                <div class="device-spec">缩放: 0.92x</div>
+            </div>
+            
+            <div class="device-card" onclick="setDevice(430, 932, 'iPhone Pro Max')">
+                <div class="device-name">📱 iPhone Pro Max</div>
+                <div class="device-spec">430 × 932 px</div>
+                <div class="device-spec">缩放: 1.00x</div>
+            </div>
+            
+            <div class="device-card" onclick="setDevice(360, 800, 'Android Standard')">
+                <div class="device-name">🤖 Android标准</div>
+                <div class="device-spec">360 × 800 px</div>
+                <div class="device-spec">缩放: 0.88x</div>
+            </div>
+            
+            <div class="device-card" onclick="setDevice(412, 915, 'Android Large')">
+                <div class="device-name">🤖 Android大屏</div>
+                <div class="device-spec">412 × 915 px</div>
+                <div class="device-spec">缩放: 0.96x</div>
+            </div>
+            
+            <div class="device-card" onclick="setDevice(768, 1024, 'iPad Mini')">
+                <div class="device-name">📱 iPad Mini</div>
+                <div class="device-spec">768 × 1024 px</div>
+                <div class="device-spec">缩放: 1.10x</div>
+            </div>
+            
+            <div class="device-card" onclick="setDevice(750, 1200, 'Galaxy Z Fold')">
+                <div class="device-name">📱 Galaxy Z Fold</div>
+                <div class="device-spec">750 × 1200 px</div>
+                <div class="device-spec">缩放: 1.15x</div>
+            </div>
+            
+            <div class="device-card" onclick="setDevice(1024, 768, 'Desktop')">
+                <div class="device-name">💻 桌面端</div>
+                <div class="device-spec">1024 × 768 px</div>
+                <div class="device-spec">缩放: 1.05x</div>
+            </div>
+        </div>
+        
+        <div class="checklist">
+            <h2>✅ 检查清单 (点击勾选)</h2>
+            
+            <div class="check-item">
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <span>标题与倒计时无重叠</span>
+            </div>
+            
+            <div class="check-item">
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <span>金币钻石栏显示完整</span>
+            </div>
+            
+            <div class="check-item">
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <span>AI对手浮窗位置正确</span>
+            </div>
+            
+            <div class="check-item">
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <span>四象限布局整齐无重叠</span>
+            </div>
+            
+            <div class="check-item">
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <span>手牌区域不溢出</span>
+            </div>
+            
+            <div class="check-item">
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <span>天命牌排列整齐</span>
+            </div>
+            
+            <div class="check-item">
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <span>确认出牌按钮可点击</span>
+            </div>
+            
+            <div class="check-item">
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <span>对局记录区域显示正常</span>
+            </div>
+            
+            <div class="check-item">
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <span>音乐控制按钮不重叠</span>
+            </div>
+        </div>
+        
+        <div class="iframe-container" id="previewFrame">
+            <iframe id="gameFrame" src=""></iframe>
+        </div>
+    </div>
+    
+    <script>
+        let currentPage = 'solo_game.html';
+        
+        function loadPage(page) {
+            currentPage = page;
+            document.getElementById('gameFrame').src = page;
+            document.getElementById('previewFrame').classList.add('active');
+            
+            // 更新按钮状态
+            document.querySelectorAll('.controls .btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.textContent.includes(page.replace('.html', '').replace('_', ''))) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+        
+        function setDevice(width, height, name) {
+            const frame = document.getElementById('gameFrame');
+            frame.style.width = width + 'px';
+            frame.style.height = height + 'px';
+            frame.style.margin = '0 auto';
+            frame.style.display = 'block';
+            
+            // 更新设备卡片状态
+            document.querySelectorAll('.device-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // 加载页面
+            if (!frame.src) {
+                frame.src = currentPage;
+            }
+            
+            document.getElementById('previewFrame').classList.add('active');
+        }
+        
+        function toggleCheck(box) {
+            box.classList.toggle('checked');
+            if (box.classList.contains('checked')) {
+                box.innerHTML = '✓';
+            } else {
+                box.innerHTML = '';
+            }
+        }
+        
+        // 默认加载个人赛
+        loadPage('solo_game.html');
+    </script>
+</body>
+</html>

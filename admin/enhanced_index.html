@@ -1,0 +1,1010 @@
+# Tower of Fate - 后台管理系统 (增强版)
+## 包含: 商城销售管理 + 玩家管理 + 系统成员管理
+
+import json
+import time
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import os
+
+class AdminHandler(BaseHTTPRequestHandler):
+    def log_message(self, format, *args):
+        pass  # 静默日志
+    
+    def do_GET(self):
+        if self.path == '/':
+            self.serve_dashboard()
+        elif self.path == '/api/stats':
+            self.serve_stats()
+        elif self.path == '/api/players':
+            self.serve_players()
+        elif self.path == '/api/shop_sales':
+            self.serve_shop_sales()
+        elif self.path == '/api/system_members':
+            self.serve_system_members()
+        else:
+            self.send_error(404)
+    
+    def do_POST(self):
+        if self.path == '/api/ban_player':
+            self.ban_player()
+        elif self.path == '/api/gift_player':
+            self.gift_player()
+        elif self.path == '/api/add_system_member':
+            self.add_system_member()
+        else:
+            self.send_error(404)
+    
+    def serve_dashboard(self):
+        html = '''<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命运之塔 - 后台管理</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        
+        /* 头部 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 28px;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* 导航 */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .nav-tab {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .nav-tab:hover, .nav-tab.active {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            border-color: #ffd700;
+        }
+        
+        /* 面板 */
+        .panel {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        .panel-title {
+            font-size: 20px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* 表格 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            padding: 12px;
+            text-align: left;
+            color: #ffd700;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+            font-weight: bold;
+        }
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            vertical-align: middle;
+        }
+        .data-table tr:hover {
+            background: rgba(255,215,0,0.05);
+        }
+        
+        /* 标签 */
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .tag-system {
+            background: rgba(0,255,255,0.2);
+            color: #0ff;
+            border: 1px solid #0ff;
+        }
+        .tag-vip {
+            background: rgba(255,215,0,0.2);
+            color: #ffd700;
+            border: 1px solid #ffd700;
+        }
+        .tag-online {
+            background: rgba(0,255,0,0.2);
+            color: #0f0;
+            border: 1px solid #0f0;
+        }
+        .tag-offline {
+            background: rgba(128,128,128,0.2);
+            color: #888;
+            border: 1px solid #888;
+        }
+        .tag-banned {
+            background: rgba(255,0,0,0.2);
+            color: #f00;
+            border: 1px solid #f00;
+        }
+        
+        /* 按钮 */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            margin: 2px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+        }
+        .btn-danger {
+            background: rgba(255,0,0,0.3);
+            color: #fff;
+            border: 1px solid rgba(255,0,0,0.5);
+        }
+        .btn-success {
+            background: rgba(0,255,0,0.3);
+            color: #fff;
+            border: 1px solid rgba(0,255,0,0.5);
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 36px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        .stat-label {
+            color: #888;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        /* 搜索框 */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #ffd700;
+        }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ 命运之塔后台管理</h1>
+            <div style="color: #888;">v2.0 增强版</div>
+        </div>
+        
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="showPanel('dashboard')">📊 总览</div>
+            <div class="nav-tab" onclick="showPanel('players')">👥 玩家管理</div>
+            <div class="nav-tab" onclick="showPanel('shop')">🛍️ 商城销售</div>
+            <div class="nav-tab" onclick="showPanel('system')">🤖 系统成员</div>
+            <div class="nav-tab" onclick="showPanel('tournaments')">🏆 锦标赛管理</div>
+            <div class="nav-tab" onclick="showPanel('honors')">🏅 荣誉系统</div>
+        </div>
+        
+        <!-- 总览面板 -->
+        <div id="dashboard-panel" class="panel-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-players">1,234</div>
+                    <div class="stat-label">总注册用户</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="online-now">156</div>
+                    <div class="stat-label">当前在线</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="today-revenue">¥8,520</div>
+                    <div class="stat-label">今日收入</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-sales">3,456</div>
+                    <div class="stat-label">总订单数</div>
+                </div>
+            </div>
+            
+            <!-- 快速入口 -->
+            <div class="panel" style="margin-top: 30px;">
+                <div class="panel-title">🎮 游戏功能入口</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <a href="../web_client/new_index.html" target="_blank" class="btn btn-primary" style="text-align: center; text-decoration: none; padding: 15px;">
+                        🏠 游戏首页
+                    </a>
+                    <a href="../web_client/tournament.html" target="_blank" class="btn btn-primary" style="text-align: center; text-decoration: none; padding: 15px;">
+                        🏆 锦标赛
+                    </a>
+                    <a href="../web_client/solo_game.html" target="_blank" class="btn btn-primary" style="text-align: center; text-decoration: none; padding: 15px;">
+                        🎮 个人赛
+                    </a>
+                    <a href="../web_client/team_battle_v2.html" target="_blank" class="btn btn-primary" style="text-align: center; text-decoration: none; padding: 15px;">
+                        ⚔️ 团队赛
+                    </a>
+                    <a href="../web_client/shop_v2.html" target="_blank" class="btn btn-success" style="text-align: center; text-decoration: none; padding: 15px;">
+                        🛍️ 商城
+                    </a>
+                    <a href="../web_client/streak.html" target="_blank" class="btn btn-primary" style="text-align: center; text-decoration: none; padding: 15px;">
+                        🔥 连胜挑战
+                    </a>
+                    <a href="../web_client/season_honors.html" target="_blank" class="btn btn-primary" style="text-align: center; text-decoration: none; padding: 15px;">
+                        🏅 赛季荣誉
+                    </a>
+                    <a href="../web_client/ai_test_80.html" target="_blank" class="btn" style="text-align: center; text-decoration: none; padding: 15px;">
+                        🤖 AI测试
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 玩家管理面板 -->
+        <div id="players-panel" class="panel-section hidden">
+            <div class="panel">
+                <div class="panel-title">
+                    👥 玩家管理
+                    <div>
+                        <button class="btn btn-success" onclick="addSystemMember()">+ 添加系统成员</button>
+                    </div>
+                </div>
+                <div class="search-box">
+                    <input type="text" class="search-input" id="playerSearch" placeholder="搜索玩家ID、昵称..." onkeyup="searchPlayers()">
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>玩家ID</th>
+                            <th>昵称</th>
+                            <th>等级</th>
+                            <th>段位</th>
+                            <th>金币</th>
+                            <th>钻石</th>
+                            <th>状态</th>
+                            <th>标签</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="players-table-body">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 商城销售面板 -->
+        <div id="shop-panel" class="panel-section hidden">
+            <div class="panel">
+                <div class="panel-title">
+                    🛍️ 商城销售统计
+                    <select id="timeFilter" onchange="loadShopSales()">
+                        <option value="today">今日</option>
+                        <option value="week">本周</option>
+                        <option value="month">本月</option>
+                        <option value="all">全部</option>
+                    </select>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>商品名称</th>
+                            <th>购买人数</th>
+                            <th>总订单数</th>
+                            <th>单价</th>
+                            <th>总收入</th>
+                            <th>折扣信息</th>
+                        </tr>
+                    </thead>
+                    <tbody id="shop-table-body">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">📋 订单明细</div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>订单ID</th>
+                            <th>玩家</th>
+                            <th>玩家等级</th>
+                            <th>商品</th>
+                            <th>价格</th>
+                            <th>购买时间</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table-body">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 系统成员面板 -->
+        <div id="system-panel" class="panel-section hidden">
+            <div class="panel">
+                <div class="panel-title">
+                    🤖 系统AI成员 (动态生成)
+                    <button class="btn btn-primary" onclick="generateSystemMembers()">🔄 重新生成</button>
+                </div>
+                <div style="margin-bottom: 15px; color: #888;">
+                    系统成员数量 = 当前在线玩家 × 9 (自动动态生成)
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>成员ID</th>
+                            <th>昵称</th>
+                            <th>等级</th>
+                            <th>段位</th>
+                            <th>状态</th>
+                            <th>创建时间</th>
+                        </tr>
+                    </thead>
+                    <tbody id="system-table-body">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 锦标赛管理面板 -->
+        <div id="tournaments-panel" class="panel-section hidden">
+            <div class="panel">
+                <div class="panel-title">
+                    🏆 全球锦标赛排期
+                    <a href="../web_client/tournament.html" target="_blank" class="btn btn-primary">🎮 进入锦标赛</a>
+                </div>
+                <div id="tournament-schedule">
+                    <!-- 动态生成各国锦标赛排期 -->
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">🌍 热门城市锦标赛</div>
+                <div id="hot-cities-tournaments" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 荣誉系统面板 -->
+        <div id="honors-panel" class="panel-section hidden">
+            <div class="panel">
+                <div class="panel-title">✈️ 旅游达人荣誉系统</div>
+                <div style="color: #888; margin-bottom: 20px;">
+                    在世界各地参加锦标赛，解锁独特的旅游达人称号！命运塔是一款旅行消遣和朋友共玩的休闲类游戏。
+                </div>
+                <div id="traveler-honors" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <!-- 动态生成荣誉列表 -->
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">🏅 玩家荣誉排行</div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>玩家</th>
+                            <th>旅游达人等级</th>
+                            <th>解锁城市数</th>
+                            <th>总参赛次数</th>
+                            <th>荣誉勋章</th>
+                        </tr>
+                    </thead>
+                    <tbody id="honor-ranking-body">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 模拟数据
+        let players = [];
+        let systemMembers = [];
+        let shopSales = [];
+        let orders = [];
+        
+        // 初始化数据
+        function initData() {
+            // 根据在线玩家动态生成系统成员
+            const onlinePlayers = Math.floor(Math.random() * 15) + 5; // 5-20个在线玩家
+            generateDynamicSystemMembers(onlinePlayers);
+            
+            // 生成玩家数据
+            generatePlayersData();
+            
+            // 生成商城数据
+            generateShopData();
+        }
+        
+        function generateSystemMembersData() {
+            systemMembers = [];
+            const ranks = ['青铜', '白银', '黄金', '铂金', '钻石'];
+            const titles = ['战士', '法师', '射手', '刺客', '辅助', '坦克'];
+            
+            for (let i = 1; i <= 80; i++) {
+                systemMembers.push({
+                    id: 'system_' + String(i).padStart(3, '0'),
+                    nickname: titles[Math.floor(Math.random() * titles.length)] + Math.floor(Math.random() * 9000 + 1000),
+                    level: Math.floor(Math.random() * 50 + 1),
+                    rank: ranks[Math.floor(Math.random() * ranks.length)],
+                    status: 'online',
+                    created: new Date().toLocaleString()
+                });
+            }
+        }
+        
+        function generatePlayersData() {
+            const ranks = ['青铜', '白银', '黄金', '铂金', '钻石', '星耀', '王者'];
+            players = [
+                { id: 'player_001', nickname: '金先生', level: 25, rank: '黄金III', coins: 15000, diamonds: 500, status: 'online', tags: ['VIP'] },
+                { id: 'player_002', nickname: '银月剑客', level: 18, rank: '白银I', coins: 8500, diamonds: 120, status: 'playing', tags: [] },
+                { id: 'player_003', nickname: '天命之子', level: 32, rank: '黄金V', coins: 32000, diamonds: 2000, status: 'offline', tags: ['VIP'] },
+            ];
+            
+            // 添加系统成员作为可显示的玩家
+            systemMembers.slice(0, 20).forEach((member, idx) => {
+                players.push({
+                    id: member.id,
+                    nickname: member.nickname,
+                    level: member.level,
+                    rank: member.rank,
+                    coins: Math.floor(Math.random() * 10000),
+                    diamonds: Math.floor(Math.random() * 500),
+                    status: member.status,
+                    tags: ['系统成员']
+                });
+            });
+        }
+        
+        function generateShopData() {
+            shopSales = [
+                { name: 'VIP会员卡', buyers: 156, orders: 189, price: 980, discount: '无' },
+                { name: '传说皮肤包', buyers: 89, orders: 92, price: 680, discount: '周末8折' },
+                { name: '金币大礼包', buyers: 234, orders: 312, price: 100, discount: '无' },
+                { name: '钻石月卡', buyers: 178, orders: 180, price: 300, discount: '首充双倍' },
+                { name: '限定头像框', buyers: 67, orders: 67, price: 280, discount: '限时特惠' },
+            ];
+            
+            // 生成订单明细
+            orders = [];
+            for (let i = 1; i <= 20; i++) {
+                const product = shopSales[Math.floor(Math.random() * shopSales.length)];
+                orders.push({
+                    id: 'ORD' + String(i).padStart(6, '0'),
+                    player: players[Math.floor(Math.random() * players.length)].nickname,
+                    level: Math.floor(Math.random() * 50 + 1),
+                    product: product.name,
+                    price: product.price,
+                    time: new Date(Date.now() - Math.random() * 86400000).toLocaleString()
+                });
+            }
+        }
+        
+        // 切换面板
+        function showPanel(panelName) {
+            document.querySelectorAll('.panel-section').forEach(p => p.classList.add('hidden'));
+            document.getElementById(panelName + '-panel').classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (panelName === 'players') renderPlayers();
+            if (panelName === 'shop') renderShop();
+            if (panelName === 'system') renderSystemMembers();
+            if (panelName === 'tournaments') renderTournaments();
+            if (panelName === 'honors') renderHonors();
+        }
+        
+        // 渲染玩家列表
+        function renderPlayers() {
+            const tbody = document.getElementById('players-table-body');
+            tbody.innerHTML = players.map(p => `
+                <tr>
+                    <td>${p.id}</td>
+                    <td>${p.nickname}</td>
+                    <td>${p.level}</td>
+                    <td>${p.rank}</td>
+                    <td>${p.coins.toLocaleString()}</td>
+                    <td>${p.diamonds}</td>
+                    <td><span class="tag tag-${p.status}">${p.status === 'online' ? '在线' : p.status === 'playing' ? '游戏中' : '离线'}</span></td>
+                    <td>${p.tags.map(t => `<span class="tag ${t === 'VIP' ? 'tag-vip' : t === '系统成员' ? 'tag-system' : ''}">${t}</span>`).join('')}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="giftPlayer('${p.id}')">🎁 送礼</button>
+                        <button class="btn btn-danger" onclick="banPlayer('${p.id}')">🚫 封禁</button>
+                        <button class="btn" onclick="viewGameHistory('${p.id}')">📋 记录</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // 查看玩家游戏记录
+        function viewGameHistory(playerId) {
+            const player = players.find(p => p.id === playerId);
+            if (!player) return;
+            
+            // 生成游戏记录数据（如果没有）
+            if (!player.game_history) {
+                player.game_history = generateGameHistory();
+            }
+            
+            const historyHtml = player.game_history.map(h => `
+                <tr>
+                    <td>${h.date}</td>
+                    <td>${h.mode}</td>
+                    <td style="color: ${h.result === '胜利' ? '#2ed573' : '#ff4757'}"">${h.result}</td>
+                    <td>${h.score}</td>
+                </tr>
+            `).join('');
+            
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.8); z-index: 10000; display: flex;
+                align-items: center; justify-content: center;
+            `;
+            modal.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
+                    border: 2px solid #ffd700; border-radius: 15px;
+                    padding: 30px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;
+                ">
+                    <h3 style="color: #ffd700; margin-bottom: 20px;">📋 ${player.nickname} 的游戏记录</h3>
+                    <table class="data-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>模式</th>
+                                <th>结果</th>
+                                <th>积分变化</th>
+                            </tr>
+                        </thead>
+                        <tbody>${historyHtml}</tbody>
+                    </table>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn" onclick="this.closest('.modal').remove()" style="background: #666;">关闭</button>
+                    </div>
+                </div>
+            `;
+            modal.className = 'modal';
+            document.body.appendChild(modal);
+        }
+        
+        // 生成游戏记录
+        function generateGameHistory() {
+            const modes = ['排位赛', '团队赛', '经典对战', '锦标赛'];
+            const results = ['胜利', '失败'];
+            const history = [];
+            
+            for (let i = 0; i < 10; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                history.push({
+                    date: date.toISOString().split('T')[0],
+                    mode: modes[Math.floor(Math.random() * modes.length)],
+                    result: results[Math.floor(Math.random() * results.length)],
+                    score: Math.random() > 0.5 ? '+' + Math.floor(Math.random() * 100 + 50) : '-' + Math.floor(Math.random() * 30 + 10)
+                });
+            }
+            return history;
+        }
+        
+        // 渲染商城数据
+        function renderShop() {
+            const tbody = document.getElementById('shop-table-body');
+            tbody.innerHTML = shopSales.map(s => `
+                <tr>
+                    <td>${s.name}</td>
+                    <td>${s.buyers}</td>
+                    <td>${s.orders}</td>
+                    <td>${s.price}钻石</td>
+                    <td>¥${(s.orders * s.price * 0.1).toFixed(2)}</td>
+                    <td>${s.discount}</td>
+                </tr>
+            `).join('');
+            
+            const ordersBody = document.getElementById('orders-table-body');
+            ordersBody.innerHTML = orders.map(o => `
+                <tr>
+                    <td>${o.id}</td>
+                    <td>${o.player}</td>
+                    <td>Lv.${o.level}</td>
+                    <td>${o.product}</td>
+                    <td>${o.price}钻石</td>
+                    <td>${o.time}</td>
+                </tr>
+            `).join('');
+        }
+        
+        // 渲染系统成员
+        function renderSystemMembers() {
+            const tbody = document.getElementById('system-table-body');
+            tbody.innerHTML = systemMembers.map(m => `
+                <tr>
+                    <td>${m.id}</td>
+                    <td>${m.nickname}</td>
+                    <td>Lv.${m.level}</td>
+                    <td>${m.rank}</td>
+                    <td><span class="tag tag-online">在线</span></td>
+                    <td>${m.created}</td>
+                </tr>
+            `).join('');
+        }
+        
+        // 操作函数
+        function searchPlayers() {
+            const keyword = document.getElementById('playerSearch').value.toLowerCase();
+            const filtered = players.filter(p => 
+                p.id.toLowerCase().includes(keyword) || 
+                p.nickname.toLowerCase().includes(keyword)
+            );
+            // 重新渲染过滤后的数据
+            const tbody = document.getElementById('players-table-body');
+            tbody.innerHTML = filtered.map(p => `
+                <tr>
+                    <td>${p.id}</td>
+                    <td>${p.nickname}</td>
+                    <td>${p.level}</td>
+                    <td>${p.rank}</td>
+                    <td>${p.coins.toLocaleString()}</td>
+                    <td>${p.diamonds}</td>
+                    <td><span class="tag tag-${p.status}">${p.status === 'online' ? '在线' : p.status === 'playing' ? '游戏中' : '离线'}</span></td>
+                    <td>${p.tags.map(t => `<span class="tag ${t === 'VIP' ? 'tag-vip' : t === '系统成员' ? 'tag-system' : ''}">${t}</span>`).join('')}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="giftPlayer('${p.id}')">🎁 送礼</button>
+                        <button class="btn btn-danger" onclick="banPlayer('${p.id}')">🚫 封禁</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function giftPlayer(playerId) {
+            alert(`🎁 向玩家 ${playerId} 发放礼品`);
+        }
+        
+        function banPlayer(playerId) {
+            if (confirm(`确定要封禁玩家 ${playerId} 吗？`)) {
+                alert(`🚫 玩家 ${playerId} 已被封禁`);
+            }
+        }
+        
+        function addSystemMember() {
+            alert('添加系统成员功能');
+        }
+        
+        function generateSystemMembers() {
+            const onlinePlayers = Math.floor(Math.random() * 20) + 5; // 模拟5-25个在线玩家
+            generateDynamicSystemMembers(onlinePlayers);
+            renderSystemMembers();
+            alert(`✅ 已根据${onlinePlayers}个在线玩家，动态生成${onlinePlayers * 9}个系统AI成员！`);
+        }
+        
+        function generateDynamicSystemMembers(onlinePlayers) {
+            const count = onlinePlayers * 9;
+            systemMembers = [];
+            const ranks = ['青铜', '白银', '黄金', '铂金', '钻石'];
+            const titles = ['战士', '法师', '射手', '刺客', '辅助', '坦克'];
+            
+            for (let i = 1; i <= count; i++) {
+                systemMembers.push({
+                    id: 'system_' + String(i).padStart(3, '0'),
+                    nickname: titles[Math.floor(Math.random() * titles.length)] + Math.floor(Math.random() * 9000 + 1000),
+                    level: Math.floor(Math.random() * 50 + 1),
+                    rank: ranks[Math.floor(Math.random() * ranks.length)],
+                    status: 'online',
+                    created: new Date().toLocaleString()
+                });
+            }
+        }
+
+        // 渲染锦标赛
+        function renderTournaments() {
+            const countries = [
+                { name: '中国', cities: ['北京', '上海', '广州', '深圳', '成都', '杭州'], timezone: 'UTC+8', type: '标准赛' },
+                { name: '日本', cities: ['东京', '大阪', '京都', '福冈', '札幌'], timezone: 'UTC+9', type: '快棋赛' },
+                { name: '韩国', cities: ['首尔', '釜山', '仁川'], timezone: 'UTC+9', type: '标准赛' },
+                { name: '美国', cities: ['纽约', '洛杉矶', '芝加哥', '旧金山', '西雅图'], timezone: 'UTC-5', type: '大奖赛' },
+                { name: '英国', cities: ['伦敦', '曼彻斯特', '伯明翰', '爱丁堡'], timezone: 'UTC+0', type: '经典赛' },
+                { name: '法国', cities: ['巴黎', '里昂', '马赛', '尼斯'], timezone: 'UTC+1', type: '浪漫赛' },
+                { name: '德国', cities: ['柏林', '慕尼黑', '汉堡', '科隆'], timezone: 'UTC+1', type: '精密赛' },
+                { name: '澳大利亚', cities: ['悉尼', '墨尔本', '布里斯班'], timezone: 'UTC+10', type: '海洋赛' },
+                { name: '巴西', cities: ['圣保罗', '里约热内卢', '巴西利亚'], timezone: 'UTC-3', type: '热情赛' },
+                { name: '俄罗斯', cities: ['莫斯科', '圣彼得堡', '喀山'], timezone: 'UTC+3', type: '冰雪赛' }
+            ];
+            
+            let scheduleHtml = '<div style="display: grid; gap: 10px;">';
+            
+            countries.forEach(country => {
+                country.cities.forEach((city, idx) => {
+                    const date = new Date();
+                    date.setDate(date.getDate() + idx + Math.floor(Math.random() * 7));
+                    const types = ['标准赛', '快棋赛', '大奖赛', '经典赛'];
+                    const tournamentType = types[Math.floor(Math.random() * types.length)];
+                    
+                    scheduleHtml += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; 
+                                    background: rgba(255,215,0,0.1); padding: 12px; border-radius: 8px;
+                                    border-left: 4px solid #ffd700;">
+                            <div>
+                                <span style="font-weight: bold; color: #ffd700;">${country.name} · ${city}</span>
+                                <span style="color: #888; margin-left: 10px;">${tournamentType}</span>
+                            </div>
+                            <div style="color: #888; font-size: 14px;">
+                                ${date.toLocaleDateString('zh-CN')} ${date.toLocaleTimeString('zh-CN', {hour: '2-digit', minute:'2-digit'})}
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+            
+            scheduleHtml += '</div>';
+            document.getElementById('tournament-schedule').innerHTML = scheduleHtml;
+            
+            // 热门城市
+            const hotCities = [
+                { city: '东京', country: '日本', players: 2341, prize: '¥50,000' },
+                { city: '巴黎', country: '法国', players: 1892, prize: '¥45,000' },
+                { city: '纽约', country: '美国', players: 2156, prize: '¥55,000' },
+                { city: '伦敦', country: '英国', players: 1678, prize: '¥40,000' },
+                { city: '上海', country: '中国', players: 3456, prize: '¥60,000' },
+                { city: '悉尼', country: '澳大利亚', players: 1234, prize: '¥35,000' }
+            ];
+            
+            document.getElementById('hot-cities-tournaments').innerHTML = hotCities.map(h => `
+                <div style="background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,107,107,0.1)); 
+                            padding: 20px; border-radius: 12px; border: 1px solid rgba(255,215,0,0.3);">
+                    <div style="font-size: 20px; font-weight: bold; color: #ffd700; margin-bottom: 10px;">
+                        🌍 ${h.city}, ${h.country}
+                    </div>
+                    <div style="color: #888; margin-bottom: 5px;">👥 ${h.players.toLocaleString()} 人报名</div>
+                    <div style="color: #2ed573; font-weight: bold;">💰 奖池 ${h.prize}</div>
+                    <a href="../web_client/tournament.html" target="_blank" class="btn btn-primary" 
+                       style="display: block; margin-top: 15px; text-align: center; text-decoration: none;">
+                        立即报名
+                    </a>
+                </div>
+            `).join('');
+        }
+        
+        // 渲染荣誉系统
+        function renderHonors() {
+            const travelerHonors = [
+                { 
+                    level: '旅行新手', 
+                    icon: '🌱', 
+                    desc: '参加1个城市的锦标赛',
+                    requirement: 1,
+                    color: '#888'
+                },
+                { 
+                    level: '背包客', 
+                    icon: '🎒', 
+                    desc: '参加5个不同城市的锦标赛',
+                    requirement: 5,
+                    color: '#3498db'
+                },
+                { 
+                    level: '环球旅行者', 
+                    icon: '✈️', 
+                    desc: '参加10个不同城市的锦标赛',
+                    requirement: 10,
+                    color: '#2ed573'
+                },
+                { 
+                    level: '探险家', 
+                    icon: '🧭', 
+                    desc: '参加20个不同城市的锦标赛',
+                    requirement: 20,
+                    color: '#9b59b6'
+                },
+                { 
+                    level: '旅游达人', 
+                    icon: '🌟', 
+                    desc: '参加30个不同城市的锦标赛',
+                    requirement: 30,
+                    color: '#f39c12'
+                },
+                { 
+                    level: '传奇旅者', 
+                    icon: '👑', 
+                    desc: '参加50个不同城市的锦标赛',
+                    requirement: 50,
+                    color: '#e74c3c'
+                }
+            ];
+            
+            document.getElementById('traveler-honors').innerHTML = travelerHonors.map((h, idx) => `
+                <div style="background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(0,0,0,0.3)); 
+                            padding: 20px; border-radius: 12px; border: 2px solid ${h.color};">
+                    <div style="font-size: 48px; text-align: center; margin-bottom: 10px;">${h.icon}</div>
+                    <div style="font-size: 18px; font-weight: bold; color: ${h.color}; text-align: center; margin-bottom: 10px;">
+                        ${h.level}
+                    </div>
+                    <div style="color: #888; text-align: center; font-size: 14px;">${h.desc}</div>
+                    <div style="margin-top: 15px; background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div style="width: ${Math.min(100, (idx * 20))}%; height: 100%; background: ${h.color}; border-radius: 4px;"></div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // 玩家荣誉排行
+            const honorRanking = [
+                { rank: 1, name: '金先生', level: '传奇旅者', cities: 52, tournaments: 128, medals: '🌟👑✈️' },
+                { rank: 2, name: '银月剑客', level: '旅游达人', cities: 35, tournaments: 89, medals: '🌟✈️🧭' },
+                { rank: 3, name: '天命之子', level: '旅游达人', cities: 31, tournaments: 76, medals: '🌟✈️' },
+                { rank: 4, name: '旅行者小明', level: '探险家', cities: 24, tournaments: 62, medals: '🧭✈️' },
+                { rank: 5, name: '环球玩家', level: '探险家', cities: 21, tournaments: 54, medals: '🧭' },
+            ];
+            
+            document.getElementById('honor-ranking-body').innerHTML = honorRanking.map(p => `
+                <tr>
+                    <td style="color: ${p.rank === 1 ? '#ffd700' : p.rank === 2 ? '#c0c0c0' : p.rank === 3 ? '#cd7f32' : '#fff'}; font-weight: bold;">
+                        ${p.rank === 1 ? '🥇' : p.rank === 2 ? '🥈' : p.rank === 3 ? '🥉' : p.rank}
+                    </td>
+                    <td>${p.name}</td>
+                    <td><span style="color: #ffd700;">${p.level}</span></td>
+                    <td>${p.cities}</td>
+                    <td>${p.tournaments}</td>
+                    <td>${p.medals}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function loadShopSales() {
+            renderShop();
+        }
+        
+        // 初始化
+        window.onload = function() {
+            initData();
+        };
+    </script>
+</body>
+</html>'''
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html; charset=utf-8')
+        self.end_headers()
+        self.wfile.write(html.encode('utf-8'))
+    
+    def serve_stats(self):
+        stats = {
+            'total_players': 1234,
+            'online_now': 156,
+            'today_revenue': 8520,
+            'total_sales': 3456
+        }
+        self.send_json(stats)
+    
+    def serve_players(self):
+        players = [
+            {
+                'id': 'player_001', 
+                'nickname': '金先生', 
+                'level': 25, 
+                'rank': '黄金III', 
+                'coins': 15000, 
+                'diamonds': 500, 
+                'status': 'online', 
+                'tags': ['VIP'],
+                'game_history': [
+                    {'date': '2024-03-04', 'mode': '排位赛', 'result': '胜利', 'score': '+100'},
+                    {'date': '2024-03-04', 'mode': '团队赛', 'result': '胜利', 'score': '+150'},
+                    {'date': '2024-03-03', 'mode': '经典对战', 'result': '失败', 'score': '-20'},
+                ]
+            },
+        ]
+        self.send_json(players)
+    
+    def serve_shop_sales(self):
+        sales = [
+            {'name': 'VIP会员卡', 'buyers': 156, 'orders': 189, 'price': 980, 'discount': '无'},
+        ]
+        self.send_json(sales)
+    
+    def serve_system_members(self):
+        members = []
+        for i in range(1, 81):
+            members.append({
+                'id': f'system_{i:03d}',
+                'nickname': f'AI玩家{i}',
+                'level': random.randint(1, 50),
+                'rank': random.choice(['青铜', '白银', '黄金', '铂金', '钻石']),
+                'status': 'online'
+            })
+        self.send_json(members)
+    
+    def ban_player(self):
+        self.send_json({'success': True, 'message': 'Player banned'})
+    
+    def gift_player(self):
+        self.send_json({'success': True, 'message': 'Gift sent'})
+    
+    def add_system_member(self):
+        self.send_json({'success': True, 'message': 'System member added'})
+    
+    def send_json(self, data):
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json; charset=utf-8')
+        self.end_headers()
+        self.wfile.write(json.dumps(data, ensure_ascii=False).encode('utf-8'))
+
+def run_server(port=8081):
+    server = HTTPServer(('0.0.0.0', port), AdminHandler)
+    print(f'🎮 Tower of Fate 后台管理系统 v2.0')
+    print(f'⚙️  访问地址: http://localhost:{port}')
+    print(f'📊 包含功能: 玩家管理 | 商城销售 | 系统成员')
+    server.serve_forever()
+
+if __name__ == '__main__':
+    run_server()

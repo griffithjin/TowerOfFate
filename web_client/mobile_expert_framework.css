@@ -1,0 +1,510 @@
+/**
+ * 命运塔·首登者 - 移动端响应式适配专家级框架
+ * Mobile First 策略 | 严格断点定义 | 安全区适配
+ * 
+ * 目标设备断点:
+ * - iOS: 375px(SE) | 390-402px(14/15/16) | 430px(Pro Max) | 420-480px(Fold)
+ * - Android: 360-390px(S/Pixel) | 412px(XL/OnePlus) | 700-800px+(Fold展开)
+ */
+
+/* ==========================================
+   Step 1: CSS Reset & Base Variables
+   ========================================== */
+:root {
+    /* 基础字体大小 (1rem = 16px) */
+    --font-base: 16px;
+    
+    /* 基础间距系统 (使用rem) */
+    --space-unit: 0.25rem;  /* 4px */
+    --space-1: 0.25rem;     /* 4px */
+    --space-2: 0.5rem;      /* 8px */
+    --space-3: 0.75rem;     /* 12px */
+    --space-4: 1rem;        /* 16px */
+    --space-5: 1.25rem;     /* 20px */
+    --space-6: 1.5rem;      /* 24px */
+    --space-8: 2rem;        /* 32px */
+    --space-10: 2.5rem;     /* 40px */
+    --space-12: 3rem;       /* 48px */
+    
+    /* 字体大小系统 (Mobile First: 最小360px) */
+    --text-xs: 0.75rem;     /* 12px - 最小可读 */
+    --text-sm: 0.875rem;    /* 14px - 正文 */
+    --text-base: 1rem;      /* 16px - 默认 */
+    --text-lg: 1.125rem;    /* 18px */
+    --text-xl: 1.25rem;     /* 20px */
+    --text-2xl: 1.5rem;     /* 24px */
+    --text-3xl: 1.875rem;   /* 30px */
+    
+    /* 圆角系统 */
+    --radius-sm: 0.25rem;   /* 4px */
+    --radius-md: 0.5rem;    /* 8px */
+    --radius-lg: 0.75rem;   /* 12px */
+    --radius-xl: 1rem;      /* 16px */
+    --radius-full: 9999px;
+    
+    /* 阴影系统 */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    
+    /* 触摸热区 (iOS 44px标准 / Android 48dp) */
+    --touch-min: 2.75rem;   /* 44px */
+    --touch-comfort: 3rem;  /* 48px */
+    
+    /* iOS安全区 (刘海屏/底部Home条) */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+}
+
+/* ==========================================
+   Step 2: Mobile First Base Styles (360px+)
+   ========================================== */
+
+/* 基础重置 */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: var(--font-base);
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    font-size: var(--text-sm); /* 14px 保证可读性 */
+    line-height: 1.5;
+    color: #fff;
+    background: #0a0a1a;
+    min-height: 100vh;
+    /* 安全区适配 */
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+}
+
+/* 容器系统 */
+.container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding-left: var(--space-3);  /* 12px */
+    padding-right: var(--space-3); /* 12px */
+}
+
+/* 栅格系统 (Mobile First: 单列) */
+.grid {
+    display: grid;
+    gap: var(--space-3);
+}
+
+.grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+
+/* Flex布局 */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.flex-1 { flex: 1 1 0%; }
+
+/* 间距工具类 */
+.gap-1 { gap: var(--space-1); }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+.p-4 { padding: var(--space-4); }
+
+.px-3 { padding-left: var(--space-3); padding-right: var(--space-3); }
+.py-2 { padding-top: var(--space-2); padding-bottom: var(--space-2); }
+
+/* 字体工具类 */
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+
+.font-bold { font-weight: 700; }
+.text-center { text-align: center; }
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 触摸热区 (符合iOS 44px标准) */
+.touch-target {
+    min-width: var(--touch-min);
+    min-height: var(--touch-min);
+}
+
+.touch-comfort {
+    min-width: var(--touch-comfort);
+    min-height: var(--touch-comfort);
+}
+
+/* 按钮基础样式 */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--touch-min); /* 44px */
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: rgba(255,215,0,0.2);
+}
+
+.btn:active {
+    transform: scale(0.96);
+}
+
+/* 卡片基础样式 */
+.card {
+    background: rgba(255,255,255,0.05);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3);
+}
+
+/* 导航栏 (Mobile: 汉堡菜单) */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 3.5rem; /* 56px */
+    padding: 0 var(--space-3);
+    background: rgba(10,10,26,0.95);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-brand {
+    font-size: var(--text-lg);
+    font-weight: bold;
+    background: linear-gradient(45deg, #ffd700, #ff6b6b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* 汉堡菜单按钮 */
+.navbar-menu-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: var(--touch-min);
+    height: var(--touch-min);
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.navbar-menu-btn span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: #fff;
+    border-radius: 2px;
+}
+
+/* 隐藏桌面导航 */
+.navbar-nav {
+    display: none;
+}
+
+/* ==========================================
+   Step 3: 断点逐级增强
+   ========================================== */
+
+/* 
+ * Breakpoint 1: 375px (iPhone SE/8) - 兼容底线
+ * 确保文字不换行溢出，按钮可点击
+ */
+@media (min-width: 375px) {
+    :root {
+        --text-sm: 0.9375rem; /* 15px - 稍大一点保证可读 */
+    }
+    
+    .container {
+        padding-left: var(--space-4);
+        padding-right: var(--space-4);
+    }
+}
+
+/* 
+ * Breakpoint 2: 390px-402px (iPhone 14/15/16 标准版)
+ * 主流标准，优化默认布局
+ */
+@media (min-width: 390px) {
+    :root {
+        --text-base: 1.0625rem; /* 17px */
+    }
+    
+    /* 两列网格可用 */
+    .grid-cols-2\@390 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 
+ * Breakpoint 3: 412px (Pixel XL, OnePlus)
+ * 大屏手机，更宽松的间距
+ */
+@media (min-width: 412px) {
+    :root {
+        --space-unit: 0.3125rem; /* 5px */
+    }
+    
+    .container {
+        padding-left: var(--space-5);
+        padding-right: var(--space-5);
+    }
+}
+
+/* 
+ * Breakpoint 4: 430px (iPhone 14/15/16 Pro Max)
+ * 大屏旗舰，利用宽屏优势
+ */
+@media (min-width: 430px) {
+    :root {
+        --text-lg: 1.25rem; /* 20px */
+    }
+    
+    /* 更宽的容器 */
+    .container {
+        max-width: 26rem; /* 416px */
+    }
+    
+    /* 三列网格 */
+    .grid-cols-3\@430 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 
+ * Breakpoint 5: 420px-480px (折叠态/未来机型)
+ * 弹性布局，准备过渡到平板
+ */
+@media (min-width: 480px) {
+    .grid-cols-2\@480 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 
+ * Breakpoint 6: 700px+ (Galaxy Z Fold 展开态)
+ * 类似平板的多列布局
+ */
+@media (min-width: 700px) {
+    :root {
+        --text-base: 1.125rem; /* 18px */
+        --space-unit: 0.375rem; /* 6px */
+    }
+    
+    /* 显示桌面导航，隐藏汉堡菜单 */
+    .navbar-menu-btn {
+        display: none;
+    }
+    
+    .navbar-nav {
+        display: flex;
+        gap: var(--space-4);
+    }
+    
+    /* 多列布局 */
+    .grid-cols-3\@700 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .grid-cols-4\@700 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* 
+ * Breakpoint 7: 768px+ (iPad Mini/小尺寸平板)
+ */
+@media (min-width: 768px) {
+    .container {
+        max-width: 48rem; /* 768px */
+        padding-left: var(--space-6);
+        padding-right: var(--space-6);
+    }
+    
+    .grid-cols-4\@768 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* 
+ * Breakpoint 8: 1024px+ (iPad Pro/桌面)
+ */
+@media (min-width: 1024px) {
+    :root {
+        --font-base: 18px; /* 增大基础字体 */
+    }
+    
+    .container {
+        max-width: 64rem; /* 1024px */
+    }
+}
+
+/* ==========================================
+   Step 4: 安全区适配 (刘海屏/底部Home条)
+   ========================================== */
+
+/* iOS刘海屏 */
+@supports (padding-top: env(safe-area-inset-top)) {
+    .safe-top {
+        padding-top: max(var(--space-4), env(safe-area-inset-top));
+    }
+    
+    .safe-bottom {
+        padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+    }
+    
+    /* 底部固定导航的安全区 */
+    .bottom-nav {
+        padding-bottom: env(safe-area-inset-bottom, var(--space-4));
+    }
+    
+    /* 顶部固定导航的安全区 */
+    .top-nav {
+        padding-top: env(safe-area-inset-top, var(--space-2));
+    }
+}
+
+/* ==========================================
+   Step 5: 触摸优化
+   ========================================== */
+
+/* 触摸设备优化 */
+@media (pointer: coarse) {
+    /* 增大触摸热区 */
+    .btn, button, [role="button"] {
+        min-height: var(--touch-comfort); /* 48px for Android */
+    }
+    
+    /* 增大点击间距，防止误触 */
+    .touch-spacing > * + * {
+        margin-top: var(--space-2);
+    }
+    
+    /* 表单元素增大 */
+    input, select, textarea {
+        min-height: var(--touch-comfort);
+        font-size: var(--text-base); /* 防止iOS缩放 */
+    }
+}
+
+/* ==========================================
+   Step 6: 特殊组件适配
+   ========================================== */
+
+/* 游戏卡牌 */
+.game-card {
+    width: 3.5rem;      /* 56px @360px */
+    height: 4.875rem;   /* 78px @360px */
+    border-radius: var(--radius-md);
+}
+
+@media (min-width: 390px) {
+    .game-card {
+        width: 3.75rem;   /* 60px */
+        height: 5.25rem;  /* 84px */
+    }
+}
+
+@media (min-width: 430px) {
+    .game-card {
+        width: 4.375rem;  /* 70px */
+        height: 5.9375rem;/* 95px */
+    }
+}
+
+/* 游戏区域 */
+.game-board {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-2);
+}
+
+@media (min-width: 700px) {
+    .game-board {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 模态框 */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    z-index: 1000;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 24rem; /* 384px */
+    max-height: calc(100vh - var(--safe-top) - var(--safe-bottom) - var(--space-8));
+    overflow-y: auto;
+    background: #1a1a3e;
+    border-radius: var(--radius-xl);
+    padding: var(--space-4);
+}
+
+/* 滚动容器 */
+.scroll-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* ==========================================
+   Step 7: 暗色模式支持
+   ========================================== */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+    }
+}
+
+/* ==========================================
+   Step 8: 减少动画 (无障碍)
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

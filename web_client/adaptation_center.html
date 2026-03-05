@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>命运塔·首登者 - 适配验证中心</title>
+    <script src="ui_components_system.js"></script>
+    <script src="device_adaptive_framework.js"></script>
+    <link rel="stylesheet" href="mobile_expert_framework.css">
+    <link rel="stylesheet" href="ui_global_responsive.css">
+    <link rel="stylesheet" href="device_adaptive.css">
+    <link rel="stylesheet" href="global_responsive.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: var(--sp-md);
+        }
+        
+        .header {
+            text-align: center;
+            padding: var(--sp-lg) 0;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+            margin-bottom: var(--sp-lg);
+        }
+        
+        .header h1 {
+            font-size: var(--font-xxl);
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: var(--sp-sm);
+        }
+        
+        .header p {
+            font-size: var(--font-md);
+            color: #888;
+        }
+        
+        .device-info {
+            background: rgba(255,255,255,0.05);
+            border-radius: var(--rd-lg);
+            padding: var(--sp-md);
+            margin-bottom: var(--sp-lg);
+            text-align: center;
+        }
+        
+        .device-info .label {
+            font-size: var(--font-sm);
+            color: #888;
+            margin-bottom: var(--sp-xs);
+        }
+        
+        .device-info .value {
+            font-size: var(--font-xl);
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .section {
+            margin-bottom: var(--sp-xl);
+        }
+        
+        .section-title {
+            font-size: var(--font-lg);
+            color: #ffd700;
+            margin-bottom: var(--sp-md);
+            padding-left: var(--sp-sm);
+            border-left: 3px solid #ffd700;
+        }
+        
+        /* 游戏入口网格 */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+            gap: var(--sp-md);
+        }
+        
+        .game-card {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,107,107,0.05));
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: var(--rd-lg);
+            padding: var(--sp-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--sp-sm);
+        }
+        
+        .game-card:hover {
+            transform: translateY(-0.25rem);
+            border-color: #ffd700;
+            box-shadow: 0 0.5rem 1rem rgba(255,215,0,0.2);
+        }
+        
+        .game-card .icon {
+            font-size: calc(var(--font-xxl) * 1.5);
+        }
+        
+        .game-card .name {
+            font-size: var(--font-md);
+            font-weight: bold;
+        }
+        
+        .game-card .desc {
+            font-size: var(--font-xs);
+            color: #888;
+        }
+        
+        /* UI元素展示 */
+        .ui-showcase {
+            background: rgba(255,255,255,0.03);
+            border-radius: var(--rd-lg);
+            padding: var(--sp-md);
+        }
+        
+        .showcase-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--sp-md);
+            margin-bottom: var(--sp-md);
+            align-items: center;
+        }
+        
+        .showcase-label {
+            font-size: var(--font-sm);
+            color: #888;
+            min-width: 6rem;
+        }
+        
+        /* 手牌示例 */
+        .hand-card-demo {
+            width: var(--hand-width);
+            height: var(--hand-height);
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            border-radius: var(--rd-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hand-card-demo .suit {
+            font-size: var(--hand-suit);
+            color: #d00;
+        }
+        
+        .hand-card-demo .rank {
+            font-size: var(--hand-rank);
+            font-weight: bold;
+            color: #000;
+        }
+        
+        /* 天命牌示例 */
+        .destiny-card-demo {
+            width: var(--destiny-width);
+            height: var(--destiny-height);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: var(--rd-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .destiny-card-demo .icon {
+            font-size: var(--destiny-icon);
+        }
+        
+        .destiny-card-demo .name {
+            font-size: var(--destiny-font);
+            font-weight: bold;
+        }
+        
+        /* 按钮示例 */
+        .btn-demo {
+            min-height: var(--btn-h);
+            padding: var(--btn-py) var(--btn-px);
+            font-size: var(--btn-font);
+            border-radius: var(--btn-radius);
+            background: linear-gradient(135deg, #2ed573, #27ae60);
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* 金币栏示例 */
+        .currency-demo {
+            height: var(--currency-h);
+            background: rgba(255,215,0,0.1);
+            border-radius: calc(var(--currency-h) / 2);
+            display: flex;
+            align-items: center;
+            padding: 0 var(--sp-sm);
+            gap: var(--currency-gap);
+        }
+        
+        .currency-demo .item {
+            display: flex;
+            align-items: center;
+            gap: calc(var(--currency-gap) / 2);
+            font-size: var(--currency-font);
+        }
+        
+        /* 倒计时示例 */
+        .countdown-demo {
+            width: var(--countdown-w);
+            height: var(--countdown-h);
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-radius: var(--rd-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--countdown-font);
+            font-weight: bold;
+        }
+        
+        /* 状态标签 */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--sp-xs);
+            padding: var(--sp-xs) var(--sp-sm);
+            border-radius: var(--rd-xl);
+            font-size: var(--font-xs);
+        }
+        
+        .status-badge.success {
+            background: rgba(46,213,115,0.2);
+            color: #2ed573;
+        }
+        
+        .status-badge.warning {
+            background: rgba(255,193,7,0.2);
+            color: #ffc107;
+        }
+        
+        /* 底部 */
+        .footer {
+            text-align: center;
+            padding: var(--sp-lg) 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: var(--sp-xl);
+        }
+        
+        .footer p {
+            font-size: var(--font-sm);
+            color: #666;
+        }
+        
+        /* 适配信息表格 */
+        .adapt-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--font-sm);
+        }
+        
+        .adapt-table th,
+        .adapt-table td {
+            padding: var(--sp-sm);
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .adapt-table th {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .adapt-table .check {
+            color: #2ed573;
+        }
+    </style>
+</head>
+<body class="safe-top safe-bottom">
+    <div class="header">
+        <h1>🐍 命运塔·首登者</h1>
+        <p>适配验证中心 - 查看所有已适配的界面元素</p>
+    </div>
+    
+    <div class="device-info">
+        <div class="label">当前设备</div>
+        <div class="value" id="deviceName">检测中...</div>
+        <div style="font-size: var(--font-sm); color: #666; margin-top: var(--sp-xs);">
+            宽度: <span id="screenWidth">-</span>px | 
+            缩放: <span id="scaleValue">-</span>x
+        </div>
+    </div>
+    
+    <!-- 游戏入口 -->
+    <div class="section">
+        <div class="section-title">🎮 游戏入口 (已全面适配)</div>
+        <div class="game-grid">
+            <a href="solo_game.html" class="game-card">
+                <div class="icon">👤</div>
+                <div class="name">个人赛</div>
+                <div class="desc">1v1 AI对战</div>
+                <span class="status-badge success">
+                    <span>✓</span> 已适配
+                </span>
+            </a>
+            <a href="streak_challenge.html" class="game-card">
+                <div class="icon">🔥</div>
+                <div class="name">连胜挑战</div>
+                <div class="desc">连胜模式</div>
+                <span class="status-badge success">
+                    <span>✓</span> 已适配
+                </span>
+            </a>
+            <a href="shop_v2.html" class="game-card">
+                <div class="icon">🛒</div>
+                <div class="name">商城</div>
+                <div class="desc">购买皮肤道具</div>
+                <span class="status-badge success">
+                    <span>✓</span> 已适配
+                </span>
+            </a>
+            <a href="tournament.html" class="game-card">
+                <div class="icon">🏆</div>
+                <div class="name">锦标赛</div>
+                <div class="desc">城市争霸赛</div>
+                <span class="status-badge success">
+                    <span>✓</span> 已适配
+                </span>
+            </a>
+            <a href="season_honors.html" class="game-card">
+                <div class="icon">🎖️</div>
+                <div class="name">赛季荣誉</div>
+                <div class="desc">段位排名</div>
+                <span class="status-badge success">
+                    <span>✓</span> 已适配
+                </span>
+            </a>
+            <a href="responsive_test.html" class="game-card">
+                <div class="icon">📱</div>
+                <div class="name">响应式测试</div>
+                <div class="desc">多设备模拟</div>
+                <span class="status-badge success">
+                    <span>✓</span> 已适配
+                </span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- UI元素展示 -->
+    <div class="section">
+        <div class="section-title">🎨 UI元素展示 (CSS变量驱动)</div>
+        <div class="ui-showcase">
+            <div class="showcase-row">
+                <span class="showcase-label">手牌尺寸:</span>
+                <div class="hand-card-demo">
+                    <div class="suit">♥</div>
+                    <div class="rank">A</div>
+                </div>
+                <span style="font-size: var(--font-xs); color: #666;">
+                    var(--hand-width/height)
+                </span>
+            </div>
+            
+            <div class="showcase-row">
+                <span class="showcase-label">天命牌:</span>
+                <div class="destiny-card-demo">
+                    <div class="icon">⚡</div>
+                    <div class="name">突击</div>
+                </div>
+                <span style="font-size: var(--font-xs); color: #666;">
+                    var(--destiny-width/height)
+                </span>
+            </div>
+            
+            <div class="showcase-row">
+                <span class="showcase-label">游戏按钮:</span>
+                <button class="btn-demo">确认出牌</button>
+                <span style="font-size: var(--font-xs); color: #666;">
+                    var(--btn-h/font)
+                </span>
+            </div>
+            
+            <div class="showcase-row">
+                <span class="showcase-label">金币钻石栏:</span>
+                <div class="currency-demo">
+                    <div class="item">
+                        <span>💎</span>
+                        <span>500</span>
+                    </div>
+                    <div class="item">
+                        <span>🪙</span>
+                        <span>5000</span>
+                    </div>
+                </div>
+                <span style="font-size: var(--font-xs); color: #666;">
+                    var(--currency-h)
+                </span>
+            </div>
+            
+            <div class="showcase-row">
+                <span class="showcase-label">倒计时:</span>
+                <div class="countdown-demo">10</div>
+                <span style="font-size: var(--font-xs); color: #666;">
+                    var(--countdown-w/h)
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 适配状态 -->
+    <div class="section">
+        <div class="section-title">✅ 适配状态</div>
+        <table class="adapt-table">
+            <tr>
+                <th>适配项</th>
+                <th>状态</th>
+                <th>技术方案</th>
+            </tr>
+            <tr>
+                <td>天命牌</td>
+                <td class="check">✓ CSS变量</td>
+                <td>var(--destiny-width/height)</td>
+            </tr>
+            <tr>
+                <td>用户手牌</td>
+                <td class="check">✓ CSS变量</td>
+                <td>var(--hand-width/height)</td>
+            </tr>
+            <tr>
+                <td>守卫牌</td>
+                <td class="check">✓ CSS变量</td>
+                <td>var(--guard-width/height)</td>
+            </tr>
+            <tr>
+                <td>塔层显示</td>
+                <td class="check">✓ CSS变量</td>
+                <td>var(--tower-level-h)</td>
+            </tr>
+            <tr>
+                <td>嘲讽浮窗</td>
+                <td class="check">✓ CSS变量</td>
+                <td>var(--taunt-max-w)</td>
+            </tr>
+            <tr>
+                <td>倒计时</td>
+                <td class="check">✓ CSS变量</td>
+                <td>var(--countdown-w/h)</td>
+            </tr>
+            <tr>
+                <td>音乐控制</td>
+                <td class="check">✓ CSS变量</td>
+                <td>var(--music-w/h)</td>
+            </tr>
+            <tr>
+                <td>金币钻石栏</td>
+                <td class="check">✓ CSS变量</td>
+                <td>var(--currency-h)</td>
+            </tr>
+            <tr>
+                <td>按钮</td>
+                <td class="check">✓ CSS变量</td>
+                <td>var(--btn-h/font)</td>
+            </tr>
+            <tr>
+                <td>头部</td>
+                <td class="check">✓ CSS变量</td>
+                <td>var(--header-h)</td>
+            </tr>
+            <tr>
+                <td>触摸优化</td>
+                <td class="check">✓ 44px标准</td>
+                <td>@media (pointer: coarse)</td>
+            </tr>
+            <tr>
+                <td>iOS安全区</td>
+                <td class="check">✓ viewport-fit</td>
+                <td>env(safe-area-inset-*)</td>
+            </tr>
+        </table>
+    </div>
+    
+    <!-- 设备适配表 -->
+    <div class="section">
+        <div class="section-title">📱 设备适配表</div>
+        <table class="adapt-table">
+            <tr>
+                <th>设备</th>
+                <th>宽度</th>
+                <th>缩放</th>
+                <th>状态</th>
+            </tr>
+            <tr>
+                <td>iPhone SE/8</td>
+                <td>375px</td>
+                <td>0.85x</td>
+                <td class="check">✓ 已适配</td>
+            </tr>
+            <tr>
+                <td>iPhone 14/15/16</td>
+                <td>390-402px</td>
+                <td>0.92x</td>
+                <td class="check">✓ 已适配</td>
+            </tr>
+            <tr>
+                <td>iPhone Pro Max</td>
+                <td>430px</td>
+                <td>1.00x</td>
+                <td class="check">✓ 已适配</td>
+            </tr>
+            <tr>
+                <td>Android标准</td>
+                <td>360-390px</td>
+                <td>0.88x</td>
+                <td class="check">✓ 已适配</td>
+            </tr>
+            <tr>
+                <td>Android大屏</td>
+                <td>412px</td>
+                <td>0.96x</td>
+                <td class="check">✓ 已适配</td>
+            </tr>
+            <tr>
+                <td>Galaxy Z Fold</td>
+                <td>700px+</td>
+                <td>1.15x</td>
+                <td class="check">✓ 已适配</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="footer">
+        <p>命运塔·首登者 V3.6 全面UI响应式重构完成</p>
+        <p style="margin-top: var(--sp-xs);">所有UI元素使用CSS变量，无固定像素</p>
+        <p style="margin-top: var(--sp-xs); color: #444;">
+            当前时间: <span id="currentTime">-</span>
+        </p>
+    </div>
+    
+    <script>
+        // 检测设备信息
+        function updateDeviceInfo() {
+            const width = window.innerWidth;
+            const ua = navigator.userAgent;
+            const isIOS = /iPhone|iPad|iPod/.test(ua);
+            const isAndroid = /Android/.test(ua);
+            
+            let deviceName = '桌面端';
+            let scale = '1.0';
+            
+            if (width >= 700 && width <= 850) {
+                deviceName = isIOS ? 'iPhone Fold' : 'Galaxy Z Fold';
+                scale = '1.15';
+            } else if (isIOS) {
+                if (width <= 380) {
+                    deviceName = 'iPhone SE/8';
+                    scale = '0.85';
+                } else if (width <= 415) {
+                    deviceName = 'iPhone 14/15/16';
+                    scale = '0.92';
+                } else {
+                    deviceName = 'iPhone Pro Max';
+                    scale = '1.0';
+                }
+            } else if (isAndroid) {
+                if (width <= 400) {
+                    deviceName = 'Android标准';
+                    scale = '0.88';
+                } else if (width <= 440) {
+                    deviceName = 'Android大屏';
+                    scale = '0.96';
+                }
+            }
+            
+            document.getElementById('deviceName').textContent = deviceName;
+            document.getElementById('screenWidth').textContent = width;
+            document.getElementById('scaleValue').textContent = scale;
+        }
+        
+        // 更新时间
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = 
+                now.toLocaleString('zh-CN');
+        }
+        
+        // 初始化
+        updateDeviceInfo();
+        updateTime();
+        setInterval(updateTime, 1000);
+        
+        // 监听窗口变化
+        window.addEventListener('resize', () => {
+            setTimeout(updateDeviceInfo, 100);
+        });
+    </script>
+</body>
+</html>

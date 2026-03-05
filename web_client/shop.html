@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命运之塔 - 商城</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 头部 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .currency-display {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .currency-item {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 10px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+        }
+        
+        .currency-item .amount {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        /* 导航标签 */
+        .nav-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .nav-tab {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,215,0,0.2);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-size: 16px;
+        }
+        
+        .nav-tab:hover, .nav-tab.active {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            border-color: #ffd700;
+            transform: translateY(-2px);
+        }
+        
+        /* 推荐区 */
+        .featured-section {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .featured-title {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        /* 商品卡片 */
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        
+        .item-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border: 2px solid rgba(255,215,0,0.2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .item-card:hover {
+            transform: translateY(-5px);
+            border-color: #ffd700;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+        }
+        
+        .item-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,215,0,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+        
+        .item-card:hover::before {
+            opacity: 1;
+            transform: rotate(45deg) translate(50%, 50%);
+        }
+        
+        .item-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+            transition: transform 0.3s;
+        }
+        
+        .item-card:hover .item-icon {
+            transform: scale(1.1);
+        }
+        
+        .item-name {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        
+        .item-desc {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .item-price {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            font-size: 20px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .item-price .diamond {
+            color: #0ff;
+        }
+        
+        .buy-btn {
+            margin-top: 15px;
+            padding: 10px 30px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .buy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255,215,0,0.4);
+        }
+        
+        .buy-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* 限时标签 */
+        .item-tag {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #ff4444, #ff6666);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .item-tag.hot {
+            background: linear-gradient(135deg, #ff8800, #ffaa00);
+        }
+        
+        .item-tag.new {
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+        }
+        
+        .item-tag.vip {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+        }
+        
+        /* VIP专区 */
+        .vip-section {
+            background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05));
+            border: 3px solid #ffd700;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .vip-badge-large {
+            position: absolute;
+            top: -15px;
+            left: 30px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .vip-benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .vip-benefit {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(255,215,0,0.1);
+            border-radius: 10px;
+        }
+        
+        .vip-benefit-icon {
+            font-size: 24px;
+        }
+        
+        .vip-price {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+        }
+        
+        .vip-price .original {
+            text-decoration: line-through;
+            color: #888;
+            font-size: 18px;
+        }
+        
+        .vip-price .current {
+            font-size: 36px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        /* 返回按钮 */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            z-index: 100;
+            transition: transform 0.3s;
+        }
+        
+        .back-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header h1 {
+                font-size: 28px;
+            }
+            
+            .item-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .featured-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <a href="new_index.html" class="back-btn">🏠 返回首页</a>
+    
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>🛍️ 命运商城</h1>
+            <div class="currency-display">
+                <div class="currency-item">
+                    <span>💰</span>
+                    <span class="amount" id="coinAmount">1000</span>
+                </div>
+                <div class="currency-item">
+                    <span>💎</span>
+                    <span class="amount diamond" id="diamondAmount">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- VIP专区 -->
+        <div class="vip-section">
+            <div class="vip-badge-large">👑 VIP会员</div>
+            
+            <h2 style="color: #ffd700; margin-bottom: 10px;">开通VIP，尊享专属特权</h2>
+            
+            <div class="vip-benefits">
+                <div class="vip-benefit">
+                    <span class="vip-benefit-icon">🎴</span>
+                    <div>
+                        <div>天命牌+1</div>
+                        <small style="color: #888;">从3层开始游戏</small>
+                    </div>
+                </div>
+                <div class="vip-benefit">
+                    <span class="vip-benefit-icon">💰</span>
+                    <div>
+                        <div>金币加成+20%</div>
+                        <small style="color: #888;">每局游戏额外获得</small>
+                    </div>
+                </div>
+                <div class="vip-benefit">
+                    <span class="vip-benefit-icon">🏆</span>
+                    <div>
+                        <div>积分加成+10%</div>
+                        <small style="color: #888;">排位赛更快升级</small>
+                    </div>
+                </div>
+                <div class="vip-benefit">
+                    <span class="vip-benefit-icon">👤</span>
+                    <div>
+                        <div>专属头像框</div>
+                        <small style="color: #888;">彰显尊贵身份</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="vip-price">
+                <div class="original">原价: 1280钻石</div>
+                <div class="current">💎 980 / 永久</div>
+                <button class="buy-btn" style="margin-top: 15px; max-width: 300px;" onclick="buyVIP()">
+                    立即开通
+                </button>
+            </div>
+        </div>
+        
+        <!-- 导航标签 -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="showCategory('all')">全部</div>
+            <div class="nav-tab" onclick="showCategory('featured')">🔥 推荐</div>
+            <div class="nav-tab" onclick="showCategory('skins')">🎨 皮肤</div>
+            <div class="nav-tab" onclick="showCategory('cards')">🃏 卡牌</div>
+            <div class="nav-tab" onclick="showCategory('effects')">✨ 特效</div>
+            <div class="nav-tab" onclick="showCategory('bundles')">🎁 礼包</div>
+        </div>
+        
+        <!-- 推荐区 -->
+        <div class="featured-section" id="featuredSection">
+            <div class="featured-title">🔥 本周推荐</div>
+            
+            <div class="featured-grid">
+                <div class="item-card" style="border-color: #ffd700;">
+                    <div class="item-tag hot">热卖</div>
+                    <div class="item-icon">🎴</div>
+                    <div class="item-name">传说卡背</div>
+                    <div class="item-desc">金色传说品质卡背，全场最耀眼</div>
+                    <div class="item-price">
+                        <span>💎</span>
+                        <span>680</span>
+                    </div>
+                    <button class="buy-btn" onclick="buyItem('legendary_cardback', 680, 'diamond')">购买</button>
+                </div>
+                
+                <div class="item-card" style="border-color: #ff4444;">
+                    <div class="item-tag">限时</div>
+                    <div class="item-icon">🎁</div>
+                    <div class="item-name">新手大礼包</div>
+                    <div class="item-desc">超值新手包，助你快速成长</div>
+                    <div class="item-price">
+                        <span>💎</span>
+                        <span>60</span>
+                    </div>
+                    <button class="buy-btn" onclick="buyItem('starter_pack', 60, 'diamond')">购买</button>
+                </div>
+                
+                <div class="item-card" style="border-color: #00ff88;">
+                    <div class="item-tag new">新品</div>
+                    <div class="item-icon">✨</div>
+                    <div class="item-name">霓虹特效包</div>
+                    <div class="item-desc">赛博朋克风格出牌特效</div>
+                    <div class="item-price">
+                        <span>💎</span>
+                        <span>380</span>
+                    </div>
+                    <button class="buy-btn" onclick="buyItem('neon_effects', 380, 'diamond')">购买</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 商品列表 -->
+        <div class="item-grid" id="itemGrid">
+            <!-- 皮肤类 -->
+            <div class="item-card" data-category="skins">
+                <div class="item-icon">🎨</div>
+                <div class="item-name">经典皮肤包</div>
+                <div class="item-desc">传统扑克风格皮肤</div>
+                <div class="item-price">
+                    <span>💰</span>
+                    <span>500</span>
+                </div>
+                <button class="buy-btn" onclick="buyItem('classic_skin', 500, 'coin')">购买</button>
+            </div>
+            
+            <div class="item-card" data-category="skins">
+                <div class="item-icon">🌸</div>
+                <div class="item-name">樱花皮肤</div>
+                <div class="item-desc">浪漫樱花主题</div>
+                <div class="item-price">
+                    <span>💎</span>
+                    <span>280</span>
+                </div>
+                <button class="buy-btn" onclick="buyItem('sakura_skin', 280, 'diamond')">购买</button>
+            </div>
+            
+            <div class="item-card" data-category="skins">
+                <div class="item-icon">🔥</div>
+                <div class="item-name">烈焰皮肤</div>
+                <div class="item-desc">炽热火焰特效</div>
+                <div class="item-price">
+                    <span>💎</span>
+                    <span>380</span>
+                </div>
+                <button class="buy-btn" onclick="buyItem('flame_skin', 380, 'diamond')">购买</button>
+            </div>
+            
+            <!-- 卡牌类 -->
+            <div class="item-card" data-category="cards">
+                <div class="item-icon">🃏</div>
+                <div class="item-name">金色卡牌</div>
+                <div class="item-desc">土豪金卡牌边框</div>
+                <div class="item-price">
+                    <span>💎</span>
+                    <span>180</span>
+                </div>
+                <button class="buy-btn" onclick="buyItem('gold_card', 180, 'diamond')">购买</button>
+            </div>
+            
+            <div class="item-card" data-category="cards">
+                <div class="item-icon">💎</div>
+                <div class="item-name">钻石卡牌</div>
+                <div class="item-desc">闪耀钻石品质</div>
+                <div class="item-price">
+                    <span>💎</span>
+                    <span>480</span>
+                </div>
+                <button class="buy-btn" onclick="buyItem('diamond_card', 480, 'diamond')">购买</button>
+            </div>
+            
+            <!-- 特效类 -->
+            <div class="item-card" data-category="effects">
+                <div class="item-icon">⚡</div>
+                <div class="item-name">闪电特效</div>
+                <div class="item-desc">出牌时闪电效果</div>
+                <div class="item-price">
+                    <span>💎</span>
+                    <span>220</span>
+                </div>
+                <button class="buy-btn" onclick="buyItem('lightning_effect', 220, 'diamond')">购买</button>
+            </div>
+            
+            <div class="item-card" data-category="effects">
+                <div class="item-icon">🌟</div>
+                <div class="item-name">星光特效</div>
+                <div class="item-desc">梦幻星光粒子</div>
+                <div class="item-price">
+                    <span>💎</span>
+                    <span>260</span>
+                </div>
+                <button class="buy-btn" onclick="buyItem('star_effect', 260, 'diamond')">购买</button>
+            </div>
+            
+            <!-- 礼包类 -->
+            <div class="item-card" data-category="bundles">
+                <div class="item-tag">超值</div>
+                <div class="item-icon">🎁</div>
+                <div class="item-name">金币大礼包</div>
+                <div class="item-desc">内含5000金币</div>
+                <div class="item-price">
+                    <span>💎</span>
+                    <span>100</span>
+                </div>
+                <button class="buy-btn" onclick="buyItem('coin_bundle', 100, 'diamond')">购买</button>
+            </div>
+            
+            <div class="item-card" data-category="bundles">
+                <div class="item-tag vip">VIP</div>
+                <div class="item-icon">👑</div>
+                <div class="item-name">至尊礼包</div>
+                <div class="item-desc">皮肤+特效+头像框</div>
+                <div class="item-price">
+                    <span>💎</span>
+                    <span>1280</span>
+                </div>
+                <button class="buy-btn" onclick="buyItem('ultimate_bundle', 1280, 'diamond')">购买</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 用户数据
+        let userData = {
+            coins: 1000,
+            diamonds: 0,
+            vip: false,
+            inventory: []
+        };
+        
+        // 加载用户数据
+        function loadUserData() {
+            const saved = localStorage.getItem('towerOfFate_userData');
+            if (saved) {
+                userData = JSON.parse(saved);
+            }
+            updateCurrencyDisplay();
+        }
+        
+        // 保存用户数据
+        function saveUserData() {
+            localStorage.setItem('towerOfFate_userData', JSON.stringify(userData));
+        }
+        
+        // 更新货币显示
+        function updateCurrencyDisplay() {
+            document.getElementById('coinAmount').textContent = userData.coins.toLocaleString();
+            document.getElementById('diamondAmount').textContent = userData.diamonds.toLocaleString();
+        }
+        
+        // 购买物品
+        function buyItem(itemId, price, currency) {
+            if (currency === 'coin') {
+                if (userData.coins < price) {
+                    alert('💰 金币不足！');
+                    return;
+                }
+                userData.coins -= price;
+            } else {
+                if (userData.diamonds < price) {
+                    alert('💎 钻石不足！请充值');
+                    return;
+                }
+                userData.diamonds -= price;
+            }
+            
+            userData.inventory.push(itemId);
+            saveUserData();
+            updateCurrencyDisplay();
+            
+            alert(`🎉 购买成功！获得: ${itemId}`);
+        }
+        
+        // 购买VIP
+        function buyVIP() {
+            if (userData.diamonds < 980) {
+                alert('💎 钻石不足！需要980钻石');
+                return;
+            }
+            
+            userData.diamonds -= 980;
+            userData.vip = true;
+            saveUserData();
+            updateCurrencyDisplay();
+            
+            alert('🎉 VIP开通成功！享受专属特权！');
+        }
+        
+        // 显示分类
+        function showCategory(category) {
+            // 更新标签状态
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 显示/隐藏商品
+            const items = document.querySelectorAll('.item-card');
+            const featured = document.getElementById('featuredSection');
+            
+            if (category === 'all') {
+                items.forEach(item => item.style.display = 'block');
+                featured.style.display = 'block';
+            } else if (category === 'featured') {
+                items.forEach(item => item.style.display = 'none');
+                featured.style.display = 'block';
+            } else {
+                items.forEach(item => {
+                    if (item.dataset.category === category) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                featured.style.display = 'none';
+            }
+        }
+        
+        // 页面加载
+        window.onload = function() {
+            loadUserData();
+        };
+    </script>
+</body>
+</html>

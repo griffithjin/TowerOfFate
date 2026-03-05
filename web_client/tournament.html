@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>命运塔·首登者 - 全球锦标赛</title>
+    <script src="global_tournament_data.js"></script>
+    <link rel="stylesheet" href="mobile_expert_framework.css">
+    <link rel="stylesheet" href="ui_global_responsive.css">
+    <link rel="stylesheet" href="device_adaptive.css">
+    <link rel="stylesheet" href="global_responsive.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        .container { max-width: 87.5rem; margin: 0 auto; padding: var(--sp-lg); }
+        
+        .header {
+            text-align: center;
+            padding: var(--sp-lg) 0;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+            margin-bottom: var(--sp-lg);
+        }
+        
+        .header h1 {
+            font-size: var(--font-xxl);
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header p {
+            color: #888;
+            margin-top: var(--sp-sm);
+        }
+        
+        /* 统计信息 */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: var(--sp-xl);
+            margin-bottom: var(--sp-lg);
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: var(--sp-md);
+            background: rgba(255,215,0,0.1);
+            border-radius: var(--rd-lg);
+            min-width: 120px;
+        }
+        
+        .stat-value {
+            font-size: var(--font-xxl);
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: var(--font-sm);
+            color: #888;
+            margin-top: var(--sp-xs);
+        }
+        
+        /* 筛选标签 */
+        .filter-tabs {
+            display: flex;
+            gap: var(--sp-sm);
+            margin-bottom: var(--sp-lg);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .filter-tab {
+            padding: var(--sp-sm) var(--sp-md);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: var(--rd-xl);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: var(--font-sm);
+        }
+        
+        .filter-tab:hover, .filter-tab.active {
+            background: rgba(255,215,0,0.2);
+            border-color: #ffd700;
+        }
+        
+        /* 锦标赛网格 */
+        .tournament-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--sp-md);
+        }
+        
+        .tournament-card {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: var(--rd-lg);
+            padding: var(--sp-md);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .tournament-card:hover {
+            transform: translateY(-3px);
+            border-color: #ffd700;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.2);
+        }
+        
+        .tournament-card.S { border-color: #ffd700; background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.05)); }
+        .tournament-card.A { border-color: #c0c0c0; background: linear-gradient(135deg, rgba(192,192,192,0.2), rgba(192,192,192,0.05)); }
+        .tournament-card.B { border-color: #cd7f32; background: linear-gradient(135deg, rgba(205,127,50,0.2), rgba(205,127,50,0.05)); }
+        .tournament-card.C { border-color: #4a90e2; background: linear-gradient(135deg, rgba(74,144,226,0.2), rgba(74,144,226,0.05)); }
+        .tournament-card.D { border-color: #666; }
+        
+        .tournament-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--sp-sm);
+        }
+        
+        .tournament-tier {
+            font-size: var(--font-xs);
+            padding: 2px 8px;
+            border-radius: var(--rd-sm);
+            background: rgba(255,215,0,0.3);
+        }
+        
+        .tournament-name {
+            font-size: var(--font-md);
+            font-weight: bold;
+            margin-bottom: var(--sp-xs);
+            line-height: 1.3;
+        }
+        
+        .tournament-location {
+            font-size: var(--font-sm);
+            color: #888;
+            margin-bottom: var(--sp-sm);
+        }
+        
+        .tournament-info {
+            display: flex;
+            gap: var(--sp-md);
+            font-size: var(--font-xs);
+            color: #aaa;
+        }
+        
+        .tournament-info span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .register-btn {
+            width: 100%;
+            margin-top: var(--sp-sm);
+            padding: var(--sp-sm);
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            border: none;
+            border-radius: var(--rd-md);
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .register-btn:hover {
+            opacity: 0.9;
+        }
+        
+        /* 中国区域选择 */
+        .china-regions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: var(--sp-sm);
+            margin-bottom: var(--sp-lg);
+        }
+        
+        .region-btn {
+            padding: var(--sp-sm);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: var(--rd-md);
+            cursor: pointer;
+            text-align: center;
+            font-size: var(--font-sm);
+            transition: all 0.3s;
+        }
+        
+        .region-btn:hover, .region-btn.active {
+            background: rgba(255,215,0,0.2);
+            border-color: #ffd700;
+        }
+        
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: var(--sp-sm);
+            margin-top: var(--sp-xl);
+        }
+        
+        .page-btn {
+            padding: var(--sp-sm) var(--sp-md);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: var(--rd-md);
+            cursor: pointer;
+            color: #fff;
+        }
+        
+        .page-btn:hover, .page-btn.active {
+            background: rgba(255,215,0,0.2);
+        }
+        
+        /* 返回按钮 */
+        .back-btn {
+            display: inline-block;
+            margin-bottom: var(--sp-md);
+            color: #888;
+            text-decoration: none;
+            font-size: var(--font-sm);
+        }
+        
+        .back-btn:hover {
+            color: #ffd700;
+        }
+        
+        /* iPhone SE优化 */
+        @media (max-width: 23.4375rem) {
+            .container {
+                padding: var(--sp-sm);
+            }
+            
+            .header h1 {
+                font-size: var(--font-lg);
+            }
+            
+            .stats-bar {
+                gap: var(--sp-sm);
+            }
+            
+            .stat-item {
+                min-width: 80px;
+                padding: var(--sp-sm);
+            }
+            
+            .tournament-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .china-regions {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body class="safe-top safe-bottom">
+    <div class="container">
+        <a href="new_index.html" class="back-btn">← 返回首页</a>
+        
+        <div class="header">
+            <h1>🏆 全球锦标赛</h1>
+            <p>每个国家5场锦标赛 · 中国31省每省5场 · 丰富竞技体验</p>
+        </div>
+        
+        <!-- 统计信息 -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="totalCount">-</div>
+                <div class="stat-label">总锦标赛</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="chinaCount">-</div>
+                <div class="stat-label">中国赛区</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="globalCount">-</div>
+                <div class="stat-label">国际赛区</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">5</div>
+                <div class="stat-label">每场名额</div>
+            </div>
+        </div>
+        
+        <!-- 筛选标签 -->
+        <div class="filter-tabs">
+            <div class="filter-tab active" onclick="filterTournaments('all')">全部</div>
+            <div class="filter-tab" onclick="filterTournaments('china')">🇨🇳 中国</div>
+            <div class="filter-tab" onclick="filterTournaments('international')">🌍 国际</div>
+            <div class="filter-tab" onclick="filterTournaments('S')">S级赛事</div>
+            <div class="filter-tab" onclick="filterTournaments('A')">A级赛事</div>
+            <div class="filter-tab" onclick="filterTournaments('B')">B级赛事</div>
+            <div class="filter-tab" onclick="filterTournaments('C')">C级赛事</div>
+        </div>
+        
+        <!-- 中国区域选择 -->
+        <div id="chinaRegions" class="china-regions" style="display: none;">
+            <div class="region-btn" onclick="filterByRegion('all')">全部</div>
+            <div class="region-btn" onclick="filterByRegion('华北')">华北</div>
+            <div class="region-btn" onclick="filterByRegion('东北')">东北</div>
+            <div class="region-btn" onclick="filterByRegion('华东')">华东</div>
+            <div class="region-btn" onclick="filterByRegion('华中')">华中</div>
+            <div class="region-btn" onclick="filterByRegion('华南')">华南</div>
+            <div class="region-btn" onclick="filterByRegion('西南')">西南</div>
+            <div class="region-btn" onclick="filterByRegion('西北')">西北</div>
+        </div>
+        
+        <!-- 锦标赛列表 -->
+        <div id="tournamentList" class="tournament-grid">
+            <!-- 动态生成 -->
+        </div>
+        
+        <!-- 分页 -->
+        <div class="pagination" id="pagination">
+            <!-- 动态生成 -->
+        </div>
+    </div>
+    
+    <script>
+        let allTournaments = [];
+        let currentPage = 1;
+        let currentFilter = 'all';
+        let currentRegion = 'all';
+        const itemsPerPage = 12;
+        
+        // 初始化
+        function init() {
+            // 生成所有锦标赛数据
+            allTournaments = GlobalTournamentData.generateTournaments();
+            
+            // 更新统计
+            const stats = GlobalTournamentData.getStats();
+            document.getElementById('totalCount').textContent = stats.total;
+            document.getElementById('chinaCount').textContent = stats.china;
+            document.getElementById('globalCount').textContent = stats.international;
+            
+            // 渲染锦标赛列表
+            renderTournaments();
+        }
+        
+        // 渲染锦标赛列表
+        function renderTournaments() {
+            let filtered = allTournaments;
+            
+            // 应用筛选
+            if (currentFilter === 'china') {
+                filtered = filtered.filter(t => t.country === '中国');
+                document.getElementById('chinaRegions').style.display = 'grid';
+            } else if (currentFilter === 'international') {
+                filtered = filtered.filter(t => t.country !== '中国');
+                document.getElementById('chinaRegions').style.display = 'none';
+            } else if (['S', 'A', 'B', 'C', 'D'].includes(currentFilter)) {
+                filtered = filtered.filter(t => t.tier === currentFilter);
+                document.getElementById('chinaRegions').style.display = 'none';
+            } else {
+                document.getElementById('chinaRegions').style.display = 'none';
+            }
+            
+            // 应用区域筛选
+            if (currentRegion !== 'all' && currentFilter === 'china') {
+                filtered = filtered.filter(t => t.region === currentRegion);
+            }
+            
+            // 分页
+            const totalPages = Math.ceil(filtered.length / itemsPerPage);
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageItems = filtered.slice(start, end);
+            
+            // 渲染
+            const container = document.getElementById('tournamentList');
+            container.innerHTML = pageItems.map(t => `
+                <div class="tournament-card ${t.tier}">
+                    <div class="tournament-header">
+                        <span class="tournament-tier">${t.tier}级</span>
+                        <span style="font-size: 12px; color: #888;">${t.country}</span>
+                    </div>
+                    <div class="tournament-name">${t.name}</div>
+                    <div class="tournament-location">📍 ${t.location} ${t.region ? '(' + t.region + ')' : ''}</div>
+                    <div class="tournament-info">
+                        <span>💎 ${t.entryFee}</span>
+                        <span>🏆 ${t.prize.toLocaleString()}</span>
+                        <span>👥 ${t.maxPlayers}</span>
+                    </div>
+                    <button class="register-btn" onclick="registerTournament(${t.id})">立即报名</button>
+                </div>
+            `).join('');
+            
+            // 渲染分页
+            renderPagination(totalPages);
+        }
+        
+        // 渲染分页
+        function renderPagination(totalPages) {
+            const container = document.getElementById('pagination');
+            let html = '';
+            
+            for (let i = 1; i <= totalPages; i++) {
+                html += `
+                    <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        // 筛选锦标赛
+        function filterTournaments(type) {
+            currentFilter = type;
+            currentPage = 1;
+            currentRegion = 'all';
+            
+            // 更新标签状态
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.includes('全部') && type === 'all') tab.classList.add('active');
+                if (tab.textContent.includes('中国') && type === 'china') tab.classList.add('active');
+                if (tab.textContent.includes('国际') && type === 'international') tab.classList.add('active');
+                if (tab.textContent.includes(type + '级')) tab.classList.add('active');
+            });
+            
+            renderTournaments();
+        }
+        
+        // 按区域筛选
+        function filterByRegion(region) {
+            currentRegion = region;
+            currentPage = 1;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.region-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === region || (region === 'all' && btn.textContent === '全部')) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            renderTournaments();
+        }
+        
+        // 跳转到页面
+        function goToPage(page) {
+            currentPage = page;
+            renderTournaments();
+        }
+        
+        // 报名锦标赛
+        function registerTournament(id) {
+            const tournament = allTournaments.find(t => t.id === id);
+            alert(`报名成功！\n\n${tournament.name}\n地点: ${tournament.location}\n报名费: ${tournament.entryFee}钻石\n奖金池: ${tournament.prize.toLocaleString()}`);
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .tournament-card:hover {
+            border-color: #ffd700;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+        }
+        
+        .tournament-info h3 {
+            font-size: var(--title-font);
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+        
+        .tournament-meta {
+            display: flex;
+            gap: 20px;
+            font-size: var(--font-sm);
+            color: #888;
+        }
+        
+        .tournament-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tournament-prize {
+            text-align: right;
+        }
+        
+        .prize-amount {
+            font-size: var(--hand-suit);
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .prize-label {
+            font-size: var(--font-xs);
+            color: #888;
+        }
+        
+        .btn-register {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-size: var(--font-md);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-register:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.4);
+        }
+        
+        .btn-register:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        
+        .timer {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255,0,0,0.2);
+            border-radius: 20px;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: var(--sp-md) 40px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 10px;
+            color: #ffd700;
+            text-decoration: none;
+            font-size: var(--font-md);
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,215,0,0.2);
+        }
+        
+        @media (max-width: 48rem) {
+            .regions-grid { grid-template-columns: repeat(2, 1fr); }
+            .tournament-card { flex-direction: column; gap: var(--sp-md); text-align: center; }
+        }
+    
+        /* iPhone SE 特定优化 - 375px */
+        @media (max-width: 23.4375rem) {
+            .container, body {
+                padding: 4px;
+            }
+            
+            .header, .game-header {
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 4px 0;
+                margin-bottom: 4px;
+                gap: 4px;
+            }
+            
+            .logo, .game-title {
+                font-size: 14px !important;
+            }
+            
+            .game-info, .currency-bar {
+                gap: 4px;
+                flex-wrap: wrap;
+            }
+            
+            .info-item {
+                padding: 3px 6px !important;
+                font-size: 11px !important;
+            }
+            
+            .btn, .game-btn, .btn-confirm {
+                padding: 6px 10px !important;
+                font-size: 11px !important;
+            }
+        }
+    </style>
+    <script src="music_system.js"></script>
+    <script src="responsive_adapter.js"></script>
+</head>
+<body class="safe-top safe-bottom" class="game-container touch-device-support">
+    <div class="container">
+        <div class="header game-header">
+            <h1>🏆 全球锦标赛</h1>
+            <p style="color: #888; margin-top: 10px;">征服世界，成为传奇</p>
+        </div>
+        
+        <div class="world-map">
+            <div class="map-title">🌍 选择赛区</div>
+            <div class="regions-grid">
+                <div class="region-card" onclick="filterRegion('asia')">
+                    <div class="region-icon">🌏</div>
+                    <div class="region-name">亚洲</div>
+                    <div class="region-count">50+ 城市</div>
+                </div>
+                <div class="region-card" onclick="filterRegion('europe')">
+                    <div class="region-icon">🌍</div>
+                    <div class="region-name">欧洲</div>
+                    <div class="region-count">44+ 城市</div>
+                </div>
+                <div class="region-card" onclick="filterRegion('americas')">
+                    <div class="region-icon">🌎</div>
+                    <div class="region-name">美洲</div>
+                    <div class="region-count">35+ 城市</div>
+                </div>
+                <div class="region-card" onclick="filterRegion('africa')">
+                    <div class="region-icon">🌍</div>
+                    <div class="region-name">非洲</div>
+                    <div class="region-count">54+ 城市</div>
+                </div>
+                <div class="region-card" onclick="filterRegion('oceania')">
+                    <div class="region-icon">🌏</div>
+                    <div class="region-name">大洋洲</div>
+                    <div class="region-count">14+ 城市</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tournaments-section">
+            <div class="section-title">
+                <span>⚔️</span>
+                <span>即将开始的锦标赛</span>
+            </div>
+            
+            <div class="tournament-list" id="tournamentList">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="new_index.html" class="back-btn">← 返回大厅</a>
+        </div>
+    </div>
+    
+    <script>
+        // 锦标赛数据
+        const tournaments = [
+            {
+                id: 'tour_001',
+                city: '北京',
+                country: '中国',
+                region: 'asia',
+                population: '2154万',
+                tier: 'S',
+                pointsEntry: 500,
+                prizePool: 25000,
+                timeLeft: 1800, // 30分钟
+                registered: 45,
+                maxPlayers: 128
+            },
+            {
+                id: 'tour_002',
+                city: '东京',
+                country: '日本',
+                region: 'asia',
+                population: '1396万',
+                tier: 'S',
+                pointsEntry: 500,
+                prizePool: 25000,
+                timeLeft: 3600, // 60分钟
+                registered: 32,
+                maxPlayers: 128
+            },
+            {
+                id: 'tour_003',
+                city: '纽约',
+                country: '美国',
+                region: 'americas',
+                population: '846万',
+                tier: 'A',
+                pointsEntry: 300,
+                prizePool: 15000,
+                timeLeft: 2400, // 40分钟
+                registered: 28,
+                maxPlayers: 100
+            },
+            {
+                id: 'tour_004',
+                city: '伦敦',
+                country: '英国',
+                region: 'europe',
+                population: '898万',
+                tier: 'A',
+                pointsEntry: 300,
+                prizePool: 15000,
+                timeLeft: 1200, // 20分钟
+                registered: 56,
+                maxPlayers: 100
+            },
+            {
+                id: 'tour_005',
+                city: '巴黎',
+                country: '法国',
+                region: 'europe',
+                population: '216万',
+                tier: 'B',
+                pointsEntry: 200,
+                prizePool: 10000,
+                timeLeft: 900, // 15分钟
+                registered: 38,
+                maxPlayers: 80
+            }
+
+            // 更多亚洲城市
+            { id: 'tour_006', city: '上海', country: '中国', region: 'asia', population: '2428万', tier: 'S', pointsEntry: 500, prizePool: 50000, timeLeft: 7200, registered: 67, maxPlayers: 128, type: '大奖赛' },
+            { id: 'tour_007', city: '首尔', country: '韩国', region: 'asia', population: '977万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 1800, registered: 56, maxPlayers: 100, type: '标准赛' },
+            { id: 'tour_008', city: '新加坡', country: '新加坡', region: 'asia', population: '569万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 3000, registered: 43, maxPlayers: 100, type: '国际赛' },
+            { id: 'tour_009', city: '曼谷', country: '泰国', region: 'asia', population: '828万', tier: 'B', pointsEntry: 200, prizePool: 15000, timeLeft: 5400, registered: 31, maxPlayers: 80, type: '热情赛' },
+            { id: 'tour_010', city: '迪拜', country: '阿联酋', region: 'asia', population: '333万', tier: 'A', pointsEntry: 300, prizePool: 30000, timeLeft: 2100, registered: 39, maxPlayers: 100, type: '奢华赛' },
+            
+            // 欧洲
+            { id: 'tour_011', city: '柏林', country: '德国', region: 'europe', population: '364万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 3600, registered: 54, maxPlayers: 100, type: '精密赛' },
+            { id: 'tour_012', city: '罗马', country: '意大利', region: 'europe', population: '287万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 600, registered: 47, maxPlayers: 100, type: '古典赛' },
+            { id: 'tour_013', city: '马德里', country: '西班牙', region: 'europe', population: '326万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 4200, registered: 44, maxPlayers: 100, type: '热情赛' },
+            { id: 'tour_014', city: '阿姆斯特丹', country: '荷兰', region: 'europe', population: '87万', tier: 'B', pointsEntry: 200, prizePool: 15000, timeLeft: 6600, registered: 29, maxPlayers: 80, type: '运河赛' },
+            { id: 'tour_015', city: '莫斯科', country: '俄罗斯', region: 'europe', population: '1192万', tier: 'S', pointsEntry: 500, prizePool: 50000, timeLeft: 4500, registered: 81, maxPlayers: 128, type: '冰雪赛' },
+            
+            // 北美
+            { id: 'tour_016', city: '洛杉矶', country: '美国', region: 'americas', population: '399万', tier: 'A', pointsEntry: 300, prizePool: 30000, timeLeft: 1800, registered: 64, maxPlayers: 100, type: '好莱坞赛' },
+            { id: 'tour_017', city: '芝加哥', country: '美国', region: 'americas', population: '271万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 4200, registered: 51, maxPlayers: 100, type: '风城赛' },
+            { id: 'tour_018', city: '旧金山', country: '美国', region: 'americas', population: '88万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 5400, registered: 48, maxPlayers: 100, type: '科技赛' },
+            { id: 'tour_019', city: '多伦多', country: '加拿大', region: 'americas', population: '273万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 4800, registered: 46, maxPlayers: 100, type: '枫叶赛' },
+            { id: 'tour_020', city: '墨西哥城', country: '墨西哥', region: 'americas', population: '885万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 1500, registered: 43, maxPlayers: 100, type: '古文明赛' },
+            
+            // 南美
+            { id: 'tour_021', city: '圣保罗', country: '巴西', region: 'americas', population: '1221万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 2700, registered: 52, maxPlayers: 100, type: '桑巴赛' },
+            { id: 'tour_022', city: '里约热内卢', country: '巴西', region: 'americas', population: '675万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 4500, registered: 49, maxPlayers: 100, type: '狂欢赛' },
+            { id: 'tour_023', city: '布宜诺斯艾利斯', country: '阿根廷', region: 'americas', population: '289万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 3300, registered: 41, maxPlayers: 100, type: '探戈赛' },
+            
+            // 大洋洲
+            { id: 'tour_024', city: '悉尼', country: '澳大利亚', region: 'oceania', population: '531万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 1200, registered: 48, maxPlayers: 100, type: '歌剧院赛' },
+            { id: 'tour_025', city: '墨尔本', country: '澳大利亚', region: 'oceania', population: '496万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 3000, registered: 44, maxPlayers: 100, type: '体育赛' },
+            { id: 'tour_026', city: '奥克兰', country: '新西兰', region: 'oceania', population: '166万', tier: 'B', pointsEntry: 200, prizePool: 15000, timeLeft: 4200, registered: 29, maxPlayers: 80, type: '探险赛' },
+            
+            // 非洲
+            { id: 'tour_027', city: '开罗', country: '埃及', region: 'africa', population: '984万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 2400, registered: 39, maxPlayers: 100, type: '金字塔赛' },
+            { id: 'tour_028', city: '开普敦', country: '南非', region: 'africa', population: '461万', tier: 'B', pointsEntry: 200, prizePool: 15000, timeLeft: 4800, registered: 31, maxPlayers: 80, type: '海角赛' },
+            { id: 'tour_029', city: '拉各斯', country: '尼日利亚', region: 'africa', population: '1486万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 3600, registered: 37, maxPlayers: 100, type: '活力赛' },
+            
+            // 中东
+            { id: 'tour_030', city: '伊斯坦布尔', country: '土耳其', region: 'asia', population: '1546万', tier: 'A', pointsEntry: 300, prizePool: 25000, timeLeft: 2700, registered: 53, maxPlayers: 100, type: '欧亚赛' },
+            { id: 'tour_031', city: '特拉维夫', country: '以色列', region: 'asia', population: '42万', tier: 'B', pointsEntry: 200, prizePool: 15000, timeLeft: 6900, registered: 30, maxPlayers: 80, type: '创新赛' },
+            { id: 'tour_032', city: '多哈', country: '卡塔尔', region: 'asia', population: '28万', tier: 'A', pointsEntry: 350, prizePool: 30000, timeLeft: 1500, registered: 36, maxPlayers: 100, type: '沙漠赛' }
+        ];
+        
+        // 渲染锦标赛列表
+        function renderTournaments(region = 'all') {
+            const container = document.getElementById('tournamentList');
+            const filtered = region === 'all' ? tournaments : tournaments.filter(t => t.region === region);
+            
+            container.innerHTML = filtered.map(tour => `
+                <div class="tournament-card">
+                    <div class="tournament-info">
+                        <h3>${tour.city}, ${tour.country}</h3>
+                        <div class="tournament-meta">
+                            <span>👥 ${tour.registered}/${tour.maxPlayers}</span>
+                            <span>🏆 ${tour.tier}级</span>
+                            <span>📊 ${tour.population}</span>
+                            <span class="timer">⏱️ ${formatTime(tour.timeLeft)}</span>
+                        </div>
+                        <div style="margin-top: 8px;">
+                            <span style="background: rgba(255,215,0,0.2); color: #ffd700; padding: 3px 10px; border-radius: var(--rd-lg); font-size: var(--font-xs);">
+                                🎮 ${tour.type || '标准赛'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="tournament-prize">
+                        <div class="prize-amount">💎 ${tour.prizePool.toLocaleString()}</div>
+                        <div class="prize-label">奖金池</div>
+                    </div>
+                    <button class="btn-register game-btn" onclick="registerTournament('${tour.id}')">
+                        💎${tour.pointsEntry} 报名
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        // 格式化时间
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // 筛选赛区
+        function filterRegion(region) {
+            renderTournaments(region);
+        }
+        
+        // 报名锦标赛
+        function registerTournament(tourId) {
+            const tour = tournaments.find(t => t.id === tourId);
+            const aiCount = Math.max(0, tour.maxPlayers - tour.registered - 1);
+            
+            if (confirm(`确认报名 ${tour.city} 锦标赛？
+
+🎮 比赛类型: ${tour.type || '标准赛'}
+💰 报名费: 💎${tour.pointsEntry}
+🏆 奖金池: 💎${tour.prizePool.toLocaleString()}
+🤖 系统将分配 ${aiCount} 个AI玩家填充空位
+
+报名后不可取消！`)) {
+                alert(`✅ 报名成功！
+
+🏆 ${tour.city} 锦标赛 (${tour.type || '标准赛'})
+⏱️ 倒计时: ${formatTime(tour.timeLeft)}
+🤖 系统将自动匹配AI玩家
+
+请准时参加！`);
+                tour.registered++;
+                renderTournaments();
+            }
+        }
+        
+        // 倒计时更新
+        setInterval(() => {
+            tournaments.forEach(t => {
+                if (t.timeLeft > 0) t.timeLeft--;
+            });
+            renderTournaments();
+        }, 1000);
+        
+        // 初始化
+        renderTournaments();
+    </script>
+    <script src="ui_components_system.js"></script>
+    <script src="device_adaptive_framework.js"></script>
+    <script src="global_responsive.js"></script>
+    <script src="touch_support.js"></script>
+</body>
+</html>

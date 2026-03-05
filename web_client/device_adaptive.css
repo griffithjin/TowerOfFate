@@ -1,0 +1,314 @@
+/* ==========================================
+   命运塔·首登者 - 设备精确适配CSS框架
+   使用rem和CSS变量代替固定像素
+   针对特定iOS/Android机型优化
+   ========================================== */
+
+/* 引入设备适配框架变量 */
+@import url('device_adaptive_framework.js');
+
+/* ==========================================
+   基础变量 (使用du - device unit单位)
+   ========================================== */
+:root {
+    /* 基础单位 (动态计算) */
+    --du-base: 16px;
+    --du-xs: 8px;
+    --du-sm: 12px;
+    --du-md: 16px;
+    --du-lg: 20px;
+    --du-xl: 24px;
+    --du-xxl: 32px;
+    
+    /* 组件尺寸 (使用rem) */
+    --card-width: 4.375rem;    /* 70px */
+    --card-height: 5.9375rem;  /* 95px */
+    --card-suit: 1.75rem;      /* 28px */
+    --card-rank: 1.125rem;     /* 18px */
+    
+    --btn-height: 2.75rem;     /* 44px */
+    --btn-padding-x: 1.5rem;   /* 24px */
+    --btn-padding-y: 0.75rem;  /* 12px */
+    
+    /* 间距 */
+    --space-xs: 0.5rem;        /* 8px */
+    --space-sm: 0.75rem;       /* 12px */
+    --space-md: 1rem;          /* 16px */
+    --space-lg: 1.5rem;        /* 24px */
+    --space-xl: 2rem;          /* 32px */
+    
+    /* 字体 */
+    --font-xs: 0.75rem;        /* 12px */
+    --font-sm: 0.875rem;       /* 14px */
+    --font-md: 1rem;           /* 16px */
+    --font-lg: 1.125rem;       /* 18px */
+    --font-xl: 1.25rem;        /* 20px */
+    --font-xxl: 1.5rem;        /* 24px */
+    
+    /* 圆角 */
+    --radius-sm: 0.375rem;     /* 6px */
+    --radius-md: 0.5rem;       /* 8px */
+    --radius-lg: 0.75rem;      /* 12px */
+    --radius-xl: 1rem;         /* 16px */
+    
+    /* 阴影 */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.2);
+}
+
+/* ==========================================
+   设备特定微调
+   ========================================== */
+
+/* iPhone SE/8 (375px) - 最小屏幕 */
+.device-small.platform-ios {
+    --card-width: 3.75rem;     /* 60px */
+    --card-height: 5rem;       /* 80px */
+    --card-suit: 1.5rem;       /* 24px */
+    --card-rank: 1rem;         /* 16px */
+    --space-md: 0.75rem;       /* 12px */
+    --font-md: 0.9375rem;      /* 15px */
+}
+
+/* iPhone 14/15/16 标准版 (390-402px) */
+.device-standard.platform-ios {
+    --card-width: 4rem;        /* 64px */
+    --card-height: 5.5rem;     /* 88px */
+    --card-suit: 1.625rem;     /* 26px */
+    --card-rank: 1.0625rem;    /* 17px */
+    --space-md: 0.875rem;      /* 14px */
+}
+
+/* iPhone Pro Max (430px) */
+.device-large.platform-ios {
+    --card-width: 4.5rem;      /* 72px */
+    --card-height: 6.25rem;    /* 100px */
+    --card-suit: 1.875rem;     /* 30px */
+    --card-rank: 1.25rem;      /* 20px */
+}
+
+/* Android标准 (360-390px) */
+.device-standard.platform-android {
+    --card-width: 3.625rem;    /* 58px */
+    --card-height: 4.875rem;   /* 78px */
+    --card-suit: 1.4375rem;    /* 23px */
+    --card-rank: 0.9375rem;    /* 15px */
+    --space-md: 0.75rem;       /* 12px */
+    --font-md: 0.9375rem;      /* 15px */
+}
+
+/* Android大屏 (412px) */
+.device-large.platform-android {
+    --card-width: 4.25rem;     /* 68px */
+    --card-height: 5.75rem;    /* 92px */
+    --card-suit: 1.75rem;      /* 28px */
+    --card-rank: 1.125rem;     /* 18px */
+}
+
+/* 折叠屏展开 (700-800px+) */
+.device-fold {
+    --card-width: 5rem;        /* 80px */
+    --card-height: 6.875rem;   /* 110px */
+    --card-suit: 2rem;         /* 32px */
+    --card-rank: 1.375rem;     /* 22px */
+    --space-md: 1.25rem;       /* 20px */
+    --font-md: 1.0625rem;      /* 17px */
+}
+
+/* ==========================================
+   通用组件样式 (使用rem)
+   ========================================== */
+
+/* 容器 */
+.game-container {
+    width: 100%;
+    max-width: 75rem;          /* 1200px */
+    margin: 0 auto;
+    padding: var(--space-md);
+}
+
+/* 卡牌 */
+.game-card {
+    width: var(--card-width);
+    height: var(--card-height);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.game-card .suit {
+    font-size: var(--card-suit);
+    line-height: 1;
+}
+
+.game-card .rank {
+    font-size: var(--card-rank);
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* 按钮 */
+.game-btn {
+    min-height: var(--btn-height);
+    min-width: var(--btn-height);
+    padding: var(--btn-padding-y) var(--btn-padding-x);
+    font-size: var(--font-md);
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+}
+
+.game-btn:active {
+    transform: scale(0.95);
+}
+
+/* 触摸设备优化 */
+@media (pointer: coarse) {
+    .game-btn {
+        min-height: calc(var(--btn-height) * 1.1);
+        min-width: calc(var(--btn-height) * 1.1);
+        padding: calc(var(--btn-padding-y) * 1.2) calc(var(--btn-padding-x) * 1.2);
+    }
+}
+
+/* 网格布局 */
+.responsive-grid {
+    display: grid;
+    gap: var(--space-md);
+}
+
+/* 移动端单列 */
+@media (max-width: 23.4375rem) { /* 375px */
+    .responsive-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* 小屏双列 */
+@media (min-width: 23.5rem) and (max-width: 29.999rem) { /* 376-479px */
+    .responsive-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 中屏双列 */
+@media (min-width: 30rem) and (max-width: 47.999rem) { /* 480-767px */
+    .responsive-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 平板及以上 */
+@media (min-width: 48rem) { /* 768px+ */
+    .responsive-grid {
+        grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    }
+}
+
+/* 折叠屏 */
+@media (min-width: 43.75rem) and (max-width: 50rem) { /* 700-800px */
+    .responsive-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ==========================================
+   文字工具类
+   ========================================== */
+.text-xs { font-size: var(--font-xs); }
+.text-sm { font-size: var(--font-sm); }
+.text-md { font-size: var(--font-md); }
+.text-lg { font-size: var(--font-lg); }
+.text-xl { font-size: var(--font-xl); }
+.text-xxl { font-size: var(--font-xxl); }
+
+/* ==========================================
+   间距工具类
+   ========================================== */
+.p-xs { padding: var(--space-xs); }
+.p-sm { padding: var(--space-sm); }
+.p-md { padding: var(--space-md); }
+.p-lg { padding: var(--space-lg); }
+.p-xl { padding: var(--space-xl); }
+
+.m-xs { margin: var(--space-xs); }
+.m-sm { margin: var(--space-sm); }
+.m-md { margin: var(--space-md); }
+.m-lg { margin: var(--space-lg); }
+.m-xl { margin: var(--space-xl); }
+
+/* ==========================================
+   安全区适配
+   ========================================== */
+.safe-area-inset {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* iPhone刘海屏 */
+@supports (padding-top: env(safe-area-inset-top)) {
+    .notch-safe {
+        padding-top: max(var(--space-md), env(safe-area-inset-top));
+    }
+    
+    .home-indicator-safe {
+        padding-bottom: max(var(--space-md), env(safe-area-inset-bottom));
+    }
+}
+
+/* ==========================================
+   横屏适配
+   ========================================== */
+@media (orientation: landscape) and (max-height: 31.25rem) { /* 500px */
+    :root {
+        --card-width: 3.5rem;      /* 56px */
+        --card-height: 4.75rem;    /* 76px */
+        --card-suit: 1.375rem;     /* 22px */
+        --card-rank: 0.875rem;     /* 14px */
+        --space-md: 0.625rem;      /* 10px */
+    }
+}
+
+/* ==========================================
+   减少动画 (无障碍)
+   ========================================== */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ==========================================
+   暗黑模式
+   ========================================== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #0a0a1a;
+        --bg-secondary: #1a1a3e;
+        --text-primary: #ffffff;
+        --text-secondary: #888888;
+    }
+}
+
+/* ==========================================
+   打印样式
+   ========================================== */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}

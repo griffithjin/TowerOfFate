@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>命运塔·首登者 - 个人赛</title>
+    <script src="music_system.js"></script>
+    <script src="responsive_adapter_2026.js"></script>
+    <script src="taunt_system.js"></script>
+    <script src="pixel_tower_system.js"></script>
+    <link rel="stylesheet" href="mobile_expert_framework.css">
+    <link rel="stylesheet" href="ui_global_responsive.css">
+    <link rel="stylesheet" href="device_adaptive.css">
+    <link rel="stylesheet" href="global_responsive.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .container { 
+            max-width: 75rem; 
+            margin: 0 auto; 
+            padding: var(--sp-sm);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 头部 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--sp-sm) 0;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+        
+        .logo {
+            font-size: var(--title-font);
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .game-info {
+            display: flex;
+            gap: var(--sp-md);
+            align-items: center;
+        }
+        
+        .info-item {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: var(--font-sm);
+        }
+        
+        /* 田字形主布局 */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: var(--sp-sm);
+            flex: 1;
+            min-height: 0;
+        }
+        
+        .quadrant {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: var(--sp-sm);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .quadrant-title {
+            font-size: 13px;
+            color: #ffd700;
+            margin-bottom: 8px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        /* 第一象限：守卫牌 + 天命牌 */
+        .quadrant-1 {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .guard-section-small {
+            height: 40%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,107,107,0.05));
+            border-radius: 10px;
+            margin-bottom: 8px;
+            padding: 8px;
+        }
+        
+        .guard-card-display {
+            width: var(--hand-width);
+            height: var(--hand-height);
+            background: linear-gradient(135deg, #1a1a2e, #0f3460);
+            border: 2px solid #ffd700;
+            border-radius: var(--rd-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .guard-card-display.revealed {
+            background: linear-gradient(135deg, #fff, #f8f8f8);
+        }
+        
+        .guard-shield {
+            font-size: 32px;
+        }
+        
+        .guard-text {
+            font-size: 11px;
+            color: #ffd700;
+            margin-top: 3px;
+        }
+        
+        .destiny-section-main {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .destiny-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        
+        .destiny-card-item {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,0,255,0.2));
+            border: 1px solid #ffd700;
+            border-radius: var(--rd-sm);
+            padding: 4px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 9px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .destiny-card-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255,215,0,0.3);
+        }
+        
+        .destiny-card-item .icon { font-size: var(--font-sm); margin-bottom: 2px; }
+        .destiny-card-item .name { color: #ffd700; font-weight: bold; font-size: 8px; }
+        
+        /* 第二象限：核心塔 */
+        .tower-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding: 5px;
+        }
+        
+        .tower-name {
+            font-size: var(--font-sm);
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        
+        .tower-shape {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            position: relative;
+        }
+        
+        .tower-level {
+            height: 16px;
+            margin: 1px 0;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .tower-level.current {
+            box-shadow: 0 0 10px currentColor;
+            animation: levelPulse 1s infinite;
+        }
+        
+        @keyframes levelPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        /* 霓虹灯效果（灯红酒绿） */
+        @keyframes neonPulse {
+            0%, 100% { 
+                box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+                filter: brightness(1);
+            }
+            50% { 
+                box-shadow: 0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor;
+                filter: brightness(1.3);
+            }
+        }
+        
+        .tower-level.neon {
+            animation: neonPulse 1.5s ease-in-out infinite;
+        }
+        
+        /* 像素艺术字体 */
+        .pixel-art {
+            font-family: 'Courier New', monospace;
+            font-size: 8px;
+            letter-spacing: -1px;
+            white-space: pre;
+            opacity: 0.8;
+        }
+        
+        /* 塔层头像 */
+        .level-avatar {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            animation: avatarBounce 2s infinite;
+        }
+        
+        .level-avatar.player {
+            right: -18px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .level-avatar.ai {
+            left: -18px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        @keyframes avatarBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        
+        /* 第三象限：手牌横条 */
+        .hand-section-full {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .hand-scroll-container {
+            flex: 1;
+            overflow-x: auto;
+            overflow-y: hidden;
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .hand-cards-row {
+            display: flex;
+            gap: 8px;
+            padding: 0 8px;
+        }
+        
+        .hand-card {
+            flex-shrink: 0;
+            width: var(--card-width);
+            height: var(--card-height);
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .hand-card:hover {
+            transform: translateY(-0.25rem);
+            border-color: #ffd700;
+        }
+        
+        .hand-card.selected {
+            border-color: #2ed573;
+            transform: translateY(-0.25rem);
+            box-shadow: 0 0.3125rem 0.9375rem rgba(46,213,115,0.4);
+        }
+        
+        .hand-card .suit {
+            font-size: var(--card-suit);
+        }
+        
+        .hand-card .rank {
+            font-size: var(--card-rank);
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .card-count {
+            text-align: center;
+            font-size: 11px;
+            color: #888;
+            margin-top: 3px;
+        }
+        
+        .action-area {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            padding: 8px;
+            flex-shrink: 0;
+        }
+        
+        .btn-confirm, .btn-taunt {
+            min-height: var(--btn-height);
+            padding: var(--btn-padding-y) var(--btn-padding-x);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--font-md);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-confirm {
+            background: linear-gradient(135deg, #2ed573, #27ae60);
+            color: #fff;
+        }
+        
+        .btn-taunt {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: #fff;
+        }
+        
+        .btn-confirm:hover, .btn-taunt:hover {
+            transform: scale(1.05);
+        }
+        
+        /* 第四象限：记录日志 */
+        .log-section {
+            flex: 1;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.3);
+            border-radius: var(--rd-sm);
+            padding: 8px;
+            font-size: 11px;
+        }
+        
+        .log-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .log-entry.success { color: #2ed573; }
+        .log-entry.fail { color: #ff4757; }
+        .log-entry.guard { color: #ffd700; }
+        .log-entry.taunt { color: #9b59b6; }
+        .log-entry.destiny { color: #0ff; }
+        
+        /* AI区域 */
+        .ai-panel {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            background: rgba(0,0,0,0.85);
+            border: 1px solid rgba(255,107,107,0.3);
+            border-radius: 10px;
+            padding: var(--sp-sm);
+            z-index: 100;
+            min-width: 120px;
+        }
+        
+        .ai-title {
+            font-size: var(--font-xs);
+            color: #ff6b6b;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .ai-avatar-main {
+            width: var(--btn-height);
+            height: var(--btn-height);
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--destiny-icon);
+            margin: 0 auto 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .ai-avatar-main:hover {
+            transform: scale(1.1);
+        }
+        
+        .ai-info {
+            font-size: 11px;
+            text-align: center;
+        }
+        
+        .ai-level {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        
+        .ai-status {
+            font-size: 10px;
+            color: #888;
+            margin-top: 4px;
+        }
+        
+        /* 倒计时 */
+        .countdown-display {
+            position: fixed;
+            top: 60px;
+            left: 10px;
+            padding: 8px 16px;
+            background: rgba(255,0,0,0.2);
+            border: 2px solid #ff4444;
+            border-radius: var(--rd-md);
+            font-size: var(--title-font);
+            color: #ff4444;
+            font-weight: bold;
+            z-index: 100;
+        }
+        
+        /* 守卫进度 */
+        .guard-progress {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 8px 20px;
+            z-index: 100;
+            display: none;
+        }
+        
+        .guard-progress.active {
+            display: block;
+        }
+        
+        .guard-progress-text {
+            color: #ffd700;
+            font-size: var(--font-xs);
+            text-align: center;
+        }
+        
+        .guard-progress-bar {
+            width: 150px;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .guard-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ff6b6b);
+            transition: width 0.5s;
+        }
+        
+        /* 庆祝弹窗 */
+        .celebration-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .celebration-content {
+            text-align: center;
+            animation: celebrationPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes celebrationPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .celebration-icon {
+            font-size: 80px;
+            margin-bottom: 15px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .celebration-title {
+            font-size: var(--hand-suit);
+            background: linear-gradient(45deg, #ffd700, #ff6b6b, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        /* 嘲讽气泡 */
+        .taunt-bubble {
+            position: absolute;
+            padding: 8px 12px;
+            border-radius: var(--rd-lg);
+            font-size: var(--font-xs);
+            max-width: 180px;
+            z-index: 1000;
+            animation: bubblePop 3s ease-out forwards;
+        }
+        
+        @keyframes bubblePop {
+            0% { opacity: 0; transform: translateY(10px) scale(0.8); }
+            20% { opacity: 1; transform: translateY(0) scale(1); }
+            80% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-15px) scale(0.9); }
+        }
+        
+        /* 响应式 */
+        @media (max-width: 48rem) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(4, 1fr);
+            }
+            .hand-card { width: calc(var(--btn-height) * 1.2); height: calc(var(--hand-height) * 0.8); }
+            .hand-card .suit { font-size: var(--title-font); }
+            .hand-card .rank { font-size: var(--font-sm); }
+        }
+        
+        /* iPhone SE 特定优化 - 375px */
+        @media (max-width: 23.4375rem) {
+            .container {
+                padding: 4px;
+            }
+            
+            .header {
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 4px 0;
+                margin-bottom: 4px;
+                gap: 4px;
+                min-height: auto;
+            }
+            
+            .logo {
+                font-size: 14px !important;
+                flex-shrink: 0;
+            }
+            
+            .game-info {
+                gap: 4px;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+                flex: 1;
+            }
+            
+            .info-item {
+                padding: 3px 6px !important;
+                font-size: 11px !important;
+                border-radius: 10px;
+            }
+            
+            .countdown-display {
+                position: static !important;
+                width: auto;
+                height: 24px;
+                font-size: 12px;
+                margin: 4px 0;
+                padding: 2px 8px;
+                display: inline-flex;
+                order: -1;
+            }
+            
+            .main-grid {
+                gap: 4px;
+            }
+            
+            .quadrant {
+                padding: 4px;
+                border-radius: 8px;
+            }
+            
+            .quadrant-title {
+                font-size: 11px;
+                margin-bottom: 4px;
+            }
+            
+            .hand-card {
+                width: 38px !important;
+                height: 52px !important;
+            }
+            
+            .hand-card .suit {
+                font-size: 16px !important;
+            }
+            
+            .hand-card .rank {
+                font-size: 11px !important;
+            }
+            
+            .btn-confirm, .btn-taunt {
+                padding: 6px 10px !important;
+                font-size: 11px !important;
+            }
+            
+            .ai-panel {
+                padding: 4px;
+            }
+            
+            .ai-avatar {
+                width: 32px !important;
+                height: 32px !important;
+                font-size: 16px !important;
+            }
+            
+            .game-log {
+                max-height: 80px;
+            }
+            
+            .guard-section-small {
+                height: 35%;
+                padding: 4px;
+                margin-bottom: 4px;
+            }
+            
+            .destiny-card-item {
+                width: 45px;
+                height: 55px;
+            }
+            
+            .destiny-icon {
+                font-size: 18px;
+            }
+            
+            .destiny-name {
+                font-size: 9px;
+            }
+        }
+    </style>
+</head>
+<body class="safe-top safe-bottom" class="game-container touch-device-support">
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header game-header">
+            <div class="logo game-title">🎮 命运塔·个人赛</div>
+            <div class="game-info currency-bar">
+                <div class="info-item">💎 <span id="diamonds">500</span></div>
+                <div class="info-item">🪙 <span id="coins">5000</span></div>
+                <div class="info-item">🏰 <span id="playerLevelName" class="level-badge">第2层</span></div>
+                <a href="new_index.html" style="color: #888; text-decoration: none; font-size: var(--font-sm);">← 返回</a>
+            </div>
+        </div>
+        
+        <!-- 倒计时 -->
+        <div class="countdown-display countdown-display" id="countdownDisplay">
+            ⏱️ <span id="countdownValue">15</span>
+        </div>
+        
+        <!-- AI对手面板 -->
+        <div class="ai-panel" id="aiPanel">
+            <div class="ai-title">🤖 AI对手</div>
+            <div class="ai-avatar-main" id="aiAvatar" onclick="tauntAI()">🎭</div>
+            <div class="ai-info">
+                <div class="ai-level"><span id="aiLevelName">第2层</span></div>
+                <div class="ai-status" id="aiStatus">正在攀登...</div>
+            </div>
+        </div>
+        
+        <!-- 田字形主布局 -->
+        <div class="main-grid game-grid-layout">
+            <!-- 第一象限：守卫牌 + 天命牌 -->
+            <div class="quadrant quadrant-1">
+                <div class="guard-section-small">
+                    <div style="font-size: 11px; color: #888; margin-bottom: 3px;">🛡️ 守卫牌</div>
+                    <div class="guard-card-display guard-card" id="guardCard">
+                        <div class="guard-shield">🛡️</div>
+                        <div class="guard-text">?</div>
+                    </div>
+                </div>
+                <div class="destiny-section-main">
+                    <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-align: center;">✨ 天命牌 (点击使用)</div>
+                    <div class="destiny-cards-grid" id="destinyCards">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 第二象限：核心塔 -->
+            <div class="quadrant game-panel">
+                <div class="tower-name">🏰 <span id="towerName">埃菲尔铁塔</span></div>
+                <div class="tower-container">
+                    <div class="tower-shape" id="towerShape">
+                        <!-- 动态生成13层塔 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 第三象限：手牌横条 -->
+            <div class="quadrant hand-section-full">
+                <div class="quadrant-title">🎴 手牌 (<span id="cardCount">5</span>/18)</div>
+                <div class="hand-scroll-container">
+                    <div class="hand-cards-row" id="handCards">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+                <div class="action-area">
+                    <button class="btn-confirm game-btn" id="confirmBtn" onclick="confirmPlay()">
+                        ✅ 确认出牌
+                    </button>
+                    <button class="btn-taunt game-btn" onclick="randomTaunt()">
+                        💬 嘲讽
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 第四象限：记录日志 -->
+            <div class="quadrant game-panel">
+                <div class="quadrant-title">📜 对局记录</div>
+                <div class="log-section" id="gameLog">
+                    <div class="log-entry">
+                        <span>🎮 游戏开始，目标：第A层！</span>
+                        <span>--:--:--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 守卫进度 -->
+        <div class="guard-progress" id="guardProgress">
+            <div class="guard-progress-text">
+                🛡️ <span id="guardDefendCount">0</span>/13 次防御成功
+            </div>
+            <div class="guard-progress-bar">
+                <div class="guard-progress-fill" id="guardProgressFill" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 塔层命名（从下到上：第1层=2️⃣，第13层=A）
+        const LEVEL_NAMES = ['2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', 'J', 'Q', 'K', 'A'];
+        
+        // 11项天命牌
+        const DESTINY_TYPES = [
+            { type: 'assault', name: '突击', desc: '立即+1层', icon: '⚡', category: 'buff', target: 'self' },
+            { type: 'swap', name: '换牌', desc: '重新抽牌', icon: '🔄', category: 'buff', target: 'self' },
+            { type: 'peek', name: '透视', desc: '看守卫牌', icon: '👁️', category: 'buff', target: 'self' },
+            { type: 'guard', name: '守卫', desc: '本轮必胜', icon: '🛡️', category: 'buff', target: 'self' },
+            { type: 'double', name: '双倍', desc: '下次+2层', icon: '✨', category: 'buff', target: 'self' },
+            { type: 'shield', name: '护盾', desc: '免疫一次', icon: '🔒', category: 'buff', target: 'self' },
+            { type: 'kick', name: '踢人', desc: '对手-1层', icon: '👢', category: 'debuff', target: 'opponent' },
+            { type: 'down', name: '下降', desc: '守卫回2层', icon: '⬇️', category: 'debuff', target: 'opponent' },
+            { type: 'freeze', name: '冰冻', desc: '对手停一轮', icon: '❄️', category: 'debuff', target: 'opponent' },
+            { type: 'steal', name: '偷看', desc: '看对手牌', icon: '👀', category: 'debuff', target: 'opponent' },
+            { type: 'copy', name: '复制', desc: '复制上轮牌', icon: '📋', category: 'debuff', target: 'opponent' }
+        ];
+        
+        // 游戏状态
+        let gameState = {
+            playerLevel: 1,  // 1对应第2层，13对应第A层
+            aiLevel: 1,
+            handCards: [],
+            destinyCards: [],
+            selectedCard: null,
+            isGuard: false,
+            aiIsGuard: false,
+            guardDefends: 0,
+            aiGuardDefends: 0,
+            guardCard: null,
+            countdown: 15,
+            countdownTimer: null,
+            currentTower: null,
+            gameLog: [],
+            diamonds: 500,
+            coins: 5000,
+            aiFrozen: 0,  // AI冰冻轮数
+            playerShield: false,  // 玩家护盾
+            doubleNext: false,  // 下次双倍
+            lastAiCard: null,  // AI上轮出的牌
+            peekUsed: false,  // 本轮是否已透视
+            nextGuardRevealed: null,  // 下轮守卫牌（透视后）
+            aiChallengeWins: 0  // AI挑战守卫连胜次数
+        };
+        
+        // 获取层名显示
+        function getLevelName(level) {
+            if (level >= 1 && level <= 13) {
+                return '第' + LEVEL_NAMES[level - 1] + '层';
+            }
+            return '第?' + level;
+        }
+        
+        // 初始化游戏
+        function initGame() {
+            // 随机选择一座塔
+            // 从像素塔库中随机选择
+            const allTowers = [
+                ...PixelTowerSystem.library.basic,
+                ...PixelTowerSystem.library.rare,
+                ...PixelTowerSystem.library.epic
+            ];
+            gameState.currentTower = allTowers[Math.floor(Math.random() * allTowers.length)];
+            
+            addLog(`🏰 欢迎来到${gameState.currentTower.name}！`, 'info');
+            addLog(`📍 ${gameState.currentTower.country}`, 'info');
+            
+            // 生成13层塔
+            renderTower();
+            
+            // 生成初始5张手牌（去重）
+            gameState.handCards = generateUniqueCards(5);
+            renderHandCards();
+            
+            // 生成3张天命牌
+            gameState.destinyCards = generateDestinyCards(3);
+            renderDestinyCards();
+            
+            // AI自动出牌循环
+            startAIAutoPlay();
+            
+            // 开始倒计时
+            startCountdown();
+            
+            // 初始嘲讽
+            setTimeout(() => {
+                const taunt = getContextualTaunt('confidence');
+                showTauntBubble(document.getElementById('aiAvatar'), taunt, true);
+            }, 2000);
+        }
+        
+        // 生成不重复的卡牌
+        function generateUniqueCards(count) {
+            const suits = ['♥', '♦', '♣', '♠'];
+            const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+            const cards = [];
+            const used = new Set();
+            
+            while (cards.length < count && cards.length < 52) {
+                const suit = suits[Math.floor(Math.random() * suits.length)];
+                const rank = ranks[Math.floor(Math.random() * ranks.length)];
+                const key = suit + rank;
+                
+                if (!used.has(key)) {
+                    used.add(key);
+                    const color = (suit === '♥' || suit === '♦') ? '#d00' : '#000';
+                    cards.push({ suit, rank, color, id: cards.length });
+                }
+            }
+            return cards;
+        }
+        
+        // 生成天命牌
+        function generateDestinyCards(count) {
+            const cards = [];
+            for (let i = 0; i < count; i++) {
+                const type = DESTINY_TYPES[Math.floor(Math.random() * DESTINY_TYPES.length)];
+                cards.push({ ...type, id: i });
+            }
+            return cards;
+        }
+        
+        // 渲染塔（使用像素块系统，从下到上：第1层=2️⃣，第13层=A）
+        function renderTower() {
+            const towerId = gameState.currentTower ? gameState.currentTower.id : 'tower_eiffel';
+            const containerId = 'towerShape';
+            
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            // 获取塔数据
+            let tower = null;
+            for (const category in PixelTowerSystem.library) {
+                tower = PixelTowerSystem.library[category].find(t => t.id === towerId);
+                if (tower) break;
+            }
+            
+            if (!tower) {
+                tower = PixelTowerSystem.library.basic[0];
+            }
+            
+            let html = '';
+            
+            // 从下到上渲染：第1层(2️⃣)在最底部，第13层(A)在最顶部
+            for (let i = 1; i <= 13; i++) {
+                const isPlayerHere = i === gameState.playerLevel;
+                const isAiHere = i === gameState.aiLevel;
+                const levelName = PixelTowerSystem.getLevelSymbol(i);
+                
+                // 获取像素行
+                let pixelLine = '';
+                if (tower.pixels && tower.pixels.length >= (14 - i)) {
+                    pixelLine = tower.pixels[13 - (i - 1)];  // 第1层用pixels[12]，第13层用pixels[0]
+                }
+                
+                const bgColor = isPlayerHere ? tower.color : 
+                               isAiHere ? '#ff6b6b' : 
+                               'rgba(255,255,255,0.1)';
+                const textColor = isPlayerHere || isAiHere ? '#fff' : '#888';
+                
+                // 灯红酒绿霓虹效果
+                const glowStyle = tower.neon && isPlayerHere ? 
+                    `box-shadow: 0 0 15px ${tower.color}, 0 0 30px ${tower.color}; animation: neonPulse 1.5s infinite;` : '';
+                
+                html += `
+                    <div class="tower-level ${isPlayerHere ? 'current' : ''}" 
+                         style="background: ${bgColor}; color: ${textColor}; ${glowStyle}"
+                         id="level_${i}">
+                        <span class="level-symbol">${levelName}</span>
+                        ${pixelLine ? `<span class="pixel-art" style="font-family: monospace; font-size: 8px; letter-spacing: -1px; margin-left: 8px; opacity: 0.7;">${pixelLine}</span>` : ''}
+                        ${isPlayerHere ? '<div class="level-avatar player">😊</div>' : ''}
+                        ${isAiHere ? '<div class="level-avatar ai">🤖</div>' : ''}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+            
+            // 更新塔名显示
+            const nameEl = document.getElementById('towerName');
+            if (nameEl && tower) {
+                nameEl.innerHTML = `🏰 ${tower.name} <span style="font-size:11px;color:#888">${tower.country}</span>`;
+            }
+        }
+        
+        // 渲染手牌
+        function renderHandCards() {
+            const container = document.getElementById('handCards');
+            container.innerHTML = gameState.handCards.map((card, index) => `
+                <div class="hand-card ${gameState.selectedCard === index ? 'selected' : ''}" 
+                     onclick="selectCard(${index})" id="card_${index}"
+                     title="${card.suit}${card.rank}">
+                    <div class="suit" style="color: ${card.color}">${card.suit}</div>
+                    <div class="rank">${card.rank}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('cardCount').textContent = gameState.handCards.length;
+        }
+        
+        // 渲染天命牌
+        function renderDestinyCards() {
+            const container = document.getElementById('destinyCards');
+            container.innerHTML = gameState.destinyCards.map((card, index) => `
+                <div class="destiny-card-item destiny-card" onclick="useDestiny(${index})" 
+                     title="${card.name}: ${card.desc}">
+                    <div class="icon">${card.icon}</div>
+                    <div class="name">${card.name}</div>
+                </div>
+            `).join('');
+        }
+        
+        // 选择卡牌
+        function selectCard(index) {
+            gameState.selectedCard = index;
+            renderHandCards();
+        }
+        
+        // 开始倒计时
+        function startCountdown() {
+            gameState.countdown = 15;
+            const display = document.getElementById('countdownValue');
+            
+            if (gameState.countdownTimer) clearInterval(gameState.countdownTimer);
+            
+            gameState.countdownTimer = setInterval(() => {
+                gameState.countdown--;
+                display.textContent = gameState.countdown;
+                
+                if (gameState.countdown <= 0) {
+                    clearInterval(gameState.countdownTimer);
+                    autoPlay();
+                }
+            }, 1000);
+        }
+        
+        // AI自动出牌系统
+        function startAIAutoPlay() {
+            setInterval(() => {
+                if (gameState.aiFrozen > 0) {
+                    gameState.aiFrozen--;
+                    addLog(`❄️ AI被冰冻，还剩${gameState.aiFrozen}轮`, 'info');
+                    return;
+                }
+                
+                if (!gameState.aiIsGuard && gameState.aiLevel < 13) {
+                    aiPlay();
+                } else if (gameState.aiIsGuard) {
+                    aiGuardPlay();
+                }
+            }, 4000 + Math.random() * 4000);
+        }
+        
+        // AI普通出牌
+        function aiPlay() {
+            if (gameState.aiThinking) return;
+            
+            // 如果玩家已是守卫，AI停在A层（第13层），进入挑战模式
+            if (gameState.isGuard && gameState.aiLevel >= 13) {
+                aiChallengeGuard();
+                return;
+            }
+            
+            // AI有35%概率晋级
+            if (Math.random() < 0.35) {
+                // 如果玩家已是守卫，AI最多只能到A层（第13层）
+                if (gameState.isGuard && gameState.aiLevel >= 12) {
+                    gameState.aiLevel = 13; // 停在A层
+                    addLog('🤖 AI已到达A层，正在争夺首登者！', 'guard');
+                    showTauntBubble(document.getElementById('aiAvatar'), '你已经是守卫了，我要争夺首登者！连胜3次就能取代你！', true);
+                } else {
+                    gameState.aiLevel++;
+                }
+                document.getElementById('aiLevelName').textContent = getLevelName(gameState.aiLevel);
+                addLog(`🤖 AI晋级到${getLevelName(gameState.aiLevel)}！`, 'info');
+                
+                // AI嘲讽
+                if (Math.random() < 0.3) {
+                    const taunt = getContextualTaunt('taunt');
+                    showTauntBubble(document.getElementById('aiAvatar'), taunt, true);
+                }
+                
+                renderTower();
+                
+                // AI登顶检查（只有当玩家不是守卫时才能登顶）
+                if (gameState.aiLevel >= 13 && !gameState.aiIsGuard && !gameState.isGuard) {
+                    aiBecomeGuard();
+                }
+            }
+        }
+        
+        // AI挑战守卫
+        function aiChallengeGuard() {
+            addLog('🤖 AI正在挑战守卫！', 'guard');
+            
+            // AI随机出牌
+            const suits = ['♥', '♦', '♣', '♠'];
+            const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+            const aiCard = {
+                suit: suits[Math.floor(Math.random() * suits.length)],
+                rank: ranks[Math.floor(Math.random() * ranks.length)]
+            };
+            
+            // 玩家守卫随机出牌
+            const playerGuardCard = {
+                suit: suits[Math.floor(Math.random() * suits.length)],
+                rank: ranks[Math.floor(Math.random() * ranks.length)]
+            };
+            
+            addLog(`🛡️ 你出的守卫牌: ${playerGuardCard.suit}${playerGuardCard.rank}`, 'guard');
+            addLog(`🤖 AI出牌: ${aiCard.suit}${aiCard.rank}`, 'info');
+            
+            const aiMatched = (aiCard.suit === playerGuardCard.suit) || (aiCard.rank === playerGuardCard.rank);
+            
+            if (aiMatched) {
+                // AI匹配成功，连胜+1
+                gameState.aiChallengeWins++;
+                addLog(`❌ AI匹配成功！连胜 ${gameState.aiChallengeWins}/3`, 'fail');
+                
+                if (gameState.aiChallengeWins >= 3) {
+                    addLog('💀 AI连胜3次！你失去了守卫资格！', 'fail');
+                    showTauntBubble(document.getElementById('aiAvatar'), '我取代你成为守卫了！', true);
+                    
+                    // AI取代玩家成为守卫
+                    gameState.isGuard = false;
+                    gameState.aiIsGuard = true;
+                    gameState.aiGuardDefends = gameState.guardDefends; // 继承防御次数
+                    gameState.guardDefends = 0;
+                    gameState.aiChallengeWins = 0;
+                    
+                    document.getElementById('guardProgress').classList.remove('active');
+                    document.getElementById('aiStatus').textContent = '🛡️ 守卫模式';
+                    addLog('🚨 AI成为守卫！你需要击败它！', 'guard');
+                }
+            } else {
+                // AI匹配失败，连胜清零
+                gameState.aiChallengeWins = 0;
+                gameState.guardDefends++;
+                addLog(`✅ 守卫成功！(${gameState.guardDefends}/13)`, 'success');
+                addLog('🔄 AI连胜次数已清零！', 'info');
+                updateGuardProgress();
+                
+                if (gameState.guardDefends >= 13) {
+                    showVictory();
+                    return;
+                }
+            }
+        }
+        
+        // AI成为守卫
+        function aiBecomeGuard() {
+            gameState.aiIsGuard = true;
+            document.getElementById('aiStatus').textContent = '🛡️ 守卫模式';
+            addLog('🚨 AI成为守卫！需要击败它！', 'guard');
+            
+            // AI嘲讽
+            const taunt = "我已经登顶，你追不上我了！";
+            showTauntBubble(document.getElementById('aiAvatar'), taunt, true);
+        }
+        
+        // AI守卫模式 - 玩家挑战AI守卫
+        function aiGuardPlay() {
+            if (gameState.handCards.length === 0) return;
+            
+            // AI守卫随机出牌
+            const suits = ['♥', '♦', '♣', '♠'];
+            const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+            const aiGuardCard = {
+                suit: suits[Math.floor(Math.random() * suits.length)],
+                rank: ranks[Math.floor(Math.random() * ranks.length)]
+            };
+            
+            // 玩家随机出牌对抗
+            const playerCard = gameState.handCards[Math.floor(Math.random() * gameState.handCards.length)];
+            const matched = (playerCard.suit === aiGuardCard.suit) || (playerCard.rank === aiGuardCard.rank);
+            
+            addLog(`🎴 你出${playerCard.suit}${playerCard.rank}，AI守卫出${aiGuardCard.suit}${aiGuardCard.rank}`, 'guard');
+            
+            if (matched) {
+                addLog('✅ 你匹配成功！AI守卫被突破一次！', 'success');
+                // 玩家突破守卫，可以添加连胜机制
+            } else {
+                gameState.aiGuardDefends++;
+                addLog(`🛡️ AI守卫成功防御！(${gameState.aiGuardDefends}/13)`, 'guard');
+                
+                if (gameState.aiGuardDefends >= 13) {
+                    alert('😢 AI守卫成功守住13次！你输了！');
+                    location.reload();
+                }
+            }
+        }
+        
+        // 自动出牌
+        function autoPlay() {
+            if (gameState.selectedCard === null && gameState.handCards.length > 0) {
+                selectCard(Math.floor(Math.random() * gameState.handCards.length));
+            }
+            if (gameState.selectedCard !== null) {
+                confirmPlay();
+            }
+        }
+        
+        // 确认出牌
+        function confirmPlay() {
+            if (gameState.selectedCard === null) {
+                addLog('❌ 请先选择一张手牌！', 'fail');
+                return;
+            }
+            
+            clearInterval(gameState.countdownTimer);
+            
+            const myCard = gameState.handCards[gameState.selectedCard];
+            
+            // 守卫模式
+            if (gameState.isGuard) {
+                gameState.guardCard = myCard;
+                showGuardComparison(myCard);
+            } else {
+                // 普通模式
+                let guardCard;
+                
+                // 检查是否使用了透视
+                if (gameState.peekUsed && gameState.nextGuardRevealed) {
+                    guardCard = gameState.nextGuardRevealed;
+                    gameState.peekUsed = false;
+                    addLog('👁️ 透视生效！你提前知道了守卫牌！', 'destiny');
+                } else {
+                    const suits = ['♥', '♦', '♣', '♠'];
+                    const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+                    guardCard = {
+                        suit: suits[Math.floor(Math.random() * suits.length)],
+                        rank: ranks[Math.floor(Math.random() * ranks.length)]
+                    };
+                }
+                
+                // 显示守卫牌
+                const guardDisplay = document.getElementById('guardCard');
+                guardDisplay.classList.add('revealed');
+                guardDisplay.innerHTML = `
+                    <div style="font-size: var(--hand-suit); color: ${(guardCard.suit === '♥' || guardCard.suit === '♦') ? '#d00' : '#000'};">${guardCard.suit}</div>
+                    <div style="font-size: var(--font-md); font-weight: bold; color: ${(guardCard.suit === '♥' || guardCard.suit === '♦') ? '#d00' : '#000'};">${guardCard.rank}</div>
+                `;
+                
+                // 判定结果
+                const isMatch = (myCard.suit === guardCard.suit) || (myCard.rank === guardCard.rank);
+                
+                setTimeout(() => {
+                    if (isMatch) {
+                        handleSuccess();
+                    } else {
+                        handleFail(guardCard);
+                    }
+                    nextRound();
+                }, 1500);
+            }
+        }
+        
+        // 守卫模式比对
+        function showGuardComparison(guardCard) {
+            // AI出牌
+            const suits = ['♥', '♦', '♣', '♠'];
+            const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+            const aiCard = {
+                suit: suits[Math.floor(Math.random() * suits.length)],
+                rank: ranks[Math.floor(Math.random() * ranks.length)]
+            };
+            gameState.lastAiCard = aiCard;
+            
+            addLog(`🛡️ 守卫出牌: ${guardCard.suit}${guardCard.rank}`, 'guard');
+            addLog(`🤖 AI出牌: ${aiCard.suit}${aiCard.rank}`, 'info');
+            
+            const aiMatched = (aiCard.suit === guardCard.suit) || (aiCard.rank === guardCard.rank);
+            
+            setTimeout(() => {
+                if (aiMatched) {
+                    addLog('❌ AI匹配成功！守卫被突破！', 'fail');
+                    // AI嘲讽
+                    const taunt = "你的守卫牌太弱了！";
+                    showTauntBubble(document.getElementById('aiAvatar'), taunt, true);
+                } else {
+                    gameState.guardDefends++;
+                    addLog(`✅ 守卫成功！(${gameState.guardDefends}/13)`, 'success');
+                    updateGuardProgress();
+                    
+                    // 玩家嘲讽
+                    if (Math.random() < 0.4) {
+                        const taunt = getContextualTaunt('confidence');
+                        addLog(`💬 你:"${taunt}"`, 'taunt');
+                    }
+                    
+                    if (gameState.guardDefends >= 13) {
+                        showVictory();
+                        return;
+                    }
+                }
+                nextRound();
+            }, 1500);
+        }
+        
+        // 处理成功晋级
+        function handleSuccess() {
+            // 检查双倍
+            let levels = 1;
+            if (gameState.doubleNext) {
+                levels = 2;
+                gameState.doubleNext = false;
+                addLog('✨ 双倍生效！额外+1层！', 'destiny');
+            }
+            
+            for (let i = 0; i < levels; i++) {
+                if (gameState.playerLevel < 13) {
+                    gameState.playerLevel++;
+                }
+            }
+            
+            document.getElementById('playerLevelName').textContent = getLevelName(gameState.playerLevel);
+            addLog(`🎴 你出${myCard.suit}${myCard.rank}，守卫出${guardCard.suit}${guardCard.rank}，你✅晋级到${getLevelName(gameState.playerLevel)}！`, 'success');
+            
+            // 移除使用的手牌
+            gameState.handCards.splice(gameState.selectedCard, 1);
+            
+            // 奖励新牌
+            if (gameState.handCards.length < 18) {
+                const newCards = generateUniqueCards(1);
+                const exists = gameState.handCards.some(c => 
+                    c.suit === newCards[0].suit && c.rank === newCards[0].rank
+                );
+                if (!exists) {
+                    gameState.handCards.push(newCards[0]);
+                    addLog('🎴 获得新牌！', 'success');
+                }
+            }
+            
+            // 嘲讽
+            if (Math.random() < 0.3) {
+                const taunt = getContextualTaunt('match_success');
+                addLog(`💬 你:"${taunt}"`, 'taunt');
+            }
+            
+            renderTower();
+            
+            if (gameState.playerLevel >= 13 && !gameState.isGuard) {
+                setTimeout(() => becomeGuard(), 500);
+            }
+        }
+        
+        // 处理失败
+        function handleFail(guardCard) {
+            addLog(`🎴 你出${myCard.suit}${myCard.rank}，守卫出${guardCard.suit}${guardCard.rank}，你❌失败`, 'fail');
+            gameState.handCards.splice(gameState.selectedCard, 1);
+        }
+        
+        // 成为守卫
+        function becomeGuard() {
+            gameState.isGuard = true;
+            document.getElementById('guardProgress').classList.add('active');
+            addLog('🏰 你已成为守卫！需要成功防御13次！', 'guard');
+            showGuardCelebration();
+        }
+        
+        // 庆祝登顶弹窗
+        function showGuardCelebration() {
+            const modal = document.createElement('div');
+            modal.className = 'celebration-modal';
+            
+            // 彩带
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.cssText = `
+                    position: absolute;
+                    width: 8px; height: 8px;
+                    background: ${['#ffd700', '#ff6b6b', '#2ed573', '#3498db'][Math.floor(Math.random() * 4)]};
+                    left: ${Math.random() * 100}%;
+                    animation: confettiFall ${2 + Math.random() * 2}s linear forwards;
+                `;
+                modal.appendChild(confetti);
+            }
+            
+            modal.innerHTML += `
+                <link rel="stylesheet" href="mobile_expert_framework.css">
+    <link rel="stylesheet" href="ui_global_responsive.css">
+    <link rel="stylesheet" href="device_adaptive.css">
+    <link rel="stylesheet" href="global_responsive.css">
+    <style>
+                    @keyframes confettiFall {
+                        0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+                        100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+                    }
+                </style>
+                <div class="celebration-content">
+                    <div class="celebration-icon">👑</div>
+                    <div class="celebration-title">🎉 恭喜登顶！🎉</div>
+                    <div style="color: #888; margin-bottom: 20px;">
+                        你已成功登顶${gameState.currentTower.name}！<br>
+                        现在进入守卫模式，成功防御13次即可获胜！
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove();" 
+                            style="padding: 12px 30px; font-size: var(--font-md); background: linear-gradient(135deg, #ffd700, #ff6b6b); border: none; border-radius: var(--rd-md); color: #fff; font-weight: bold; cursor: pointer;">
+                        🛡️ 开始守卫
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        // 更新守卫进度
+        function updateGuardProgress() {
+            document.getElementById('guardDefendCount').textContent = gameState.guardDefends;
+            document.getElementById('guardProgressFill').style.width = (gameState.guardDefends / 13 * 100) + '%';
+        }
+        
+        // 显示胜利
+        function showVictory() {
+            const modal = document.createElement('div');
+            modal.className = 'celebration-modal';
+            modal.innerHTML = `
+                <div class="celebration-content">
+                    <div class="celebration-icon">🏆</div>
+                    <div class="celebration-title">🎊 完美胜利！🎊</div>
+                    <div style="color: #888; margin-bottom: 20px;">
+                        你成功守住了13次攻击！<br>
+                        成为${gameState.currentTower.name}的守护者！
+                    </div>
+                    <div style="font-size: 36px; color: #ffd700; margin-bottom: 20px;">💎 +100 🪙 +1000</div>
+                    <button onclick="location.reload()" style="padding: 12px 30px; font-size: var(--font-md); background: linear-gradient(135deg, #2ed573, #27ae60); border: none; border-radius: var(--rd-md); color: #fff; font-weight: bold; cursor: pointer;">
+                        🎮 再玩一局
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        // 下一轮
+        function nextRound() {
+            gameState.selectedCard = null;
+            gameState.peekUsed = false;
+            
+            // 补充手牌
+            while (gameState.handCards.length < 3 && gameState.handCards.length < 18) {
+                const newCards = generateUniqueCards(1);
+                const exists = gameState.handCards.some(c => 
+                    c.suit === newCards[0].suit && c.rank === newCards[0].rank
+                );
+                if (!exists) {
+                    gameState.handCards.push(newCards[0]);
+                } else {
+                    break;
+                }
+            }
+            
+            renderHandCards();
+            
+            // 重置守卫牌显示
+            if (!gameState.isGuard) {
+                document.getElementById('guardCard').classList.remove('revealed');
+                document.getElementById('guardCard').innerHTML = `
+                    <div class="guard-shield">🛡️</div>
+                    <div class="guard-text">?</div>
+                `;
+            }
+            
+            startCountdown();
+        }
+        
+        // 使用天命牌
+        function useDestiny(index) {
+            const card = gameState.destinyCards[index];
+            
+            if (confirm(`使用「${card.name}」？\n${card.desc}`)) {
+                addLog(`✨ 使用天命牌: ${card.name}`, 'destiny');
+                
+                switch(card.type) {
+                    case 'assault':
+                        if (gameState.playerLevel < 13) {
+                            gameState.playerLevel++;
+                            document.getElementById('playerLevelName').textContent = getLevelName(gameState.playerLevel);
+                            renderTower();
+                            addLog('⚡ 突击！直接晋级！', 'success');
+                        }
+                        break;
+                        
+                    case 'swap':
+                        if (gameState.handCards.length > 0) {
+                            const count = gameState.handCards.length;
+                            gameState.handCards = generateUniqueCards(count);
+                            renderHandCards();
+                            addLog('🔄 换牌成功！', 'success');
+                        }
+                        break;
+                        
+                    case 'peek':
+                        // 透视：提前知道下轮守卫牌
+                        const suits = ['♥', '♦', '♣', '♠'];
+                        const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+                        gameState.nextGuardRevealed = {
+                            suit: suits[Math.floor(Math.random() * suits.length)],
+                            rank: ranks[Math.floor(Math.random() * ranks.length)]
+                        };
+                        gameState.peekUsed = true;
+                        alert(`👁️ 透视成功！下轮守卫牌是: ${gameState.nextGuardRevealed.suit}${gameState.nextGuardRevealed.rank}`);
+                        addLog('👁️ 你已透视下轮守卫牌！', 'destiny');
+                        break;
+                        
+                    case 'guard':
+                        // 守卫：本轮必胜（简化版：直接晋级）
+                        if (gameState.playerLevel < 13) {
+                            gameState.playerLevel++;
+                            document.getElementById('playerLevelName').textContent = getLevelName(gameState.playerLevel);
+                            renderTower();
+                            addLog('🛡️ 守卫之力！直接晋级！', 'success');
+                        }
+                        break;
+                        
+                    case 'double':
+                        gameState.doubleNext = true;
+                        addLog('✨ 双倍已激活！下次晋级+2层！', 'destiny');
+                        break;
+                        
+                    case 'shield':
+                        gameState.playerShield = true;
+                        addLog('🔒 护盾已激活！免疫一次负面效果！', 'destiny');
+                        break;
+                        
+                    case 'kick':
+                        // 踢人：AI下降1层
+                        if (gameState.aiLevel > 1) {
+                            gameState.aiLevel--;
+                            document.getElementById('aiLevelName').textContent = getLevelName(gameState.aiLevel);
+                            renderTower();
+                            addLog('👢 踢人成功！AI下降1层！', 'success');
+                        }
+                        break;
+                        
+                    case 'down':
+                        // 下降：如果AI是守卫，回第2层
+                        if (gameState.aiIsGuard) {
+                            gameState.aiIsGuard = false;
+                            gameState.aiLevel = 1;
+                            gameState.aiGuardDefends = 0;
+                            document.getElementById('aiLevelName').textContent = getLevelName(gameState.aiLevel);
+                            document.getElementById('aiStatus').textContent = '正在攀登...';
+                            renderTower();
+                            addLog('⬇️ 下降成功！AI守卫被击败！', 'success');
+                        } else {
+                            addLog('⬇️ 下降失败！AI不是守卫！', 'fail');
+                        }
+                        break;
+                        
+                    case 'freeze':
+                        // 冰冻：AI停2轮
+                        gameState.aiFrozen = 2;
+                        addLog('❄️ 冰冻成功！AI停2轮！', 'success');
+                        break;
+                        
+                    case 'steal':
+                        // 偷看：显示AI的手牌（模拟）
+                        const aiCards = [];
+                        for (let i = 0; i < 5; i++) {
+                            const suits = ['♥', '♦', '♣', '♠'];
+                            const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+                            aiCards.push(suits[Math.floor(Math.random() * suits.length)] + ranks[Math.floor(Math.random() * ranks.length)]);
+                        }
+                        alert(`👀 偷看成功！AI的手牌有: ${aiCards.join(', ')}`);
+                        addLog('👀 你已偷看AI的手牌！', 'destiny');
+                        break;
+                        
+                    case 'copy':
+                        // 复制：复制AI上轮出的牌
+                        if (gameState.lastAiCard) {
+                            const newCard = { ...gameState.lastAiCard, id: gameState.handCards.length };
+                            if (gameState.handCards.length < 18) {
+                                gameState.handCards.push(newCard);
+                                renderHandCards();
+                                addLog(`📋 复制成功！获得${newCard.suit}${newCard.rank}！`, 'success');
+                            }
+                        } else {
+                            addLog('📋 复制失败！AI还未出过牌！', 'fail');
+                        }
+                        break;
+                }
+                
+                gameState.destinyCards.splice(index, 1);
+                renderDestinyCards();
+            }
+        }
+        
+        // 嘲讽AI
+        function tauntAI() {
+            const taunt = getContextualTaunt('taunt');
+            showTauntBubble(document.getElementById('aiAvatar'), taunt, false);
+            addLog(`💬 你对AI说:"${taunt}"`, 'taunt');
+        }
+        
+        // 随机嘲讽
+        function randomTaunt() {
+            const categories = ['confidence', 'luck', 'humor'];
+            const cat = categories[Math.floor(Math.random() * categories.length)];
+            const taunt = getRandomTaunt(cat);
+            
+            // 显示在自己的头像位置（简化：显示在AI头上）
+            showTauntBubble(document.getElementById('aiAvatar'), taunt, false);
+            addLog(`💬 你:"${taunt}"`, 'taunt');
+        }
+        
+        // 添加日志
+        function addLog(message, type) {
+            const log = document.getElementById('gameLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const time = new Date().toLocaleTimeString('zh-CN', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            entry.innerHTML = `
+                <span>${message}</span>
+                <span style="color: #666;">${time}</span>
+            `;
+            log.insertBefore(entry, log.firstChild);
+            
+            while (log.children.length > 15) {
+                log.removeChild(log.lastChild);
+            }
+        }
+        
+        // 初始化
+        initGame();
+    </script>
+    <script src="ui_components_system.js"></script>
+    <script src="device_adaptive_framework.js"></script>
+    <script src="global_responsive.js"></script>
+    <script src="touch_support.js"></script>
+</body>
+</html>

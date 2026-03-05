@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命运塔·首登者 - 团队赛 V3</title>
+    <script src="effects.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+        
+        /* 头部 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .back-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 8px;
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        /* 主菜单 */
+        .main-menu {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .mode-card {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mode-card:hover {
+            transform: translateY(-5px);
+            border-color: #ffd700;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+        }
+        
+        .mode-icon { font-size: 40px; margin-bottom: 10px; }
+        .mode-name { font-size: 20px; color: #ffd700; margin-bottom: 8px; }
+        .mode-desc { font-size: 13px; color: #888; }
+        .mode-highlight {
+            color: #0ff;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        /* 游戏界面 */
+        .game-screen {
+            display: none;
+        }
+        
+        .game-screen.active {
+            display: block;
+        }
+        
+        /* 守卫状态栏 */
+        .guard-bar {
+            background: linear-gradient(90deg, rgba(255,215,0,0.2), rgba(255,0,0,0.2));
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .guard-bar.active {
+            display: block;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+            50% { box-shadow: 0 0 40px rgba(255,215,0,0.8); }
+        }
+        
+        .guard-title {
+            font-size: 24px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .guard-info {
+            font-size: 16px;
+            color: #ff6b6b;
+            margin-top: 5px;
+        }
+        
+        /* 团队信息栏 */
+        .team-info-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .team-panel {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1;
+            margin: 0 10px;
+        }
+        
+        .team-panel.team-a {
+            background: rgba(0,100,255,0.2);
+            border: 2px solid #0064ff;
+        }
+        
+        .team-panel.team-b {
+            background: rgba(255,0,100,0.2);
+            border: 2px solid #ff0064;
+        }
+        
+        .team-panel.guard {
+            background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,0,0,0.3));
+            border: 3px solid #ffd700;
+            animation: glow 2s infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+            50% { box-shadow: 0 0 40px rgba(255,215,0,0.8); }
+        }
+        
+        .team-level {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .team-destiny {
+            font-size: 14px;
+            color: #0ff;
+            margin-top: 10px;
+        }
+        
+        /* 共享手牌区 - 可滚动 */
+        .shared-hand-section {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .shared-hand-title {
+            font-size: 18px;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .shared-hand-desc {
+            color: #888;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        
+        .shared-cards-container {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+        }
+        
+        .shared-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .shared-card {
+            width: 70px;
+            height: 95px;
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            flex-shrink: 0;
+        }
+        
+        .shared-card:hover {
+            transform: translateY(-8px);
+            border-color: #ffd700;
+            box-shadow: 0 10px 25px rgba(255,215,0,0.4);
+        }
+        
+        .shared-card.selected {
+            border-color: #0f0;
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0,255,0,0.4);
+        }
+        
+        .shared-card.conflict {
+            border-color: #f00;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .shared-card .suit {
+            font-size: 28px;
+        }
+        
+        .shared-card .rank {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        /* 天命牌区 */
+        .destiny-section {
+            background: linear-gradient(135deg, rgba(255,0,255,0.1), rgba(0,255,255,0.1));
+            border: 2px solid rgba(255,0,255,0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .destiny-title {
+            font-size: 18px;
+            color: #f0f;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .destiny-cards {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .destiny-card {
+            width: 100px;
+            height: 130px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,0,255,0.2));
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .destiny-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.4);
+        }
+        
+        .destiny-card .name {
+            font-size: 14px;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .destiny-card .desc {
+            font-size: 11px;
+            color: #888;
+        }
+        
+        /* 队友状态 */
+        .teammates-status {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .teammate {
+            text-align: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            min-width: 80px;
+        }
+        
+        .teammate.ready {
+            background: rgba(0,255,0,0.15);
+            border: 1px solid #0f0;
+        }
+        
+        .teammate.conflict {
+            background: rgba(255,0,0,0.15);
+            border: 1px solid #f00;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* 守卫区 */
+        .guard-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .guard-card {
+            display: inline-block;
+            width: 120px;
+            height: 160px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            border: 4px solid;
+            border-image: linear-gradient(45deg, #ffd700, #ff6b6b, #ffd700) 1;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+        
+        .guard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(255,215,0,0.2) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(255,107,107,0.2) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .guard-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+        }
+        
+        .guard-card.revealed {
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            border-image: linear-gradient(45deg, #4CAF50, #8BC34A) 1;
+        }
+        
+        .guard-shield {
+            font-size: 60px;
+            margin-top: 30px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            animation: shieldPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes shieldPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .guard-text {
+            font-size: 14px;
+            color: #ffd700;
+            margin-top: 10px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .guard-suit {
+            font-size: 48px;
+            margin-top: 20px;
+        }
+        
+        .guard-rank {
+            font-size: 32px;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        /* 操作按钮 */
+        .action-bar {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .btn-action {
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-confirm {
+            background: linear-gradient(135deg, #0f0, #0a0);
+            color: #fff;
+        }
+        
+        .btn-confirm:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,255,0,0.4);
+        }
+        
+        /* 规则说明 */
+        .rules-panel {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .rules-panel h4 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .main-menu { grid-template-columns: repeat(2, 1fr); }
+            .shared-card { width: 60px; height: 80px; }
+            .team-level { font-size: 36px; }
+        }
+        
+        /* 动画 */
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+    
+
+        
+        /* 比对动画 */
+        @keyframes cardFlipIn {
+            0% { transform: rotateY(90deg); }
+            100% { transform: rotateY(0deg); }
+        }
+        @keyframes flipReveal {
+            0% { transform: scale(0) rotateY(180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotateY(90deg); }
+            100% { transform: scale(1) rotateY(0deg); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes successPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        @keyframes shine {
+            0%, 100% { text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+            50% { text-shadow: 0 0 30px rgba(255,215,0,1), 0 0 50px rgba(255,215,0,0.8); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        </style>
+    <script src="music_system.js"></script>
+    <script src="responsive_adapter.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="logo">👥 团队赛 V2</div>
+            <a href="new_index.html" class="back-btn">← 返回大厅</a>
+        </div>
+        
+        <!-- 规则说明 -->
+        <div class="rules-panel">
+            <h4>🎮 新规则说明</h4>
+            <div>• 共享手牌: 2v2=10张 | 3v3=15张 | 4v4=20张 | 5v5=50张</div>
+            <div>• 天命牌: 开局每人3张，守卫模式下所有玩家无法匹配时守卫获得</div>
+            <div>• 守卫模式: 登顶后变守卫，不再共享手牌，用自己的5张牌选守卫牌</div>
+            <div>• 守卫获胜: 当所有玩家都无法匹配守卫牌时，守卫获得天命牌并计1轮</div>
+            <div>• 淘汰守卫: 使用"下降"天命牌可直接淘汰守卫</div>
+        </div>
+        
+        <!-- 模式选择 -->
+        <div id="modeSelect" class="main-menu">
+            <div class="mode-card" onclick="startGame('2v2')">
+                <div class="mode-icon">👥</div>
+                <div class="mode-name">2v2 团队赛</div>
+                <div class="mode-desc">2人 vs 2人</div>
+                <div class="mode-highlight">🎴 共享10张手牌 | 每人5张</div>
+            </div>
+            
+            <div class="mode-card" onclick="startGame('3v3')">
+                <div class="mode-icon">👥👥</div>
+                <div class="mode-name">3v3 团队赛</div>
+                <div class="mode-desc">3人 vs 3人</div>
+                <div class="mode-highlight">🎴 共享15张手牌 | 每人5张</div>
+            </div>
+            
+            <div class="mode-card" onclick="startGame('4v4')">
+                <div class="mode-icon">👥👥👥</div>
+                <div class="mode-name">4v4 团队赛</div>
+                <div class="mode-desc">4人 vs 4人</div>
+                <div class="mode-highlight">🎴 共享20张手牌 | 每人5张</div>
+            </div>
+            
+            <div class="mode-card" onclick="startGame('5v5')">
+                <div class="mode-icon">👥👥👥👥</div>
+                <div class="mode-name">5v5 团队赛</div>
+                <div class="mode-desc">5人 vs 5人</div>
+                <div class="mode-highlight">🎴 共享50张手牌 | 每人5张</div>
+            </div>
+        </div>
+        
+        <!-- 游戏界面 -->
+        <div id="gameScreen" class="game-screen">
+            
+            <!-- 守卫状态栏 -->
+            <div id="guardBar" class="guard-bar">
+                <div class="guard-title">🏰 守卫模式</div>
+                <div class="guard-info">
+                    <span id="guardTeamName">我方团队</span> 是守卫！
+                    需要成功防御 <span id="guardRounds">13</span> 次攻击才能获胜（累计即可）
+                </div>
+            </div>
+            
+            <!-- 团队信息 -->
+            <div class="team-info-bar">
+                <div class="team-panel team-a" id="teamAPanel">
+                    <div>我方团队</div>
+                    <div class="team-level" id="teamALevel">2/A</div>
+                    <div class="team-destiny">✨ 天命牌: <span id="teamADestiny">6</span>张</div>
+                </div>
+                
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 32px; color: #ffd700;">VS</div>
+                    <div style="color: #888; margin-top: 10px;">第 <span id="currentRound">1</span> 轮</div>
+                    <!-- 倒计时显示 -->
+                    <div id="countdownDisplay" style="margin-top: 15px; padding: 10px 20px; background: rgba(255,0,0,0.2); border: 2px solid #ff4444; border-radius: 10px; font-size: 24px; color: #ff4444; font-weight: bold; display: none;">
+                        ⏱️ <span id="countdownValue">10</span>秒
+                    </div>
+                </div>
+                
+                <div class="team-panel team-b" id="teamBPanel">
+                    <div>敌方团队</div>
+                    <div class="team-level" id="teamBLevel">2/A</div>
+                    <div class="team-destiny">✨ 天命牌: <span id="teamBDestiny">6</span>张</div>
+                </div>
+            </div>
+            
+            <!-- 天命牌区 -->
+            <div class="destiny-section">
+                <div class="destiny-title" id="destinyTitle">✨ 天命牌 (点击使用) - 每人3张</div>
+                <div class="destiny-cards" id="destinyCards">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+            
+            <!-- 共享手牌区 -->
+            <div class="shared-hand-section">
+                <div class="shared-hand-title">🎴 团队共享手牌 - 每人选1张 (可滚动查看更多)</div>
+                <div class="shared-hand-desc">
+                    你和队友共享这些手牌！如果选到同一张，需要重新选择
+                </div>
+                
+                <div class="shared-cards-container">
+                    <div class="shared-cards" id="sharedCards">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+                
+                <div class="teammates-status" id="teammatesStatus">
+                    <!-- 队友状态 -->
+                </div>
+            </div>
+            
+            
+        <!-- 守卫区 -->
+            <div class="guard-section">
+                <div style="font-size: 18px; color: #888; margin-bottom: 10px;">🛡️ 守卫牌 (点击揭示)</div>
+                <div class="guard-card" id="guardCard" onclick="revealGuard()">
+                    <div class="guard-shield">🛡️</div>
+                    <div class="guard-text">守卫牌</div>
+                </div>
+            </div>
+            
+            
+            <!-- 操作按钮 -->
+            <div class="action-bar">
+                <button class="btn-action btn-confirm" id="confirmBtn" onclick="confirmSelection()">
+                    ✅ 确认选牌
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 游戏配置
+        const CONFIG = {
+            '2v2': { teamSize: 2, sharedCards: 10, handCards: 5, destinyPerPlayer: 3 },
+            '3v3': { teamSize: 3, sharedCards: 15, handCards: 5, destinyPerPlayer: 3 },
+            '4v4': { teamSize: 4, sharedCards: 20, handCards: 5, destinyPerPlayer: 3 },
+            '5v5': { teamSize: 5, sharedCards: 50, handCards: 5, destinyPerPlayer: 3 }
+        };
+        
+        // 天命牌类型
+        const DESTINY_TYPES = [
+            { type: 'assault', name: '全军突击', desc: '全队晋级' },
+            { type: 'swap', name: '换牌', desc: '重新抽手牌' },
+            { type: 'peek', name: '看牌', desc: '查看守卫牌' },
+            { type: 'bring', name: '带人', desc: '带队友晋级' },
+            { type: 'kick', name: '踢人', desc: '对手降一层' },
+            { type: 'down', name: '下降', desc: '淘汰守卫!' }
+        ];
+        
+        let gameState = {
+            mode: null,
+            myTeam: 'team_a',
+            sharedHand: [],
+            destinyCards: [],
+            selectedCard: null,
+            teammates: [],
+            guardRevealed: false,
+            isGuard: false,
+            guardDefends: 0,  // 守卫成功防御次数（累计，不需要连续）
+            guardRounds: 0,
+            countdown: 10,
+            countdownTimer: null,
+            aiOpponents: [],
+            guardHand: [],
+            guardSelectedCard: null
+        };
+        
+        // 开始游戏
+        function startGame(mode) {
+            gameState.mode = mode;
+            const config = CONFIG[mode];
+            
+            alert(`🎮 开始${mode}团队赛！\n\n共享手牌: ${config.sharedCards}张\n每人手牌: ${config.handCards}张\n天命牌: 每人${config.destinyPerPlayer}张\n\n正在匹配...`);
+            
+            // 显示游戏界面
+            document.getElementById('modeSelect').style.display = 'none';
+            document.querySelector('.rules-panel').style.display = 'none';
+            document.getElementById('gameScreen').classList.add('active');
+            
+            // 初始化游戏
+            initGame(mode);
+        }
+        
+        // 初始化游戏
+        function initGame(mode) {
+            const config = CONFIG[mode];
+            
+            // 模拟当前在线真实玩家（实际应该从服务器获取）
+            const onlineRealPlayers = Math.floor(Math.random() * 20) + 5; // 5-25个真实玩家
+            const requiredAIPlayers = onlineRealPlayers * 9;
+            
+            showNotification(`🎮 ${mode} 团队赛开始！🤖 系统已分配 ${requiredAIPlayers} 个AI玩家`, 'success');
+            
+            // 生成共享手牌
+            gameState.sharedHand = generateCards(config.sharedCards);
+            renderSharedCards();
+            
+            // 生成天命牌 (每人3张)
+            gameState.destinyCards = generateDestinyCards(config.destinyPerPlayer);
+            renderDestinyCards();
+            
+            // 生成队友 (系统AI) - 我方团队
+            gameState.teammates = [];
+            for (let i = 1; i < config.teamSize; i++) {
+                gameState.teammates.push({
+                    id: `ai_teammate_${i}`,
+                    name: getAIName(i, 'teammate'),
+                    status: 'selecting',
+                    selectedCard: null,
+                    isOpponent: false
+                });
+            }
+            
+            // 生成对手AI
+            gameState.aiOpponents = [];
+            for (let i = 0; i < config.teamSize; i++) {
+                gameState.aiOpponents.push({
+                    id: `ai_opponent_${i}`,
+                    name: getAIName(i, 'opponent'),
+                    status: 'selecting',
+                    selectedCard: null,
+                    isOpponent: true
+                });
+            }
+            
+            renderTeammates();
+            
+            // 更新UI
+            document.getElementById('teamADestiny').textContent = config.destinyPerPlayer * config.teamSize;
+            document.getElementById('teamBDestiny').textContent = config.destinyPerPlayer * config.teamSize;
+            
+            // 显示对手状态
+            renderOpponents();
+            
+            // 开始倒计时
+            startCountdown();
+        }
+        
+        // 获取AI名称
+        function getAIName(index, type) {
+            const names = ['小龙', '阿强', '小白', '小黑', '小红', '小明', '大力', '阿伟', '阿杰', '小虎',
+                          '冰冰', '雪儿', '小雨', '晴天', '风儿', '月月', '星星', '云云', '露露', '娜娜'];
+            const suffix = type === 'teammate' ? '(友)' : '(敌)';
+            return names[index % names.length] + suffix;
+        }
+        
+        // 渲染对手状态
+        function renderOpponents() {
+            const container = document.getElementById('teammatesStatus');
+            const opponentsHtml = gameState.aiOpponents.map((opp, index) => `
+                <div class="teammate" id="opponent_${index}">
+                    <div>🤖 ${opp.name}</div>
+                    <div style="font-size: 12px; color: #ff6b6b; margin-top: 5px;">
+                        ${opp.status === 'selecting' ? '选择中...' : '已选择 ✅'}
+                    </div>
+                </div>
+            `).join('');
+            
+            container.innerHTML += opponentsHtml;
+        }
+        
+        // 开始倒计时
+        function startCountdown() {
+            gameState.countdown = 10;
+            const display = document.getElementById('countdownDisplay');
+            const value = document.getElementById('countdownValue');
+            display.style.display = 'block';
+            
+            if (gameState.countdownTimer) {
+                clearInterval(gameState.countdownTimer);
+            }
+            
+            gameState.countdownTimer = setInterval(() => {
+                gameState.countdown--;
+                value.textContent = gameState.countdown;
+                
+                // 最后3秒变红色并闪烁
+                if (gameState.countdown <= 3) {
+                    display.style.animation = 'pulse 0.5s infinite';
+                }
+                
+                if (gameState.countdown <= 0) {
+                    clearInterval(gameState.countdownTimer);
+                    autoSelectCard();
+                }
+            }, 1000);
+        }
+        
+        // 自动选牌（倒计时结束）
+        function autoSelectCard() {
+            if (gameState.selectedCard === null) {
+                // 随机选择一张牌
+                const randomIndex = Math.floor(Math.random() * gameState.sharedHand.length);
+                selectCard(randomIndex);
+            }
+            confirmSelection();
+        }
+        
+        // 停止倒计时
+        function stopCountdown() {
+            if (gameState.countdownTimer) {
+                clearInterval(gameState.countdownTimer);
+                gameState.countdownTimer = null;
+            }
+            document.getElementById('countdownDisplay').style.display = 'none';
+        }
+        
+        // 生成卡牌
+        function generateCards(count) {
+            const suits = ['♥', '♦', '♣', '♠'];
+            const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+            const cards = [];
+            
+            for (let i = 0; i < count; i++) {
+                const suit = suits[Math.floor(Math.random() * suits.length)];
+                const rank = ranks[Math.floor(Math.random() * ranks.length)];
+                const color = (suit === '♥' || suit === '♦') ? '#d00' : '#000';
+                cards.push({ suit, rank, color, id: i });
+            }
+            return cards;
+        }
+        
+        // 生成天命牌
+        function generateDestinyCards(count) {
+            const cards = [];
+            for (let i = 0; i < count; i++) {
+                const type = DESTINY_TYPES[Math.floor(Math.random() * DESTINY_TYPES.length)];
+                cards.push({ ...type });
+            }
+            return cards;
+        }
+        
+        // 渲染共享手牌
+        function renderSharedCards() {
+            const container = document.getElementById('sharedCards');
+            container.innerHTML = gameState.sharedHand.map((card, index) => `
+                <div class="shared-card" onclick="selectCard(${index})" id="card_${index}" data-index="${index}">
+                    <div class="suit" style="color: ${card.color}">${card.suit}</div>
+                    <div class="rank">${card.rank}</div>
+                </div>
+            `).join('');
+        }
+        
+        // 渲染天命牌
+        function renderDestinyCards() {
+            const container = document.getElementById('destinyCards');
+            container.innerHTML = gameState.destinyCards.map((card, index) => `
+                <div class="destiny-card" onclick="useDestiny(${index})">
+                    <div class="name">${card.name}</div>
+                    <div class="desc">${card.desc}</div>
+                </div>
+            `).join('');
+        }
+        
+        // 渲染队友状态
+        function renderTeammates() {
+            const container = document.getElementById('teammatesStatus');
+            const teamHtml = gameState.teammates.map((mate, index) => `
+                <div class="teammate" id="mate_${index}">
+                    <div>🤖 ${mate.name}</div>
+                    <div class="mate-card-display" id="mateCard_${index}" style="margin-top: 5px; font-size: 20px; height: 30px;">
+                        ${mate.selectedCard !== null ? 
+                            `<span style="color: ${gameState.sharedHand[mate.selectedCard]?.color || '#000'}">${gameState.sharedHand[mate.selectedCard]?.suit || ''}</span>` 
+                            : ''}
+                    </div>
+                    <div style="font-size: 12px; color: #888; margin-top: 5px;">
+                        ${mate.status === 'selecting' ? '选择中...' : mate.status === 'ready' ? '已出牌 ✅' : '冲突! ❌'}
+                    </div>
+                </div>
+            `).join('');
+            
+            const oppHtml = gameState.aiOpponents.map((opp, index) => `
+                <div class="teammate opponent" id="opponent_${index}" style="border-color: #ff6b6b;">
+                    <div>👹 ${opp.name}</div>
+                    <div class="opp-card-display" id="oppCard_${index}" style="margin-top: 5px; font-size: 20px; height: 30px;">
+                        ${opp.selectedCard !== null ? 
+                            `<span style="color: ${gameState.sharedHand[opp.selectedCard]?.color || '#000'}">${gameState.sharedHand[opp.selectedCard]?.suit || ''}</span>` 
+                            : ''}
+                    </div>
+                    <div style="font-size: 12px; color: #ff6b6b; margin-top: 5px;">
+                        ${opp.status === 'selecting' ? '选择中...' : '已出牌 ✅'}
+                    </div>
+                </div>
+            `).join('');
+            
+            container.innerHTML = '<div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;"><div style="color: #3498db; font-size: 12px; width: 100%; text-align: center; margin-bottom: 5px;">我方队友</div>' + teamHtml + '</div>' +
+                                  '<div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 15px;"><div style="color: #e74c3c; font-size: 12px; width: 100%; text-align: center; margin-bottom: 5px;">敌方对手</div>' + oppHtml + '</div>';
+        }
+        
+        // 更新AI出牌显示
+        function updateAICardDisplay() {
+            // 更新队友出牌显示
+            gameState.teammates.forEach((mate, index) => {
+                if (mate.selectedCard !== null) {
+                    const card = gameState.sharedHand[mate.selectedCard];
+                    const el = document.getElementById(`mateCard_${index}`);
+                    if (el && card) {
+                        el.innerHTML = `<span style="color: ${card.color}; font-size: 24px;">${card.suit}</span><span style="color: ${card.color}; font-size: 16px;">${card.rank}</span>`;
+                    }
+                }
+            });
+            
+            // 更新对手出牌显示
+            gameState.aiOpponents.forEach((opp, index) => {
+                if (opp.selectedCard !== null) {
+                    const card = gameState.sharedHand[opp.selectedCard];
+                    const el = document.getElementById(`oppCard_${index}`);
+                    if (el && card) {
+                        el.innerHTML = `<span style="color: ${card.color}; font-size: 24px;">${card.suit}</span><span style="color: ${card.color}; font-size: 16px;">${card.rank}</span>`;
+                    }
+                }
+            });
+        }
+        
+        // 选择卡牌
+        function selectCard(index) {
+            // 清除之前的选择
+            document.querySelectorAll('.shared-card').forEach(card => {
+                card.classList.remove('selected', 'conflict');
+            });
+            
+            // 选中新卡
+            const card = document.getElementById(`card_${index}`);
+            card.classList.add('selected');
+            gameState.selectedCard = index;
+            
+            console.log(`选择了卡牌 ${index}`);
+        }
+        
+        // 确认选择
+        function confirmSelection() {
+            if (gameState.selectedCard === null) {
+                alert('⚠️ 请先选择一张手牌！');
+                return;
+            }
+            
+            // 停止倒计时
+            stopCountdown();
+            
+            // 玩家已选择
+            showNotification('✅ 你已选牌！AI队友和对手正在选择...', 'success');
+            
+            // AI队友和对手在1秒内完成选择
+            simulateAISelections();
+        }
+        
+        // AI队友和对手选牌（1秒内完成）
+        function simulateAISelections() {
+            const config = CONFIG[gameState.mode];
+            
+            // AI队友选择（300-800ms内）
+            gameState.teammates.forEach((mate, index) => {
+                const delay = 300 + Math.random() * 500;
+                setTimeout(() => {
+                    // 从共享手牌中随机选择
+                    const availableCards = gameState.sharedHand.map((c, i) => i);
+                    mate.selectedCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+                    mate.status = 'ready';
+                    
+                    const el = document.getElementById(`mate_${index}`);
+                    if (el) {
+                        el.classList.add('ready');
+                        el.querySelector('div:last-child').textContent = '已出牌 ✅';
+                    }
+                    
+                    // 显示AI选的牌
+                    updateAICardDisplay();
+                }, delay);
+            });
+            
+            // AI对手选择（500-1000ms内）
+            gameState.aiOpponents.forEach((opp, index) => {
+                const delay = 500 + Math.random() * 500;
+                setTimeout(() => {
+                    // 从共享手牌中随机选择
+                    const availableCards = gameState.sharedHand.map((c, i) => i);
+                    opp.selectedCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+                    opp.status = 'ready';
+                    
+                    const el = document.getElementById(`opponent_${index}`);
+                    if (el) {
+                        el.classList.add('ready');
+                        el.querySelector('div:last-child').textContent = '已出牌 ✅';
+                    }
+                    
+                    // 显示AI选的牌
+                    updateAICardDisplay();
+                }, delay);
+            });
+            
+            // 1.5秒后检查冲突并结算
+            setTimeout(() => {
+                checkConflictsAndResolve();
+            }, 1500);
+        }
+        
+        // 检查冲突并结算
+        function checkConflictsAndResolve() {
+            // 检查队友是否选了同一张牌
+            const myCard = gameState.selectedCard;
+            let hasConflict = false;
+            
+            gameState.teammates.forEach((mate, index) => {
+                if (mate.selectedCard === myCard) {
+                    hasConflict = true;
+                    const mateEl = document.getElementById(`mate_${index}`);
+                    if (mateEl) {
+                        mateEl.classList.add('conflict');
+                        mateEl.querySelector('div:last-child').textContent = '冲突! ❌';
+                    }
+                }
+            });
+            
+            if (hasConflict) {
+                showNotification('⚠️ 队友和你选了同一张牌！请重新选择！', 'warning');
+                resetSelection();
+                startCountdown(); // 重新开始倒计时
+            } else {
+                showNotification('✅ 所有人选牌完成！回合结算...', 'success');
+                resolveRound();
+            }
+        }
+        
+        // 重置选择
+        function resetSelection() {
+            gameState.selectedCard = null;
+            document.querySelectorAll('.shared-card').forEach(c => c.classList.remove('selected', 'conflict'));
+            
+            gameState.teammates.forEach((mate, index) => {
+                mate.status = 'selecting';
+                mate.selectedCard = null;
+                const el = document.getElementById(`mate_${index}`);
+                if (el) {
+                    el.classList.remove('ready', 'conflict');
+                    el.querySelector('div:last-child').textContent = '选择中...';
+                }
+            });
+        }
+        
+        // 结算回合 - 调用比对动画
+        function resolveRound() {
+            const myCard = gameState.sharedHand[gameState.selectedCard];
+            
+            // 生成守卫牌
+            const suits = ["♥", "♦", "♣", "♠"];
+            const ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+            const guardCard = {
+                suit: suits[Math.floor(Math.random() * suits.length)],
+                rank: ranks[Math.floor(Math.random() * ranks.length)],
+                color: "#000"
+            };
+            guardCard.color = (guardCard.suit === "♥" || guardCard.suit === "♦") ? "#d00" : "#000";
+            
+            // 显示比对弹窗动画
+            showCardComparison(myCard, guardCard);
+        }
+        
+        // 成为守卫
+        function becomeGuard() {
+            gameState.isGuard = true;
+            gameState.guardDefends = 0; // 初始化守卫成功次数
+            
+            // 守卫生成自己的专属手牌（5张）
+            gameState.guardHand = generateCards(5);
+            
+            document.getElementById('guardBar').classList.add('active');
+            document.getElementById('teamAPanel').classList.add('guard');
+            
+            // 更新天命牌说明
+            document.getElementById('destinyTitle').textContent = '✨ 天命牌 (点击使用) - 守卫模式下，所有玩家无法匹配时你获得';
+            
+            // 显示守卫手牌区域
+            showGuardHandArea();
+            
+            // 显示庆祝弹窗
+            showGuardCelebration();
+        }
+        
+        // 守卫登顶庆祝弹窗
+        function showGuardCelebration() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.95); z-index: 20000; display: flex;
+                align-items: center; justify-content: center; overflow: hidden;
+            `;
+            
+            // 彩带效果
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.cssText = `
+                    position: absolute; width: 10px; height: 10px;
+                    background: ${['#ffd700', '#ff6b6b', '#2ed573', '#3498db', '#9b59b6'][Math.floor(Math.random() * 5)]};
+                    left: ${Math.random() * 100}%; top: -10px;
+                    animation: confetti-fall ${2 + Math.random() * 2}s linear forwards;
+                    animation-delay: ${Math.random() * 2}s;
+                `;
+                modal.appendChild(confetti);
+            }
+            
+            // 添加CSS动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes confetti-fall {
+                    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+                    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+                }
+                @keyframes celebration-pulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                }
+                @keyframes bounce {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-20px); }
+                }
+            `;
+            modal.appendChild(style);
+            
+            modal.innerHTML += `
+                <div style="text-align: center; animation: celebration-pulse 2s ease-in-out infinite;">
+                    <div style="font-size: 100px; margin-bottom: 20px; animation: bounce 1s ease-in-out infinite;">👑</div>
+                    <div style="font-size: 36px; background: linear-gradient(45deg, #ffd700, #ff6b6b, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; font-weight: bold;">
+                        🎉 恭喜登顶！🎉
+                    </div>
+                    <div style="font-size: 18px; color: #888; margin-bottom: 30px;">
+                        你们团队已成功登顶！<br>
+                        现在进入守卫模式，成功防御13次攻击即可获胜！<br>
+                        <span style="color: #0ff;">（不需要连续，累计13次即可）</span>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove(); startGuardMode();" 
+                            style="padding: 15px 40px; font-size: 18px; background: linear-gradient(135deg, #ffd700, #ff6b6b); 
+                                   border: none; border-radius: 10px; color: #fff; font-weight: bold; cursor: pointer;">
+                        🛡️ 开始守卫
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        // 开始守卫模式
+        function startGuardMode() {
+            // 显示守卫进度条
+            showGuardProgressBar();
+            showNotification('🏰 守卫模式开始！成功防御13次攻击即可获胜！', 'success');
+        }
+        
+        // 显示守卫进度条
+        function showGuardProgressBar() {
+            const progressBar = document.createElement('div');
+            progressBar.id = 'guardProgressBar';
+            progressBar.style.cssText = `
+                position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+                background: rgba(0,0,0,0.9); border: 2px solid #ffd700;
+                border-radius: 20px; padding: 15px 30px; z-index: 100;
+                min-width: 300px;
+            `;
+            progressBar.innerHTML = `
+                <div style="color: #ffd700; font-size: 14px; text-align: center; margin-bottom: 10px;">
+                    🛡️ 守卫进度: <span id="guardDefendCount">0</span>/13 次防御成功
+                </div>
+                <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; overflow: hidden;">
+                    <div id="guardDefendProgress" style="width: 0%; height: 100%; background: linear-gradient(90deg, #ffd700, #ff6b6b); transition: width 0.5s;"></div>
+                </div>
+            `;
+            document.body.appendChild(progressBar);
+        }
+        
+        // 更新守卫进度
+        function updateGuardProgress() {
+            const countEl = document.getElementById('guardDefendCount');
+            const progressEl = document.getElementById('guardDefendProgress');
+            if (countEl) countEl.textContent = gameState.guardDefends;
+            if (progressEl) progressEl.style.width = (gameState.guardDefends / 13 * 100) + '%';
+        }
+        
+        // 显示守卫胜利
+        function showGuardVictory() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.95); z-index: 20000; display: flex;
+                align-items: center; justify-content: center;
+            `;
+            modal.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 100px; margin-bottom: 20px;">🏆</div>
+                    <div style="font-size: 36px; background: linear-gradient(45deg, #ffd700, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; font-weight: bold;">
+                        🎊 完美胜利！🎊
+                    </div>
+                    <div style="font-size: 18px; color: #888; margin-bottom: 30px;">
+                        你们团队成功守住了13次攻击！<br>
+                        成为命运塔的守护者！
+                    </div>
+                    <div style="font-size: 24px; color: #ffd700; margin-bottom: 30px;">
+                        💎 +200 🪙 +2000
+                    </div>
+                    <button onclick="location.reload()" 
+                            style="padding: 15px 40px; font-size: 18px; background: linear-gradient(135deg, #2ed573, #27ae60); 
+                                   border: none; border-radius: 10px; color: #fff; font-weight: bold; cursor: pointer;">
+                        🎮 再玩一局
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        // 显示守卫手牌区域
+        function showGuardHandArea() {
+            // 创建守卫手牌区域
+            const guardArea = document.createElement('div');
+            guardArea.id = 'guardHandArea';
+            guardArea.style.cssText = `
+                background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,107,107,0.1));
+                border: 3px solid #ffd700;
+                border-radius: 15px;
+                padding: 20px;
+                margin-bottom: 20px;
+            `;
+            guardArea.innerHTML = `
+                <div style="font-size: 18px; color: #ffd700; margin-bottom: 15px; text-align: center;">
+                    🛡️ 守卫专属手牌 (选择一张作为守卫牌)
+                </div>
+                <div id="guardHandCards" style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                    <!-- 守卫手牌将在这里渲染 -->
+                </div>
+            `;
+            
+            // 插入到共享手牌区之前
+            const sharedHandSection = document.querySelector('.shared-hand-section');
+            sharedHandSection.parentNode.insertBefore(guardArea, sharedHandSection);
+            
+            // 渲染守卫手牌
+            renderGuardHand();
+        }
+        
+        // 渲染守卫手牌
+        function renderGuardHand() {
+            const container = document.getElementById('guardHandCards');
+            if (!container) return;
+            
+            container.innerHTML = gameState.guardHand.map((card, index) => `
+                <div class="shared-card" onclick="selectGuardCard(${index})" id="guardCard_${index}" data-index="${index}"
+                    style="border: 3px solid #ffd700; box-shadow: 0 0 15px rgba(255,215,0,0.5);">
+                    <div class="suit" style="color: ${card.color}">${card.suit}</div>
+                    <div class="rank">${card.rank}</div>
+                </div>
+            `).join('');
+        }
+        
+        // 守卫选择守卫牌
+        function selectGuardCard(index) {
+            document.querySelectorAll('#guardHandCards .shared-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById(`guardCard_${index}`).classList.add('selected');
+            gameState.guardSelectedCard = index;
+        }
+        
+        // 重置回合
+        function resetRound() {
+            gameState.selectedCard = null;
+            document.querySelectorAll('.shared-card').forEach(c => c.classList.remove('selected'));
+            
+            // 守卫模式下，守卫补充手牌
+            if (gameState.isGuard) {
+                // 守卫补充一张新手牌
+                const newGuardCard = generateCards(1)[0];
+                gameState.guardHand.push(newGuardCard);
+                renderGuardHand();
+                gameState.guardSelectedCard = null;
+            } else {
+                // 非守卫模式下，补充共享手牌
+                const config = CONFIG[gameState.mode];
+                const newCards = generateCards(1);
+                gameState.sharedHand.push(...newCards);
+                renderSharedCards();
+            }
+            
+            // 重置队友
+            gameState.teammates.forEach((mate, index) => {
+                mate.status = 'selecting';
+                mate.selectedCard = null;
+            });
+            
+            // 重置对手
+            gameState.aiOpponents.forEach((opp, index) => {
+                opp.status = 'selecting';
+                opp.selectedCard = null;
+            });
+            
+            // 重新渲染所有AI状态
+            renderTeammates();
+            
+            // 更新轮数
+            const round = parseInt(document.getElementById('currentRound').textContent);
+            document.getElementById('currentRound').textContent = round + 1;
+            
+            // 重置守卫牌显示
+            const guardCard = document.getElementById('guardCard');
+            guardCard.classList.remove('revealed');
+            guardCard.innerHTML = `
+                <div class="guard-shield">🛡️</div>
+                <div class="guard-text">守卫牌</div>
+            `;
+            gameState.guardRevealed = false;
+            
+            // 重新开始倒计时
+            startCountdown();
+            
+            showNotification(`🔄 第 ${round + 1} 轮开始！${gameState.isGuard ? '请选择守卫牌！' : '请选牌！'}`, 'info');
+        }
+        
+        // 显示通知
+        function showNotification(message, type = 'info') {
+            const colors = {
+                'success': '#2ed573',
+                'warning': '#ffa502',
+                'error': '#ff4757',
+                'info': '#0ff'
+            };
+            
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 15px 30px;
+                background: rgba(0,0,0,0.9);
+                border: 2px solid ${colors[type] || '#0ff'};
+                border-radius: 10px;
+                color: ${colors[type] || '#0ff'};
+                font-size: 16px;
+                z-index: 10000;
+                animation: fadeInOut 3s ease-in-out;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // 使用天命牌
+        function useDestiny(index) {
+            const card = gameState.destinyCards[index];
+            
+            if (card.type === 'down' && !gameState.isGuard) {
+                alert('❌ 只有当对方是守卫时才能使用"下降"牌！');
+                return;
+            }
+            
+            if (confirm(`使用天命牌「${card.name}」？\n\n${card.desc}`)) {
+                alert(`✨ 使用了${card.name}！\n\n${card.desc}`);
+                
+                // 移除使用的天命牌
+                gameState.destinyCards.splice(index, 1);
+                renderDestinyCards();
+                
+                // 更新显示
+                const current = parseInt(document.getElementById('teamADestiny').textContent);
+                document.getElementById('teamADestiny').textContent = current - 1;
+            }
+        }
+        
+        // 显示牌比对弹窗动画
+        function showCardComparison(playerCard, guardCard) {
+            // 创建比对弹窗
+            const modal = document.createElement('div');
+            modal.id = 'comparisonModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+            `;
+            
+            modal.innerHTML = `
+                <div id="comparisonContent" style="
+                    background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
+                    border: 4px solid #ffd700;
+                    border-radius: 25px;
+                    padding: 50px;
+                    text-align: center;
+                    box-shadow: 0 0 80px rgba(255,215,0,0.6);
+                    transform: scale(0.8);
+                    opacity: 0;
+                    transition: all 0.5s ease-out;
+                ">
+                    <h2 style="color: #ffd700; margin-bottom: 40px; font-size: 32px;">⚔️ 牌面比对</h2>
+                    
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 50px; margin: 40px 0;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 16px; color: #3498db; margin-bottom: 15px; font-weight: bold;">你的牌</div>
+                            <div id="playerCardAnim" style="
+                                width: 120px; height: 160px;
+                                background: linear-gradient(135deg, #fff, #f8f8f8);
+                                border: 4px solid #3498db;
+                                border-radius: 15px;
+                                display: flex; flex-direction: column;
+                                align-items: center; justify-content: center;
+                                color: ${playerCard.color};
+                                box-shadow: 0 0 40px rgba(52,152,219,0.6);
+                                transform: rotateY(90deg);
+                                animation: cardFlipIn 0.6s ease-out forwards;
+                            ">
+                                <div style="font-size: 48px;">${playerCard.suit}</div>
+                                <div style="font-size: 32px; font-weight: bold;">${playerCard.rank}</div>
+                            </div>
+                        </div>
+                        
+                        <div style="font-size: 48px; color: #ffd700; font-weight: bold;">VS</div>
+                        
+                        <div style="text-align: center;">
+                            <div style="font-size: 16px; color: #ffd700; margin-bottom: 15px; font-weight: bold;">守卫牌</div>
+                            <div id="guardCardAnim" style="
+                                width: 120px; height: 160px;
+                                background: linear-gradient(135deg, #1a1a2e, #16213e);
+                                border: 4px solid #ffd700;
+                                border-radius: 15px;
+                                display: flex; flex-direction: column;
+                                align-items: center; justify-content: center;
+                                box-shadow: 0 0 40px rgba(255,215,0,0.6);
+                                transform: rotateY(90deg);
+                                animation: cardFlipIn 0.6s ease-out 1.2s forwards;
+                            ">
+                                <div id="guardSuitAnim" style="font-size: 48px; opacity: 0; animation: flipReveal 0.4s ease-out 1.5s forwards;">${guardCard.suit}</div>
+                                <div id="guardRankAnim" style="font-size: 32px; font-weight: bold; opacity: 0; animation: flipReveal 0.4s ease-out 1.5s forwards;">${guardCard.rank}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="comparisonResult" style="margin-top: 30px; font-size: 28px; font-weight: bold;"></div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 弹窗进入动画
+            setTimeout(() => {
+                const content = document.getElementById('comparisonContent');
+                content.style.transform = 'scale(1)';
+                content.style.opacity = '1';
+            }, 100);
+            
+            // 守卫牌颜色设置
+            setTimeout(() => {
+                const guardSuitAnim = document.getElementById('guardSuitAnim');
+                const guardRankAnim = document.getElementById('guardRankAnim');
+                const guardCardAnim = document.getElementById('guardCardAnim');
+                
+                guardSuitAnim.style.color = guardCard.color;
+                guardRankAnim.style.color = guardCard.color;
+                guardCardAnim.style.background = 'linear-gradient(135deg, #fff, #f8f8f8)';
+            }, 1500);
+            
+            // 判定结果
+            setTimeout(() => {
+                const resultDiv = document.getElementById('comparisonResult');
+                
+                // 守卫模式下，需要检查所有玩家是否都无法匹配
+                if (gameState.isGuard) {
+                    // 获取守卫选择的守卫牌
+                    const guardSelectedIndex = gameState.guardSelectedCard !== null ? gameState.guardSelectedCard : 0;
+                    const actualGuardCard = gameState.guardHand[guardSelectedIndex] || guardCard;
+                    
+                    // 获取所有玩家的选择
+                    const allPlayerSelections = [
+                        playerCard,
+                        ...gameState.teammates.filter(m => m.selectedCard !== null).map(m => gameState.sharedHand[m.selectedCard]),
+                        ...gameState.aiOpponents.filter(o => o.selectedCard !== null).map(o => gameState.sharedHand[o.selectedCard])
+                    ].filter(c => c); // 过滤掉undefined
+                    
+                    // 检查是否所有玩家都无法匹配守卫牌
+                    let allFailed = true;
+                    let someoneMatched = false;
+                    
+                    allPlayerSelections.forEach(playerSelectedCard => {
+                        const playerMatched = (playerSelectedCard.suit === actualGuardCard.suit) || (playerSelectedCard.rank === actualGuardCard.rank);
+                        if (playerMatched) {
+                            allFailed = false;
+                            someoneMatched = true;
+                        }
+                    });
+                    
+                    if (allFailed) {
+                        // 所有玩家都无法匹配，守卫成功防御一次
+                        resultDiv.innerHTML = `
+                            <div style="color: #ffd700;">🛡️ 守卫成功！</div>
+                            <div style="font-size: 18px; color: #888; margin-top: 15px;">所有玩家都无法匹配你的守卫牌</div>
+                            <div style="font-size: 24px; color: #0ff; margin-top: 15px;">✨ 获得1张天命牌！</div>
+                        `;
+                        
+                        // 给守卫添加天命牌
+                        const newDestiny = DESTINY_TYPES[Math.floor(Math.random() * DESTINY_TYPES.length)];
+                        gameState.destinyCards.push({ ...newDestiny });
+                        renderDestinyCards();
+                        
+                        // 更新天命牌显示
+                        const currentCount = parseInt(document.getElementById('teamADestiny').textContent);
+                        document.getElementById('teamADestiny').textContent = currentCount + 1;
+                        
+                        // 增加守卫成功次数（累计，不需要连续）
+                        gameState.guardDefends++;
+                        updateGuardProgress();
+                        
+                        // 检查是否守住13次
+                        if (gameState.guardDefends >= 13) {
+                            setTimeout(() => {
+                                showGuardVictory();
+                            }, 2000);
+                        }
+                    } else {
+                        resultDiv.innerHTML = `
+                            <div style="color: #ff4757;">⚠️ 守卫被突破！</div>
+                            <div style="font-size: 18px; color: #888; margin-top: 15px;">有玩家匹配了你的守卫牌</div>
+                            <div style="font-size: 20px; color: #888; margin-top: 15px;">本轮守卫失败，但不影响累计次数</div>
+                        `;
+                    }
+                } else {
+                    // 非守卫模式，正常晋级逻辑
+                    const isMatch = (playerCard.suit === guardCard.suit) || (playerCard.rank === guardCard.rank);
+                    
+                    if (isMatch) {
+                        resultDiv.innerHTML = `
+                            <div style="color: #2ed573;">✅ 匹配成功！</div>
+                            <div style="font-size: 18px; color: #888; margin-top: 15px;">${playerCard.suit}${playerCard.rank} ↔ ${guardCard.suit}${guardCard.rank}</div>
+                            <div style="font-size: 24px; color: #ffd700; margin-top: 15px;">🎉 晋级成功！</div>
+                        `;
+                        
+                        const myLevel = parseInt(document.getElementById('teamALevel').textContent);
+                        const newLevel = myLevel + 1;
+                        document.getElementById('teamALevel').textContent = newLevel + '/A';
+                        
+                        if (newLevel >= 13 && !gameState.isGuard) {
+                            setTimeout(() => becomeGuard(), 1500);
+                        }
+                    } else {
+                        resultDiv.innerHTML = `
+                            <div style="color: #ff4757;">❌ 匹配失败</div>
+                            <div style="font-size: 18px; color: #888; margin-top: 15px;">${playerCard.suit}${playerCard.rank} ≠ ${guardCard.suit}${guardCard.rank}</div>
+                            <div style="font-size: 20px; color: #888; margin-top: 15px;">未能晋级</div>
+                        `;
+                    }
+                }
+                
+                resultDiv.style.opacity = '1';
+                resultDiv.style.transform = 'translateY(0)';
+                resultDiv.style.transition = 'all 0.5s ease-out';
+            }, 2000);
+            
+            // 关闭弹窗
+            setTimeout(() => {
+                const content = document.getElementById('comparisonContent');
+                content.style.transform = 'scale(0.8)';
+                content.style.opacity = '0';
+                
+                setTimeout(() => {
+                    modal.remove();
+                    resetRound();
+                }, 500);
+            }, 4000);
+        }
+        
+        // 揭示守卫牌
+        function revealGuard() {
+            if (gameState.guardRevealed) return;
+            
+            const suits = ['♥', '♦', '♣', '♠'];
+            const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+            const suit = suits[Math.floor(Math.random() * suits.length)];
+            const rank = ranks[Math.floor(Math.random() * ranks.length)];
+            
+            const guardCard = document.getElementById('guardCard');
+            guardCard.classList.add('revealed');
+            
+            // 替换内容为揭示的牌
+            guardCard.innerHTML = `
+                <div class="guard-suit" style="color: ${(suit === '♥' || suit === '♦') ? '#d00' : '#000'}"">${suit}</div>
+                <div class="guard-rank" style="color: ${(suit === '♥' || suit === '♦') ? '#d00' : '#000'}"">${rank}</div>
+            `;
+            
+            gameState.guardRevealed = true;
+        }
+    </script>
+</body>
+</html>

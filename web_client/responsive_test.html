@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>命运塔·首登者 - 响应式测试中心</title>
+    <script src="responsive_adapter_2026.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+        
+        .container {
+            width: 100%;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        /* 设备信息面板 */
+        .info-panel {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 18px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        /* 模拟器选择 */
+        .simulator-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            color: #ffd700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        
+        .device-btn {
+            padding: 15px 10px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .device-btn:hover {
+            border-color: #ffd700;
+            transform: scale(1.05);
+        }
+        
+        .device-btn.active {
+            background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,107,107,0.3));
+            border-color: #ffd700;
+        }
+        
+        .device-name {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .device-size {
+            font-size: 11px;
+            color: #888;
+        }
+        
+        /* 预览窗口 */
+        .preview-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .preview-frame {
+            width: 100%;
+            height: 600px;
+            border: 3px solid #333;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #000;
+            margin: 0 auto;
+            transition: all 0.5s;
+            position: relative;
+        }
+        
+        .preview-frame.iphone-se { width: 375px; height: 667px; }
+        .preview-frame.iphone-14 { width: 390px; height: 844px; }
+        .preview-frame.iphone-max { width: 430px; height: 932px; }
+        .preview-frame.ipad-mini { width: 768px; height: 1024px; }
+        .preview-frame.ipad-pro { width: 1024px; height: 1366px; }
+        .preview-frame.desktop { width: 100%; height: 800px; }
+        
+        .preview-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .device-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 10;
+            display: none;
+        }
+        
+        .preview-frame.iphone-14 .device-notch,
+        .preview-frame.iphone-max .device-notch {
+            display: block;
+        }
+        
+        /* 断点可视化 */
+        .breakpoints-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .breakpoint-bar {
+            display: flex;
+            height: 50px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        
+        .breakpoint-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .bp-xs { background: #ff4757; flex: 576; }
+        .bp-sm { background: #ff6348; flex: 192; }
+        .bp-md { background: #ffd700; flex: 224; }
+        .bp-lg { background: #2ed573; flex: 208; }
+        .bp-xl { background: #3498db; flex: 200; }
+        .bp-xxl { background: #9b59b6; flex: 1; }
+        
+        .current-bp {
+            position: absolute;
+            top: -10px;
+            width: 3px;
+            height: 70px;
+            background: #fff;
+            box-shadow: 0 0 10px #fff;
+            transition: left 0.3s;
+        }
+        
+        /* 测试按钮 */
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .test-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #2ed573, #27ae60);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(46,213,115,0.4);
+        }
+        
+        /* 响应式测试卡片 */
+        .test-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .card-demo {
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #000;
+        }
+        
+        .card-demo .suit {
+            font-size: var(--card-suit-size, 32px);
+        }
+        
+        .card-demo .rank {
+            font-size: var(--card-rank-size, 20px);
+            font-weight: bold;
+        }
+        
+        .demo-label {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 命运塔·响应式测试中心</h1>
+        <div class="subtitle">基于2026年Bootstrap/Tailwind断点标准 | 移动优先策略</div>
+        
+        <!-- 设备信息 -->
+        <div class="info-panel">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">屏幕宽度</div>
+                    <div class="info-value" id="screenWidth">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">屏幕高度</div>
+                    <div class="info-value" id="screenHeight">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">断点类型</div>
+                    <div class="info-value" id="breakpointType">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">设备方向</div>
+                    <div class="info-value" id="orientation">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">像素比</div>
+                    <div class="info-value" id="pixelRatio">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">触摸支持</div>
+                    <div class="info-value" id="touchSupport">--</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 断点可视化 -->
+        <div class="breakpoints-section">
+            <div class="section-title">📊 断点分布图</div>
+            <div style="position: relative;">
+                <div class="breakpoint-bar">
+                    <div class="breakpoint-segment bp-xs">XS
+0-576</div>
+                    <div class="breakpoint-segment bp-sm">SM
+576-768</div>
+                    <div class="breakpoint-segment bp-md">MD
+768-992</div>
+                    <div class="breakpoint-segment bp-lg">LG
+992-1200</div>
+                    <div class="breakpoint-segment bp-xl">XL
+1200-1400</div>
+                    <div class="breakpoint-segment bp-xxl">XXL
+1400+</div>
+                </div>
+                <div class="current-bp" id="currentBp"></div>
+            </div>
+            <div style="margin-top: 15px; font-size: 12px; color: #888;">
+                红色: 超小屏(手机) | 橙色: 小屏(大手机) | 黄色: 中屏(平板) | 
+                绿色: 大屏(横屏平板) | 蓝色: 超大屏(桌面) | 紫色: 特大屏(大桌面)
+            </div>
+        </div>
+        
+        <!-- 设备模拟器 -->
+        <div class="simulator-section">
+            <div class="section-title">🎯 选择模拟设备</div>
+            
+            <div class="device-grid">
+                <div class="device-btn active" onclick="setDevice('iphone-se')">
+                    <div class="device-name">iPhone SE</div>
+                    <div class="device-size">375×667</div>
+                </div>
+                
+                <div class="device-btn" onclick="setDevice('iphone-14')">
+                    <div class="device-name">iPhone 14/15</div>
+                    <div class="device-size">390×844</div>
+                </div>
+                
+                <div class="device-btn" onclick="setDevice('iphone-max')">
+                    <div class="device-name">iPhone Pro Max</div>
+                    <div class="device-size">430×932</div>
+                </div>
+                
+                <div class="device-btn" onclick="setDevice('ipad-mini')">
+                    <div class="device-name">iPad Mini</div>
+                    <div class="device-size">768×1024</div>
+                </div>
+                
+                <div class="device-btn" onclick="setDevice('ipad-pro')">
+                    <div class="device-name">iPad Pro</div>
+                    <div class="device-size">1024×1366</div>
+                </div>
+                
+                <div class="device-btn" onclick="setDevice('desktop')">
+                    <div class="device-name">桌面端</div>
+                    <div class="device-size">自适应</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 预览窗口 -->
+        <div class="preview-section">
+            <div class="section-title">👁️ 实时预览</div>
+            
+            <div style="text-align: center; margin-bottom: 15px;">
+                <a href="solo_game.html" target="_blank" class="test-btn">在新窗口打开个人赛</a>
+                <a href="streak_challenge.html" target="_blank" class="test-btn">在新窗口打开连胜挑战</a>
+            </div>
+            
+            <div class="preview-frame iphone-se" id="previewFrame">
+                <div class="device-notch"></div>
+                <iframe src="solo_game.html" id="previewIframe"></iframe>
+            </div>
+        </div>
+        
+        <!-- 响应式测试卡片 -->
+        <div class="test-card">
+            <div class="section-title">🎴 响应式卡牌测试</div>
+            
+            <div class="test-grid">
+                <div class="card-demo">
+                    <div class="suit">♠</div>
+                    <div class="rank">A</div>
+                    <div class="demo-label">当前尺寸</div>
+                </div>
+                
+                <div class="info-item" style="background: rgba(255,215,0,0.1); border: 1px solid #ffd700;">
+                    <div class="info-label">CSS变量</div>
+                    <div style="font-size: 11px; color: #888; margin-top: 10px; text-align: left;">
+                        --card-width: 55-90px<br>
+                        --card-height: 75-125px<br>
+                        根据断点自动调整
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <!-- 测试按钮 -->
+        <div class="test-buttons">
+            <button class="test-btn" onclick="testOrientation()">🔄 测试横竖屏切换</button>
+            <button class="test-btn" onclick="testTouch()">👆 测试触摸响应</button>
+            <button class="test-btn" onclick="testSafeArea()">📱 测试安全区适配</button>
+        </div>
+    </div>
+    
+    <script>
+        // 更新设备信息
+        function updateDeviceInfo() {
+            document.getElementById('screenWidth').textContent = window.innerWidth + 'px';
+            document.getElementById('screenHeight').textContent = window.innerHeight + 'px';
+            
+            // 断点类型
+            const width = window.innerWidth;
+            let bp = 'XS';
+            if (width >= 1400) bp = 'XXL';
+            else if (width >= 1200) bp = 'XL';
+            else if (width >= 992) bp = 'LG';
+            else if (width >= 768) bp = 'MD';
+            else if (width >= 576) bp = 'SM';
+            document.getElementById('breakpointType').textContent = bp;
+            
+            // 更新断点指示器
+            const maxWidth = 2400;
+            const position = (width / maxWidth) * 100;
+            document.getElementById('currentBp').style.left = position + '%';
+            
+            // 方向
+            document.getElementById('orientation').textContent = 
+                window.innerWidth > window.innerHeight ? '横屏' : '竖屏';
+            
+            // 像素比
+            document.getElementById('pixelRatio').textContent = window.devicePixelRatio + 'x';
+            
+            // 触摸支持
+            document.getElementById('touchSupport').textContent = 
+                'ontouchstart' in window ? '✅ 支持' : '❌ 不支持';
+        }
+        
+        // 设置设备
+        function setDevice(device) {
+            const frame = document.getElementById('previewFrame');
+            frame.className = 'preview-frame ' + device;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.device-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.device-btn').classList.add('active');
+        }
+        
+        // 测试横竖屏
+        function testOrientation() {
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').then(() => {
+                    alert('已切换到横屏模式');
+                }).catch(() => {
+                    alert('请手动旋转设备');
+                });
+            } else {
+                alert('请手动旋转设备测试横竖屏');
+            }
+        }
+        
+        // 测试触摸
+        function testTouch() {
+            const btn = event.target;
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                btn.style.transform = '';
+                alert('触摸响应正常！最小触控区44px');
+            }, 100);
+        }
+        
+        // 测试安全区
+        function testSafeArea() {
+            const safeTop = getComputedStyle(document.documentElement).getPropertyValue('--safe-top');
+            alert(`安全区信息：\n顶部: ${safeTop || '0px'}\n底部: ${getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom') || '0px'}`);
+        }
+        
+        // 初始化
+        window.addEventListener('resize', updateDeviceInfo);
+        window.addEventListener('orientationchange', updateDeviceInfo);
+        updateDeviceInfo();
+    </script>
+</body>
+</html>

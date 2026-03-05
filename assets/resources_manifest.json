@@ -1,0 +1,250 @@
+{
+  "project": "Tower of Fate - 命运之塔",
+  "version": "1.0",
+  "generated_at": "2026-03-03",
+  "resource_categories": {
+    "backgrounds": {
+      "description": "游戏背景图片资源",
+      "path": "/assets/images/backgrounds/",
+      "items": [
+        {
+          "id": "bg_login",
+          "name": "登录界面背景",
+          "prompt": "Epic fantasy card game login screen, ancient tower reaching into mystical clouds, golden hour lighting, floating magical cards, ethereal atmosphere, deep purple and gold color scheme, ultra detailed, 4K, game art style",
+          "style": "Adventure/Fantasy",
+          "resolution": "1920x1080",
+          "priority": "P0",
+          "status": "placeholder"
+        },
+        {
+          "id": "bg_main",
+          "name": "主界面背景",
+          "prompt": "Fantasy tower main menu background, mysterious ancient tower with glowing windows, magical particles floating, dramatic lighting, rich colors, game UI background, cinematic composition",
+          "style": "Adventure/Fantasy",
+          "resolution": "1920x1080",
+          "priority": "P0",
+          "status": "placeholder"
+        },
+        {
+          "id": "bg_game",
+          "name": "游戏对战背景",
+          "prompt": "Card battle arena background, floating platforms in mystical space, glowing runes, magical atmosphere, dark blue and purple tones, epic fantasy setting",
+          "style": "Adventure/Fantasy",
+          "resolution": "1920x1080",
+          "priority": "P0",
+          "status": "placeholder"
+        },
+        {
+          "id": "bg_shop",
+          "name": "商城背景",
+          "prompt": "Treasure room background, golden coins and gems, luxurious atmosphere, warm golden lighting, rich merchant's vault, fantasy game shop",
+          "style": "Adventure/Fantasy",
+          "resolution": "1920x1080",
+          "priority": "P1",
+          "status": "placeholder"
+        },
+        {
+          "id": "bg_team",
+          "name": "团队赛背景",
+          "prompt": "Team battle arena, grand tournament stage, cheering crowd in background, dramatic spotlight, competitive atmosphere, esports style",
+          "style": "Adventure/Competitive",
+          "resolution": "1920x1080",
+          "priority": "P1",
+          "status": "placeholder"
+        }
+      ]
+    },
+    "avatars": {
+      "description": "玩家头像资源",
+      "path": "/assets/images/avatars/",
+      "items": [
+        {
+          "id": "avatar_warrior",
+          "name": "战士头像",
+          "prompt": "Fantasy warrior portrait, armored knight, determined expression, golden helmet, epic lighting, game avatar style, transparent background",
+          "style": "Fantasy Character",
+          "resolution": "512x512",
+          "priority": "P0",
+          "status": "placeholder"
+        },
+        {
+          "id": "avatar_mage",
+          "name": "法师头像",
+          "prompt": "Mystical wizard portrait, glowing eyes, arcane symbols, magical aura, purple robes, game avatar style, transparent background",
+          "style": "Fantasy Character",
+          "resolution": "512x512",
+          "priority": "P0",
+          "status": "placeholder"
+        },
+        {
+          "id": "avatar_rogue",
+          "name": "盗贼头像",
+          "prompt": "Cunning rogue portrait, hooded figure, mysterious smile, dagger visible, dark clothing, game avatar style, transparent background",
+          "style": "Fantasy Character",
+          "resolution": "512x512",
+          "priority": "P0",
+          "status": "placeholder"
+        },
+        {
+          "id": "avatar_priest",
+          "name": "牧师头像",
+          "prompt": "Holy priest portrait, divine light, peaceful expression, white and gold robes, healing aura, game avatar style, transparent background",
+          "style": "Fantasy Character",
+          "resolution": "512x512",
+          "priority": "P0",
+          "status": "placeholder"
+        },
+        {
+          "id": "avatar_guard",
+          "name": "守卫头像",
+          "prompt": "Tower guard portrait, armored sentinel, serious expression, shield and spear, protective stance, game avatar style, transparent background",
+          "style": "Fantasy Character",
+          "resolution": "512x512",
+          "priority": "P1",
+          "status": "placeholder"
+        },
+        {
+          "id": "avatar_vip",
+          "name": "VIP专属头像",
+          "prompt": "VIP exclusive avatar, golden crown, luxurious appearance, special effects, premium quality, game avatar style, transparent background",
+          "style": "Fantasy Character/Premium",
+          "resolution": "512x512",
+          "priority": "P1",
+          "status": "placeholder"
+        }
+      ]
+    },
+    "cards": {
+      "description": "卡牌图片资源",
+      "path": "/assets/images/cards/",
+      "items": [
+        {
+          "id": "card_back_common",
+          "name": "普通卡背",
+          "prompt": "Card back design, classic pattern, blue and gold, elegant border, game card style",
+          "style": "Classic",
+          "resolution": "400x560",
+          "priority": "P0",
+          "status": "placeholder"
+        },
+        {
+          "id": "card_back_rare",
+          "name": "稀有卡背",
+          "prompt": "Card back design, intricate patterns, glowing elements, purple and gold, mystical symbols, premium quality",
+          "style": "Mystical",
+          "resolution": "400x560",
+          "priority": "P1",
+          "status": "placeholder"
+        },
+        {
+          "id": "card_back_legendary",
+          "name": "传说卡背",
+          "prompt": "Legendary card back, dragon motifs, golden flames, epic design, animated appearance, highest quality",
+          "style": "Epic/Legendary",
+          "resolution": "400x560",
+          "priority": "P1",
+          "status": "placeholder"
+        }
+      ]
+    },
+    "ui_elements": {
+      "description": "UI界面元素",
+      "path": "/assets/images/ui/",
+      "items": [
+        {
+          "id": "btn_gold",
+          "name": "金色按钮",
+          "prompt": "Golden game button, shiny metallic surface, ornate border, RPG game UI style, transparent background",
+          "style": "UI Element",
+          "resolution": "256x80",
+          "priority": "P0",
+          "status": "placeholder"
+        },
+        {
+          "id": "frame_avatar",
+          "name": "头像框",
+          "prompt": "Avatar frame border, golden ornate design, decorative corners, game UI element, transparent background",
+          "style": "UI Element",
+          "resolution": "150x150",
+          "priority": "P1",
+          "status": "placeholder"
+        },
+        {
+          "id": "icon_coin",
+          "name": "金币图标",
+          "prompt": "Gold coin icon, shiny metallic, game currency symbol, detailed texture, transparent background",
+          "style": "Icon",
+          "resolution": "64x64",
+          "priority": "P0",
+          "status": "placeholder"
+        },
+        {
+          "id": "icon_diamond",
+          "name": "钻石图标",
+          "prompt": "Diamond gem icon, sparkling blue crystal, premium currency symbol, transparent background",
+          "style": "Icon",
+          "resolution": "64x64",
+          "priority": "P0",
+          "status": "placeholder"
+        }
+      ]
+    },
+    "effects": {
+      "description": "特效图片资源",
+      "path": "/assets/images/effects/",
+      "items": [
+        {
+          "id": "effect_levelup",
+          "name": "升级特效",
+          "prompt": "Level up effect, golden light burst, magical particles, celebration visual, transparent background",
+          "style": "VFX",
+          "resolution": "512x512",
+          "priority": "P1",
+          "status": "placeholder"
+        },
+        {
+          "id": "effect_perfect",
+          "name": "完美匹配特效",
+          "prompt": "Perfect match effect, golden explosion, sparkles and stars, victory celebration, transparent background",
+          "style": "VFX",
+          "resolution": "512x512",
+          "priority": "P1",
+          "status": "placeholder"
+        },
+        {
+          "id": "effect_card_play",
+          "name": "出牌特效",
+          "prompt": "Card play trail effect, magical swoosh, particle trail, transparent background",
+          "style": "VFX",
+          "resolution": "256x256",
+          "priority": "P1",
+          "status": "placeholder"
+        }
+      ]
+    }
+  },
+  "generation_guide": {
+    "recommended_models": [
+      "DALL-E 3",
+      "Midjourney v6",
+      "Stable Diffusion XL",
+      "Adobe Firefly"
+    ],
+    "common_settings": {
+      "quality": "high",
+      "style": "game art",
+      "lighting": "cinematic",
+      "details": "ultra detailed"
+    },
+    "naming_convention": "{category}_{id}_{version}.png"
+  },
+  "placeholder_system": {
+    "description": "在图片资源生成前使用占位符",
+    "implementation": {
+      "css_gradients": "使用CSS渐变作为临时背景",
+      "emoji_icons": "使用emoji作为临时图标",
+      "colored_shapes": "使用彩色形状作为临时头像",
+      "status": "当前所有资源使用占位符，等待AI生成替换"
+    }
+  }
+}

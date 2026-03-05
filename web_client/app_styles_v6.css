@@ -1,0 +1,597 @@
+/**
+ * 命运塔·首登者 - 移动端APP统一CSS框架 V6.0
+ * 
+ * 目标：1000万美金营收，移动优先，一屏式布局
+ */
+
+/* ==========================================
+   基础配置
+   ========================================== */
+:root {
+    /* 颜色系统 */
+    --color-primary: #FFD700;
+    --color-secondary: #FF6B6B;
+    --color-success: #2ED573;
+    --color-warning: #FFA502;
+    --color-danger: #FF4757;
+    --color-bg: #0A0A1A;
+    --color-bg-light: #1A1A3E;
+    --color-text: #FFFFFF;
+    --color-text-muted: #888888;
+    
+    /* VIP颜色 */
+    --vip-1: #C0C0C0;
+    --vip-2: #FFD700;
+    --vip-3: #FF6B6B;
+    --vip-4: #9B59B6;
+    --vip-5: #3498DB;
+    --vip-6: #1ABC9C;
+    --vip-7: #E74C3C;
+    --vip-8: #F39C12;
+    
+    /* 触摸热区 - 严格遵循iOS 44px标准 */
+    --touch-min: 44px;
+    --touch-comfort: 48px;
+    --touch-large: 56px;
+    
+    /* 间距系统 - 基于8px网格 */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    
+    /* 字体系统 - 最小14px保证可读性 */
+    --font-xs: 12px;
+    --font-sm: 14px;
+    --font-base: 16px;
+    --font-lg: 18px;
+    --font-xl: 20px;
+    --font-2xl: 24px;
+    
+    /* 圆角 */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 9999px;
+    
+    /* iOS安全区 */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    
+    /* 布局 */
+    --header-height: 56px;
+    --bottom-nav-height: 64px;
+}
+
+/* ==========================================
+   基础重置 - 移动优先
+   ========================================== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    font-size: var(--font-base);
+    color: var(--color-text);
+    background: var(--color-bg);
+    height: 100%;
+    overflow: hidden;
+    /* iOS安全区适配 */
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+}
+
+/* 禁用选择（游戏元素） */
+.no-select {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* ==========================================
+   一屏式布局框架
+   ========================================== */
+.app-container {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+    display: flex;
+    flex-direction: column;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 头部 - 固定高度 */
+.app-header {
+    height: var(--header-height);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-3);
+    background: linear-gradient(180deg, rgba(255,215,0,0.1), transparent);
+    border-bottom: 1px solid rgba(255,215,0,0.2);
+}
+
+.app-header-title {
+    font-size: var(--font-lg);
+    font-weight: bold;
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.app-header-action {
+    min-width: var(--touch-min);
+    min-height: var(--touch-min);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-xl);
+}
+
+/* 底部导航 - 固定高度 */
+.app-bottom-nav {
+    height: var(--bottom-nav-height);
+    flex-shrink: 0;
+    display: flex;
+    background: var(--color-bg-light);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: var(--safe-bottom);
+}
+
+.nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--font-xs);
+    position: relative;
+}
+
+.nav-item.active {
+    color: var(--color-primary);
+}
+
+.nav-item::before {
+    content: '';
+    font-size: var(--font-xl);
+}
+
+/* 主内容区 - 自适应填充 */
+.app-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+/* 游戏区域 - 核心玩法区 */
+.game-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    overflow: hidden;
+}
+
+/* ==========================================
+   触摸优化组件
+   ========================================== */
+
+/* 基础按钮 - 最小44px触摸热区 */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--touch-min);
+    min-width: var(--touch-min);
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-sm);
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn:active {
+    transform: scale(0.96);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: #000;
+}
+
+.btn-secondary {
+    background: rgba(255,255,255,0.1);
+    color: var(--color-text);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.btn-large {
+    min-height: var(--touch-large);
+    font-size: var(--font-base);
+}
+
+/* 触摸反馈 */
+.touch-active {
+    opacity: 0.7;
+    transform: scale(0.98);
+}
+
+/* 卡片 - 触摸优化 */
+.card {
+    background: rgba(255,255,255,0.05);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3);
+    min-height: var(--touch-comfort);
+}
+
+.card-pressable {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.card-pressable:active {
+    background: rgba(255,255,255,0.1);
+    transform: scale(0.98);
+}
+
+/* 列表项 - 触摸优化 */
+.list-item {
+    display: flex;
+    align-items: center;
+    min-height: var(--touch-large);
+    padding: 0 var(--space-3);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ==========================================
+   游戏组件
+   ========================================== */
+
+/* 塔组件 */
+.tower-widget {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 0;
+}
+
+.tower-header {
+    font-size: var(--font-sm);
+    color: var(--color-primary);
+    margin-bottom: var(--space-2);
+    text-align: center;
+}
+
+.tower-body {
+    flex: 1;
+    width: 70%;
+    max-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tower-level {
+    flex: 1;
+    min-height: 14px;
+    max-height: 24px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-xs);
+    font-weight: bold;
+    position: relative;
+}
+
+/* 玩家头像 - 塔上 */
+.player-avatar-on-tower {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: float 2s ease-in-out infinite;
+}
+
+.player-avatar-on-tower.team {
+    right: -24px;
+    background: linear-gradient(135deg, #3498DB, #2980B9);
+}
+
+.player-avatar-on-tower.enemy {
+    left: -24px;
+    background: linear-gradient(135deg, #E74C3C, #C0392B);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+/* 手牌组件 */
+.hand-widget {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.hand-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-sm);
+}
+
+.hand-cards {
+    display: flex;
+    gap: var(--space-2);
+    overflow-x: auto;
+    padding: var(--space-1) 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.hand-cards::-webkit-scrollbar {
+    display: none;
+}
+
+/* 卡牌 */
+.game-card {
+    flex-shrink: 0;
+    width: 48px;
+    height: 66px;
+    background: linear-gradient(135deg, #fff, #f0f0f0);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.game-card.selected {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 10px rgba(255,215,0,0.5);
+    transform: translateY(-4px);
+}
+
+.game-card .suit {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.game-card .rank {
+    font-size: 14px;
+    font-weight: bold;
+    color: #000;
+}
+
+/* 天命牌 */
+.destiny-cards {
+    display: flex;
+    gap: var(--space-2);
+    justify-content: center;
+}
+
+.destiny-card {
+    width: 52px;
+    height: 64px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.destiny-card:active {
+    transform: scale(0.95);
+    border-color: var(--color-primary);
+}
+
+.destiny-card .icon {
+    font-size: 20px;
+}
+
+/* ==========================================
+   营收组件
+   ========================================== */
+
+/* VIP标识 */
+.vip-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-xs);
+    font-weight: bold;
+}
+
+/* 钻石/金币显示 */
+.currency-display {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    background: rgba(0,0,0,0.3);
+    border-radius: var(--radius-full);
+    font-size: var(--font-sm);
+}
+
+.currency-display .icon {
+    font-size: var(--font-base);
+}
+
+/* 快速购买按钮 */
+.btn-purchase {
+    background: linear-gradient(135deg, #FFD700, #FFA502);
+    color: #000;
+    font-weight: bold;
+    min-height: var(--touch-large);
+}
+
+/* ==========================================
+   响应式优化
+   ========================================== */
+
+/* iPhone SE/8 (375px) */
+@media (max-width: 375px) {
+    :root {
+        --font-sm: 13px;
+        --font-base: 15px;
+    }
+    
+    .game-card {
+        width: 42px;
+        height: 58px;
+    }
+    
+    .game-card .suit {
+        font-size: 18px;
+    }
+    
+    .game-card .rank {
+        font-size: 12px;
+    }
+    
+    .tower-level {
+        min-height: 12px;
+        font-size: 10px;
+    }
+}
+
+/* 大屏手机 (430px+) */
+@media (min-width: 430px) {
+    .game-card {
+        width: 54px;
+        height: 74px;
+    }
+    
+    .game-card .suit {
+        font-size: 24px;
+    }
+    
+    .game-card .rank {
+        font-size: 16px;
+    }
+}
+
+/* 横屏模式 */
+@media (orientation: landscape) and (max-height: 500px) {
+    .app-container {
+        max-width: 100%;
+    }
+    
+    .game-area {
+        flex-direction: row;
+    }
+}
+
+/* iPad Mini及以上 */
+@media (min-width: 768px) {
+    .app-container {
+        max-width: 600px;
+    }
+}
+
+/* ==========================================
+   动画效果
+   ========================================== */
+
+/* 霓虹灯效果 */
+.neon-glow {
+    animation: neonPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes neonPulse {
+    0%, 100% { 
+        box-shadow: 0 0 5px currentColor;
+    }
+    50% { 
+        box-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+    }
+}
+
+/* 呼吸效果 */
+.breathe {
+    animation: breathe 2s ease-in-out infinite;
+}
+
+@keyframes breathe {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* 震动反馈 */
+.shake {
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* ==========================================
+   无障碍支持
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* 高对比度模式 */
+@media (prefers-contrast: high) {
+    :root {
+        --color-text: #FFFFFF;
+        --color-bg: #000000;
+    }
+}

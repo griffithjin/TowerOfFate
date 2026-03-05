@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>命运塔·首登者 - 赛季与荣誉</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        
+        /* 头部 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 28px;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .back-btn {
+            color: #888;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            border-color: #ffd700;
+            color: #ffd700;
+        }
+        
+        /* 当前赛季展示 */
+        .current-season {
+            background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,107,107,0.1));
+            border: 2px solid rgba(255,215,0,0.4);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .current-season::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .season-badge {
+            display: inline-block;
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            border-radius: 20px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 20px;
+        }
+        
+        .season-title {
+            font-size: 42px;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(255,215,0,0.5);
+        }
+        
+        .season-subtitle {
+            font-size: 20px;
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
+        
+        .season-desc {
+            font-size: 18px;
+            color: #ccc;
+            line-height: 1.6;
+            max-width: 800px;
+        }
+        
+        .season-timer {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .timer-item {
+            text-align: center;
+        }
+        
+        .timer-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .timer-label {
+            font-size: 14px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        /* 赛季规则 */
+        .rules-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .rule-card {
+            background: rgba(255,255,255,0.05);
+            border-left: 4px solid #ffd700;
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .rule-title {
+            font-size: 16px;
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+        
+        .rule-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        /* 荣誉展示 */
+        .honors-section {
+            margin-bottom: 40px;
+        }
+        
+        .honors-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .honor-tab {
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #888;
+        }
+        
+        .honor-tab:hover, .honor-tab.active {
+            background: rgba(255,215,0,0.1);
+            border-color: #ffd700;
+            color: #ffd700;
+        }
+        
+        .honors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        
+        .honor-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .honor-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,215,0,0.3);
+        }
+        
+        .honor-card.owned {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+        }
+        
+        .honor-rarity {
+            position: absolute;
+            top: -10px;
+            right: 15px;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .rarity-basic { background: #95a5a6; color: #fff; }
+        .rarity-rare { background: #3498db; color: #fff; }
+        .rarity-epic { background: #9b59b6; color: #fff; }
+        .rarity-legendary { background: linear-gradient(45deg, #f39c12, #e74c3c); color: #fff; }
+        
+        .honor-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .honor-name {
+            font-size: 20px;
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+        
+        .honor-desc {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .honor-reward {
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            font-size: 13px;
+            color: #0ff;
+        }
+        
+        .honor-status {
+            margin-top: 15px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 13px;
+        }
+        
+        .status-owned {
+            background: rgba(46, 213, 115, 0.2);
+            color: #2ed573;
+        }
+        
+        .status-locked {
+            background: rgba(100, 100, 100, 0.2);
+            color: #666;
+        }
+        
+        /* 赛季历史 */
+        .season-history {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 30px;
+        }
+        
+        .history-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+        }
+        
+        .timeline-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            background: rgba(255,215,0,0.1);
+            border: 2px solid rgba(255,215,0,0.3);
+        }
+        
+        .timeline-content h4 {
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-content p {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .season-title { font-size: 28px; }
+            .season-timer { flex-wrap: wrap; }
+            .honors-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    <script src="music_system.js"></script>
+    <script src="responsive_adapter.js"></script>
+</head>
+<body class="safe-top safe-bottom">
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="logo">🏆 命运塔·首登者 - 赛季与荣誉</div>
+            <a href="new_index.html" class="back-btn">← 返回大厅</a>
+        </div>
+        
+        <!-- 当前赛季 -->
+        <div class="current-season">
+            <div class="season-badge">⚡ 第 1 赛季进行中</div>
+            <h1 class="season-title">闪电战 Blitz</h1>
+            <div class="season-subtitle">Season of Speed & Precision</div>
+            <p class="season-desc">
+                游戏节奏加快，玩家必须在 <strong style="color: #ffd700;">10秒</strong> 内完成选牌，
+                否则系统将自动为其选择一张牌。快速决策，极限挑战！
+            </p>
+            
+            <div class="season-timer">
+                <div class="timer-item">
+                    <div class="timer-value" id="days">23</div>
+                    <div class="timer-label">天</div>
+                </div>
+                <div class="timer-item">
+                    <div class="timer-value" id="hours">14</div>
+                    <div class="timer-label">时</div>
+                </div>
+                <div class="timer-item">
+                    <div class="timer-value" id="minutes">35</div>
+                    <div class="timer-label">分</div>
+                </div>
+                <div class="timer-item">
+                    <div class="timer-value" id="seconds">42</div>
+                    <div class="timer-label">秒</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 赛季规则 -->
+        <div class="rules-section">
+            <div class="section-title">
+                <span>📜</span> 本赛季核心规则
+            </div>
+            
+            <div class="rules-grid">
+                <div class="rule-card">
+                    <div class="rule-title">⏱️ 选牌时限</div>
+                    <div class="rule-value" style="color: #ff6b6b;">10秒</div>
+                </div>
+                
+                <div class="rule-card">
+                    <div class="rule-title">⚡ 快速奖励</div>
+                    <div class="rule-value" style="color: #2ed573;">5秒内 = 天命牌</div>
+                </div>
+                
+                <div class="rule-card">
+                    <div class="rule-title">🎯 自动选牌</div>
+                    <div class="rule-value">超时自动</div>
+                </div>
+                
+                <div class="rule-card">
+                    <div class="rule-title">🔥 肾上腺素</div>
+                    <div class="rule-value">3连快速 = 双倍分</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 荣誉系统 -->
+        <div class="honors-section">
+            <div class="section-title">
+                <span>🏅</span> 荣誉殿堂
+            </div>
+            
+            <div class="honors-tabs">
+                <div class="honor-tab active" onclick="switchHonorTab('season')">📅 赛季荣誉</div>
+                <div class="honor-tab" onclick="switchHonorTab('eternal')">👑 永恒荣誉</div>
+                <div class="honor-tab" onclick="switchHonorTab('my')">✨ 我的荣誉</div>
+            </div>
+            
+            <!-- 赛季荣誉 -->
+            <div id="honors-season" class="honors-content">
+                <div class="honors-grid">
+                    <!-- 闪电之影 -->
+                    <div class="honor-card owned">
+                        <div class="honor-rarity rarity-rare">稀有</div>
+                        <div class="honor-icon">⚡</div>
+                        <div class="honor-name">闪电之影</div>
+                        <div class="honor-desc">在闪电战赛季中，单局至少5次在5秒内完成选牌</div>
+                        <div class="honor-reward">🎁 奖励: 闪烁金色闪电头像框</div>
+                        <div class="honor-status status-owned">✅ 已获得</div>
+                    </div>
+                    
+                    <!-- 双面守护者 -->
+                    <div class="honor-card">
+                        <div class="honor-rarity rarity-epic">史诗</div>
+                        <div class="honor-icon">🛡️</div>
+                        <div class="honor-name">双面守护者</div>
+                        <div class="honor-desc">在守卫密令赛季中，单局至少3次同时匹配两张守卫牌</div>
+                        <div class="honor-reward">🎁 奖励: 专属称号「双面守护者」</div>
+                        <div class="honor-status status-locked">🔒 未解锁</div>
+                    </div>
+                    
+                    <!-- 平民逆袭 -->
+                    <div class="honor-card">
+                        <div class="honor-rarity rarity-epic">史诗</div>
+                        <div class="honor-icon">👑</div>
+                        <div class="honor-name">平民逆袭</div>
+                        <div class="honor-desc">在平民英雄赛季中，作为第一名登顶</div>
+                        <div class="honor-reward">🎁 奖励: 称号+卡背「草根之王」</div>
+                        <div class="honor-status status-locked">🔒 未解锁</div>
+                    </div>
+                    
+                    <!-- 双倍豪赌 -->
+                    <div class="honor-card">
+                        <div class="honor-rarity rarity-rare">稀有</div>
+                        <div class="honor-icon">🎲</div>
+                        <div class="honor-name">双倍豪赌</div>
+                        <div class="honor-desc">在双生对决赛季中，单局至少4次选择两张牌且成功率超75%</div>
+                        <div class="honor-reward">🎁 奖励: 分裂彩虹色头像框</div>
+                        <div class="honor-status status-locked">🔒 未解锁</div>
+                    </div>
+                    
+                    <!-- 逆天改命 -->
+                    <div class="honor-card">
+                        <div class="honor-rarity rarity-legendary">传说</div>
+                        <div class="honor-icon">🔮</div>
+                        <div class="honor-name">逆天改命</div>
+                        <div class="honor-desc">在禁忌之牌赛季中，单局至少3次在禁忌花色宣布后仍能登顶</div>
+                        <div class="honor-reward">🎁 奖励: 传说称号「逆天改命」</div>
+                        <div class="honor-status status-locked">🔒 未解锁</div>
+                    </div>
+                    
+                    <!-- 完美主义 -->
+                    <div class="honor-card">
+                        <div class="honor-rarity rarity-rare">稀有</div>
+                        <div class="honor-icon">💎</div>
+                        <div class="honor-name">完美主义</div>
+                        <div class="honor-desc">在大师之路赛季中，单局至少一半的晋升都是完美匹配</div>
+                        <div class="honor-reward">🎁 奖励: 称号「完美主义者」</div>
+                        <div class="honor-status status-locked">🔒 未解锁</div>
+                    </div>
+                    
+                    <!-- 赛季冠军 -->
+                    <div class="honor-card owned">
+                        <div class="honor-rarity rarity-legendary">传说</div>
+                        <div class="honor-icon">🏆</div>
+                        <div class="honor-name">赛季冠军</div>
+                        <div class="honor-desc">在任意赛季中，成为该赛季第一个达到13层的玩家</div>
+                        <div class="honor-reward">🎁 奖励: 冠军称号+名人堂展示</div>
+                        <div class="honor-status status-owned">✅ 已获得</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 永恒荣誉 -->
+            <div id="honors-eternal" class="honors-content" style="display: none;">
+                <div class="honors-grid">
+                    <div class="honor-card owned">
+                        <div class="honor-rarity rarity-basic">基础</div>
+                        <div class="honor-icon">🎮</div>
+                        <div class="honor-name">初出茅庐</div>
+                        <div class="honor-desc">完成第一场游戏</div>
+                        <div class="honor-reward">🎁 称号: 初出茅庐</div>
+                        <div class="honor-status status-owned">✅ 已获得</div>
+                    </div>
+                    
+                    <div class="honor-card owned">
+                        <div class="honor-rarity rarity-basic">基础</div>
+                        <div class="honor-icon">🏔️</div>
+                        <div class="honor-name">登顶者</div>
+                        <div class="honor-desc">首次登顶成功</div>
+                        <div class="honor-reward">🎁 称号: 登顶者</div>
+                        <div class="honor-status status-owned">✅ 已获得</div>
+                    </div>
+                    
+                    <div class="honor-card">
+                        <div class="honor-rarity rarity-rare">稀有</div>
+                        <div class="honor-icon">💯</div>
+                        <div class="honor-name">百战百胜</div>
+                        <div class="honor-desc">累计登顶成功100次</div>
+                        <div class="honor-reward">🎁 称号: 百战百胜</div>
+                        <div class="honor-status status-locked">🔒 进度: 23/100</div>
+                    </div>
+                    
+                    <div class="honor-card">
+                        <div class="honor-rarity rarity-epic">史诗</div>
+                        <div class="honor-icon">🔥</div>
+                        <div class="honor-name">千锤百炼</div>
+                        <div class="honor-desc">累计参与游戏1000局</div>
+                        <div class="honor-reward">🎁 称号: 千锤百炼</div>
+                        <div class="honor-status status-locked">🔒 进度: 156/1000</div>
+                    </div>
+                    
+                    
+                    <div class="honor-card">
+                        <div class="honor-rarity rarity-rare">稀有</div>
+                        <div class="honor-icon">🤖</div>
+                        <div class="honor-name">AI终结者</div>
+                        <div class="honor-desc">累计在单人模式中战胜AI 100次</div>
+                        <div class="honor-reward">🎁 称号: AI终结者</div>
+                        <div class="honor-status status-locked">🔒 进度: 45/100</div>
+                    </div>
+                    
+                    
+                    <div class="honor-card">
+                        <div class="honor-rarity rarity-legendary">传说</div>
+                        <div class="honor-icon">⚔️</div>
+                        <div class="honor-name">常胜将军</div>
+                        <div class="honor-desc">达成连续10次登顶</div>
+                        <div class="honor-reward">🎁 称号: 常胜将军</div>
+                        <div class="honor-status status-locked">🔒 最高连胜: 4</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <!-- 赛季历史 -->
+        <div class="season-history">
+            <div class="section-title">
+                <span>📚</span> 赛季历史
+            </div>
+            
+            <div class="history-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon">⚡</div>
+                    <div class="timeline-content">
+                        <h4>第1赛季 - 闪电战</h4>
+                        <p>进行中 | 10秒极限选牌挑战</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 切换荣誉标签
+        function switchHonorTab(tab) {
+            document.querySelectorAll('.honor-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.honors-content').forEach(c => c.style.display = 'none');
+            
+            event.target.classList.add('active');
+            document.getElementById('honors-' + tab).style.display = 'block';
+        }
+        
+        // 倒计时
+        function updateTimer() {
+            const days = document.getElementById('days');
+            const hours = document.getElementById('hours');
+            const minutes = document.getElementById('minutes');
+            const seconds = document.getElementById('seconds');
+            
+            let d = parseInt(days.textContent);
+            let h = parseInt(hours.textContent);
+            let m = parseInt(minutes.textContent);
+            let s = parseInt(seconds.textContent);
+            
+            s--;
+            if (s < 0) {
+                s = 59;
+                m--;
+                if (m < 0) {
+                    m = 59;
+                    h--;
+                    if (h < 0) {
+                        h = 23;
+                        d--;
+                    }
+                }
+            }
+            
+            days.textContent = d;
+            hours.textContent = h.toString().padStart(2, '0');
+            minutes.textContent = m.toString().padStart(2, '0');
+            seconds.textContent = s.toString().padStart(2, '0');
+        }
+        
+        setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>

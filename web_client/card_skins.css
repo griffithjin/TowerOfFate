@@ -1,0 +1,473 @@
+/* 命运塔·首登者 - 扑克牌皮肤CSS样式 */
+/* 亮闪闪边框特效 */
+
+/* ============================================
+   基础卡片样式
+   ============================================ */
+.game-card {
+    width: 80px;
+    height: 110px;
+    background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%);
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+.game-card:hover {
+    transform: translateY(-10px) scale(1.05);
+    z-index: 10;
+}
+
+/* ============================================
+   亮闪闪边框特效 - 通用
+   ============================================ */
+
+/* 粉色发光边框 - 萌猫系列 */
+.border-glow-pink {
+    border: 3px solid #ff69b4;
+    box-shadow: 
+        0 0 10px #ff69b4,
+        0 0 20px #ff69b4,
+        0 0 30px rgba(255, 105, 180, 0.5),
+        inset 0 0 20px rgba(255, 182, 193, 0.3);
+    animation: pinkPulse 2s ease-in-out infinite;
+}
+
+@keyframes pinkPulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 10px #ff69b4,
+            0 0 20px #ff69b4,
+            0 0 30px rgba(255, 105, 180, 0.5),
+            inset 0 0 20px rgba(255, 182, 193, 0.3);
+    }
+    50% {
+        box-shadow: 
+            0 0 20px #ff69b4,
+            0 0 40px #ff69b4,
+            0 0 60px rgba(255, 105, 180, 0.8),
+            0 0 80px rgba(255, 105, 180, 0.4),
+            inset 0 0 30px rgba(255, 182, 193, 0.5);
+    }
+}
+
+/* 金色闪光边框 */
+.border-glow-gold {
+    border: 3px solid #ffd700;
+    background: linear-gradient(135deg, #fff 0%, #fffacd 100%);
+    box-shadow: 
+        0 0 10px #ffd700,
+        0 0 20px rgba(255, 215, 0, 0.6),
+        inset 0 0 15px rgba(255, 215, 0, 0.2);
+    animation: goldShimmer 2s linear infinite;
+}
+
+@keyframes goldShimmer {
+    0% {
+        box-shadow: 
+            0 0 10px #ffd700,
+            0 0 20px rgba(255, 215, 0, 0.6);
+        border-color: #ffd700;
+    }
+    25% {
+        box-shadow: 
+            0 0 20px #ffd700,
+            0 0 40px rgba(255, 215, 0, 0.8),
+            0 0 60px rgba(255, 215, 0, 0.4);
+        border-color: #ffec8b;
+    }
+    50% {
+        box-shadow: 
+            0 0 30px #ffd700,
+            0 0 50px rgba(255, 215, 0, 1),
+            0 0 80px rgba(255, 215, 0, 0.6);
+        border-color: #fff;
+    }
+    75% {
+        box-shadow: 
+            0 0 20px #ffd700,
+            0 0 40px rgba(255, 215, 0, 0.8);
+        border-color: #ffec8b;
+    }
+    100% {
+        box-shadow: 
+            0 0 10px #ffd700,
+            0 0 20px rgba(255, 215, 0, 0.6);
+        border-color: #ffd700;
+    }
+}
+
+/* 彩虹闪光边框 */
+.border-rainbow {
+    border: 3px solid transparent;
+    background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%) padding-box,
+                linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3) border-box;
+    animation: rainbowRotate 3s linear infinite;
+    box-shadow: 
+        0 0 15px rgba(255,0,0,0.5),
+        0 0 30px rgba(255,127,0,0.3);
+}
+
+@keyframes rainbowRotate {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+/* 水晶棱镜边框 */
+.border-crystal {
+    border: 3px solid;
+    border-image: linear-gradient(45deg, #ff1493, #00ffff, #ff00ff, #9400d3) 1;
+    box-shadow: 
+        0 0 20px rgba(255,20,147,0.5),
+        0 0 40px rgba(0,255,255,0.3),
+        inset 0 0 30px rgba(255,255,255,0.5);
+    animation: crystalShine 2s ease-in-out infinite;
+}
+
+@keyframes crystalShine {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(1.02);
+        box-shadow: 
+            0 0 30px rgba(255,20,147,0.8),
+            0 0 60px rgba(0,255,255,0.5);
+    }
+}
+
+/* 火焰边框 */
+.border-fire {
+    border: 3px solid #ff4500;
+    background: linear-gradient(135deg, #fff 0%, #fff5f0 100%);
+    box-shadow: 
+        0 0 15px #ff4500,
+        0 0 30px rgba(255,69,0,0.6),
+        0 0 45px rgba(255,140,0,0.4);
+    animation: fireFlicker 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes fireFlicker {
+    0% {
+        box-shadow: 
+            0 0 15px #ff4500,
+            0 0 30px rgba(255,69,0,0.6);
+        border-color: #ff4500;
+    }
+    100% {
+        box-shadow: 
+            0 0 25px #ff6347,
+            0 0 50px rgba(255,99,71,0.8),
+            0 0 75px rgba(255,140,0,0.5);
+        border-color: #ff6347;
+    }
+}
+
+/* 水波边框 */
+.border-water {
+    border: 3px solid #00bfff;
+    background: linear-gradient(180deg, #fff 0%, #f0f8ff 100%);
+    box-shadow: 
+        0 0 15px #00bfff,
+        0 0 30px rgba(0,191,255,0.4);
+    animation: waterRipple 2s ease-in-out infinite;
+}
+
+@keyframes waterRipple {
+    0%, 100% {
+        box-shadow: 
+            0 0 15px #00bfff,
+            0 0 30px rgba(0,191,255,0.4);
+    }
+    50% {
+        box-shadow: 
+            0 0 25px #00bfff,
+            0 0 50px rgba(0,191,255,0.6),
+            0 0 75px rgba(135,206,235,0.4);
+    }
+}
+
+/* 霓虹边框 */
+.border-neon {
+    border: 3px solid #0ff;
+    background: linear-gradient(135deg, #fff 0%, #f0ffff 100%);
+    box-shadow: 
+        0 0 10px #0ff,
+        0 0 20px rgba(0,255,255,0.6),
+        0 0 30px rgba(0,255,255,0.4);
+    animation: neonPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes neonPulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 10px #0ff,
+            0 0 20px rgba(0,255,255,0.6);
+    }
+    50% {
+        box-shadow: 
+            0 0 20px #0ff,
+            0 0 40px rgba(0,255,255,0.8),
+            0 0 60px rgba(255,0,255,0.4);
+    }
+}
+
+/* 星空边框 */
+.border-stars {
+    border: 3px solid #4169e1;
+    background: linear-gradient(135deg, #fff 0%, #f5f5ff 100%);
+    position: relative;
+    overflow: visible;
+}
+
+.border-stars::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: radial-gradient(2px 2px at 20% 30%, #fff, transparent),
+                radial-gradient(2px 2px at 60% 70%, #ffd700, transparent),
+                radial-gradient(1px 1px at 50% 50%, #fff, transparent);
+    border-radius: 15px;
+    z-index: -1;
+    animation: twinkle 2s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* 樱花飘落边框 */
+.border-sakura {
+    border: 3px solid #ffb7c5;
+    background: linear-gradient(135deg, #fff 0%, #fff0f5 100%);
+    box-shadow: 
+        0 0 15px #ffb7c5,
+        0 0 30px rgba(255,183,197,0.4);
+    animation: sakuraGlow 3s ease-in-out infinite;
+}
+
+@keyframes sakuraGlow {
+    0%, 100% {
+        box-shadow: 
+            0 0 15px #ffb7c5,
+            0 0 30px rgba(255,183,197,0.4);
+    }
+    50% {
+        box-shadow: 
+            0 0 25px #ffb7c5,
+            0 0 50px rgba(255,192,203,0.6),
+            0 0 75px rgba(255,105,180,0.3);
+    }
+}
+
+/* ============================================
+   卡牌背面设计
+   ============================================ */
+
+.card-back-classic {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    border: 2px solid #fff;
+}
+
+.card-back-kawaii {
+    background: linear-gradient(135deg, #ff69b4, #ffb6c1);
+    position: relative;
+}
+
+.card-back-kawaii::before {
+    content: '🐱';
+    font-size: 40px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.5;
+}
+
+.card-back-dragon {
+    background: linear-gradient(135deg, #8b0000, #ff4500);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-back-dragon::before {
+    content: '🐲';
+    font-size: 50px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-shadow: 0 0 20px #ffd700;
+}
+
+.card-back-crystal {
+    background: linear-gradient(135deg, #ff1493, #00ffff, #9400d3);
+    background-size: 400% 400%;
+    animation: crystalShift 3s ease infinite;
+}
+
+@keyframes crystalShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ============================================
+   卡牌文字和图标样式
+   ============================================ */
+
+.card-suit {
+    font-size: 32px;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.card-rank {
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Georgia', serif;
+}
+
+/* 萌系字体 */
+.card-font-kawaii {
+    font-family: 'Comic Sans MS', 'Rounded M+ 1c', sans-serif;
+}
+
+/* 魔法字体 */
+.card-font-magic {
+    font-family: 'Papyrus', 'Georgia', serif;
+    text-shadow: 0 0 10px currentColor;
+}
+
+/* 科技字体 */
+.card-font-tech {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+}
+
+/* ============================================
+   选中/悬停特效
+   ============================================ */
+
+.game-card.selected {
+    transform: translateY(-15px) scale(1.1);
+    z-index: 100;
+}
+
+.game-card.selected::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 15px;
+    border: 3px solid #0f0;
+    animation: selectedPulse 1s ease-in-out infinite;
+}
+
+@keyframes selectedPulse {
+    0%, 100% { 
+        box-shadow: 0 0 20px #0f0;
+        opacity: 1;
+    }
+    50% { 
+        box-shadow: 0 0 40px #0f0, 0 0 60px #0f0;
+        opacity: 0.8;
+    }
+}
+
+/* 悬停光效 */
+.game-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.4),
+        transparent
+    );
+    transition: left 0.5s;
+}
+
+.game-card:hover::after {
+    left: 100%;
+}
+
+/* ============================================
+   出牌动画
+   ============================================ */
+
+@keyframes cardPlay {
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.3) rotate(10deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1) rotate(0deg) translateY(-50px);
+        opacity: 0;
+    }
+}
+
+.card-playing {
+    animation: cardPlay 0.6s ease-in-out forwards;
+}
+
+/* ============================================
+   获得/解锁动画
+   ============================================ */
+
+@keyframes cardUnlock {
+    0% {
+        transform: scale(0) rotate(180deg);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2) rotate(-10deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.card-unlock {
+    animation: cardUnlock 0.8s ease-out forwards;
+}
+
+/* 闪光特效 */
+@keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1); }
+}
+
+.sparkle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: radial-gradient(circle, #fff, transparent);
+    border-radius: 50%;
+    animation: sparkle 1s ease-in-out infinite;
+}

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>命运塔·首登者 - 测试中心</title>
+    <link rel="stylesheet" href="app_styles_v6.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding-bottom: 100px;
+        }
+        
+        /* 头部 */
+        .header {
+            text-align: center;
+            padding: 24px 0;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #FFD700, #FF6B6B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700, #FFA502);
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+        
+        /* 测试模块 */
+        .test-section {
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            color: #FFD700;
+            margin-bottom: 12px;
+            padding-left: 8px;
+            border-left: 3px solid #FFD700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title .badge {
+            background: #FF4757;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+        
+        /* 游戏卡片网格 */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .game-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #fff;
+            display: block;  /* 改为 block 避免 flex 重叠 */
+        }
+        
+        .game-card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .game-card:hover {
+            border-color: #FFD700;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.2);
+        }
+        
+        .game-card.featured {
+            background: linear-gradient(135deg, rgba(255,71,71,0.2), rgba(255,107,107,0.1));
+            border-color: #FF4757;
+            grid-column: span 2;
+            flex-direction: row;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .game-card.featured .card-icon {
+            font-size: 40px;
+        }
+        
+        .game-card.featured .card-content {
+            text-align: left;
+        }
+        
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        
+        .game-card:nth-child(1) .card-icon { background: linear-gradient(135deg, #FF4757, #FF6348); }
+        .game-card:nth-child(2) .card-icon { background: linear-gradient(135deg, #3498DB, #2980B9); }
+        .game-card:nth-child(3) .card-icon { background: linear-gradient(135deg, #9B59B6, #8E44AD); }
+        .game-card:nth-child(4) .card-icon { background: linear-gradient(135deg, #1ABC9C, #16A085); }
+        .game-card:nth-child(5) .card-icon { background: linear-gradient(135deg, #F39C12, #E67E22); }
+        .game-card:nth-child(6) .card-icon { background: linear-gradient(135deg, #E91E63, #C2185B); }
+        
+        .card-title {
+            font-size: 15px;
+            font-weight: bold;
+        }
+        
+        .card-desc {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .card-status {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            margin-top: 4px;
+        }
+        
+        .card-status.new {
+            background: #2ED573;
+            color: #000;
+        }
+        
+        .card-status.updated {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        /* 系统测试 */
+        .system-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .system-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 16px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #fff;
+            font-size: 12px;
+        }
+        
+        .system-btn:hover {
+            border-color: #FFD700;
+            background: rgba(255,215,0,0.1);
+        }
+        
+        .system-btn .icon {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 6px;
+        }
+        
+        /* 文档链接 */
+        .doc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .doc-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.2s;
+        }
+        
+        .doc-item:hover {
+            background: rgba(255,255,255,0.08);
+        }
+        
+        .doc-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+        
+        .doc-arrow {
+            color: #888;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10,10,26,0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: center;
+            padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+        }
+        
+        .test-all-btn {
+            background: linear-gradient(135deg, #FFD700, #FF6B6B);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            padding: 14px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* 测试说明 */
+        .test-note {
+            background: rgba(255,215,0,0.1);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .test-note strong {
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="logo">🐍 命运塔测试中心</div>
+            <div class="subtitle">V6.0 APP版本 · 移动端优先</div>
+            <div class="version-badge">1000万美金营收目标</div>
+        </div>
+        
+        <!-- 测试说明 -->
+        <div class="test-note">
+            <strong>📱 测试重点：</strong>所有界面采用一屏式布局，严格遵循移动端APP设计规范。触摸热区最小44px，适配iPhone和Android。
+        </div>
+        
+        <!-- 核心游戏测试 -->
+        <div class="test-section">
+            <div class="section-title">
+                🔥 核心游戏模式
+                <span class="badge">重点</span>
+            </div>
+            <div class="game-grid">
+                <a href="streak_challenge_v6.html" class="game-card featured">
+                    <div class="game-card-content" style="flex-direction: row; justify-content: center;">
+                        <div class="card-icon">🔥</div>
+                        <div class="card-content">
+                            <div class="card-title">连胜挑战 V6.0</div>
+                            <div class="card-desc">普通模式：连续13次成功<br>守卫模式：登顶后防御13次</div>
+                            <div class="card-status new">核心逻辑重写</div>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="solo_game_v6.html" class="game-card">
+                    <div class="game-card-content">
+                        <div class="card-icon">👤</div>
+                        <div class="card-title">个人赛 V6.0</div>
+                        <div class="card-desc">1v1 AI对战</div>
+                        <div class="card-status updated">一屏式布局</div>
+                    </div>
+                </a>
+                
+                <a href="team_battle_new.html" class="game-card">
+                    <div class="game-card-content">
+                        <div class="card-icon">⚔️</div>
+                        <div class="card-title">团队赛新UI</div>
+                        <div class="card-desc">3v3 团队竞技</div>
+                        <div class="card-status new">全新设计</div>
+                    </div>
+                </a>
+                
+                <a href="tournament.html" class="game-card">
+                    <div class="game-card-content">
+                        <div class="card-icon">🏆</div>
+                        <div class="card-title">锦标赛</div>
+                        <div class="card-desc">全球570+场</div>
+                        <div class="card-status updated">31省5场</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 系统功能测试 -->
+        <div class="test-section">
+            <div class="section-title">⚙️ 系统功能</div>
+            <div class="system-grid">
+                <a href="new_index_v6.html" class="system-btn">
+                    <span class="icon">🏠</span>
+                    <span>首页V6</span>
+                </a>
+                <a href="shop_v2.html" class="system-btn">
+                    <span class="icon">🛒</span>
+                    <span>商城</span>
+                </a>
+                <a href="season_honors.html" class="system-btn">
+                    <span class="icon">🎖️</span>
+                    <span>赛季</span>
+                </a>
+                <a href="adaptation_center.html" class="system-btn">
+                    <span class="icon">📱</span>
+                    <span>适配测试</span>
+                </a>
+                <a href="device_test_center.html" class="system-btn">
+                    <span class="icon">🔧</span>
+                    <span>设备检测</span>
+                </a>
+                <a href="admin/enhanced_index.html" class="system-btn">
+                    <span class="icon">⚡</span>
+                    <span>后台管理</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 技术文档 -->
+        <div class="test-section">
+            <div class="section-title">📚 技术文档</div>
+            <div class="doc-list">
+                <a href="../TOWER_STANDARD_V6.1.md" class="doc-item" target="_blank">
+                    <span class="doc-name">📄 塔模型标准规范 V6.1</span>
+                    <span class="doc-arrow">→</span>
+                </a>
+                <a href="../ADAPTATION_SELF_CHECK_REPORT.md" class="doc-item" target="_blank">
+                    <span class="doc-name">📄 移动端适配自查报告</span>
+                    <span class="doc-arrow">→</span>
+                </a>
+                <a href="../CHANGELOG_v3.10_TOURNAMENT.md" class="doc-item" target="_blank">
+                    <span class="doc-name">📄 锦标赛系统更新日志</span>
+                    <span class="doc-arrow">→</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 核心文件 -->
+        <div class="test-section">
+            <div class="section-title">📦 核心框架文件</div>
+            <div class="doc-list">
+                <div class="doc-item">
+                    <span class="doc-name">🔧 app_framework_v6.js (10KB)</span>
+                    <span style="font-size: 11px; color: #888;">移动端APP核心框架</span>
+                </div>
+                <div class="doc-item">
+                    <span class="doc-name">🎨 app_styles_v6.css (12KB)</span>
+                    <span style="font-size: 11px; color: #888;">统一移动端样式</span>
+                </div>
+                <div class="doc-item">
+                    <span class="doc-name">🗼 unified_tower_system.js (13KB)</span>
+                    <span style="font-size: 11px; color: #888;">统一塔渲染系统</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 测试要点 -->
+        <div class="test-section">
+            <div class="section-title">✅ 测试检查清单</div>
+            <div class="test-note">
+                <strong>一屏式布局：</strong>所有核心内容在一个屏幕内完成，无滚动<br>
+                <strong>触摸热区：</strong>所有按钮最小44px（iOS标准）<br>
+                <strong>安全区适配：</strong>iPhone刘海屏和底部Home条<br>
+                <strong>塔模型：</strong>正立显示，底座在下，塔尖在上<br>
+                <strong>玩家icon：</strong>从第2️⃣层开始攀登
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <button class="test-all-btn" onclick="openAllTests()">
+            🚀 打开所有测试页面
+        </button>
+    </div>
+    
+    <script>
+        function openAllTests() {
+            const urls = [
+                'streak_challenge_v6.html',
+                'solo_game_v6.html',
+                'team_battle_new.html',
+                'new_index_v6.html',
+                'tournament.html'
+            ];
+            
+            urls.forEach((url, index) => {
+                setTimeout(() => {
+                    window.open(url, '_blank');
+                }, index * 500);
+            });
+        }
+        
+        // 显示当前时间
+        console.log('[Test Center] 测试中心已加载');
+        console.log('[Test Center] 当前时间：', new Date().toLocaleString('zh-CN'));
+    </script>
+</body>
+</html>

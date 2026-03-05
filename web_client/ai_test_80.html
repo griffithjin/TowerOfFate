@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>80 AI玩家测试 - 命运塔·首登者</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .container { max-width: 1600px; margin: 0 auto; }
+        
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px 30px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        /* 玩家卡片 */
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .player-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .player-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,215,0,0.3);
+        }
+        
+        .player-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            position: relative;
+        }
+        
+        .player-avatar.skin_kawaii_pink {
+            border: 3px solid #ff69b4;
+            box-shadow: 0 0 15px #ff69b4;
+            animation: pinkGlow 2s ease-in-out infinite;
+        }
+        
+        .player-avatar.skin_magic_crystal {
+            border: 3px solid transparent;
+            background: linear-gradient(135deg, #fff, #f0f8ff) padding-box,
+                        linear-gradient(45deg, #ff1493, #00ffff) border-box;
+            animation: crystalShine 3s linear infinite;
+        }
+        
+        .player-avatar.skin_magic_dragon {
+            border: 3px solid #ff4500;
+            box-shadow: 0 0 15px #ff4500;
+            animation: fireFlicker 0.5s ease-in-out infinite alternate;
+        }
+        
+        .player-avatar.skin_nature_sakura {
+            border: 3px solid #ffb7c5;
+            box-shadow: 0 0 15px #ffb7c5;
+        }
+        
+        .player-avatar.skin_tech_cyber {
+            border: 3px solid #0ff;
+            box-shadow: 0 0 15px #0ff;
+            animation: neonPulse 1.5s ease-in-out infinite;
+        }
+        
+        .player-avatar.frame_gold {
+            box-shadow: 0 0 20px #ffd700;
+        }
+        
+        .player-avatar.frame_diamond {
+            box-shadow: 0 0 20px #0ff;
+        }
+        
+        .player-avatar.frame_legend {
+            box-shadow: 0 0 20px #ff6b6b;
+        }
+        
+        .vip-badge {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: bold;
+            background: rgba(0,0,0,0.8);
+        }
+        
+        .player-name {
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .player-title {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        
+        .player-inventory {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .inventory-item {
+            padding: 3px 8px;
+            background: rgba(255,215,0,0.1);
+            border-radius: 5px;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+        
+        .player-currency {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        
+        .currency-diamonds { color: #0ff; }
+        .currency-coins { color: #ffd700; }
+        
+        /* 团战演示 */
+        .battle-demo {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+        
+        .battle-title {
+            text-align: center;
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+        
+        .teams-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .team {
+            text-align: center;
+        }
+        
+        .team-name {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .team-a { color: #3498db; }
+        .team-b { color: #e74c3c; }
+        
+        .team-players {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .battle-player {
+            text-align: center;
+        }
+        
+        .battle-avatar {
+            width: 80px;
+            height: 110px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .vs-text {
+            font-size: 48px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        /* 动画 */
+        @keyframes pinkGlow {
+            0%, 100% { box-shadow: 0 0 15px #ff69b4; }
+            50% { box-shadow: 0 0 25px #ff69b4; }
+        }
+        
+        @keyframes crystalShine {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        
+        @keyframes fireFlicker {
+            0% { box-shadow: 0 0 15px #ff4500; }
+            100% { box-shadow: 0 0 25px #ff6347; }
+        }
+        
+        @keyframes neonPulse {
+            0%, 100% { box-shadow: 0 0 15px #0ff; }
+            50% { box-shadow: 0 0 25px #0ff; }
+        }
+        
+        /* 操作按钮 */
+        .action-buttons {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .btn-action {
+            padding: 15px 40px;
+            margin: 0 10px;
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-action:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.4);
+        }
+    </style>
+    <script src="music_system.js"></script>
+    <script src="responsive_adapter.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 80 AI玩家测试系统</h1>
+            <p style="color: #888;">道具分配、消费模拟、视觉渲染效果测试</p>
+        </div>
+        
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value">80</div>
+                <div class="stat-label">AI玩家</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalPurchases">0</div>
+                <div class="stat-label">总购买</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalEquipped">0</div>
+                <div class="stat-label">已装备</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">15</div>
+                <div class="stat-label">皮肤种类</div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn-action" onclick="simulateAllPlayers()">🎲 模拟所有AI消费</button>
+            <button class="btn-action" onclick="showTeamBattle()">⚔️ 团战视觉演示</button>
+            <a href="new_index.html" class="btn-action" style="text-decoration: none; display: inline-block;">🏠 返回首页</a>
+        </div>
+        
+        <!-- 80 AI玩家列表 -->
+        <div id="playersContainer" class="players-grid">
+            <!-- 动态生成 -->
+        </div>
+        
+        
+        <!-- 团战演示 -->
+        <div id="battleDemo" class="battle-demo" style="display: none;">
+            <div class="battle-title">⚔️ 团战视觉演示 (玩家A能看到玩家B的装扮)</div>
+            
+            <div class="teams-container">
+                <div class="team">
+                    <div class="team-name team-a">🔵 队伍A</div>
+                    <div class="team-players" id="teamAPlayers">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+                
+                <div class="vs-text">VS</div>
+                
+                <div class="team">
+                    <div class="team-name team-b">🔴 队伍B</div>
+                    <div class="team-players" id="teamBPlayers">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // AI玩家数据
+        const aiPlayers = [];
+        const skinTypes = ['classic', 'skin_kawaii_pink', 'skin_magic_crystal', 'skin_magic_dragon', 'skin_nature_sakura', 'skin_tech_cyber'];
+        const frameTypes = ['default', 'frame_gold', 'frame_diamond', 'frame_legend'];
+        const titleTypes = ['', 'title_warrior', 'title_master', 'title_legend'];
+        
+        // 生成80个AI玩家
+        function initAIPlayers() {
+            const surnames = ["李", "王", "张", "刘", "陈", "杨", "赵", "黄", "周", "吴", "徐", "孙", "胡", "朱", "高", "林"];
+            const names = ["伟", "芳", "娜", "敏", "静", "丽", "强", "磊", "军", "洋", "勇", "杰", "涛", "明", "超", "秀英"];
+            
+            for (let i = 0; i < 80; i++) {
+                const name = surnames[i % 16] + names[i % 16] + (i >= 16 ? Math.floor(i/16) : '');
+                aiPlayers.push({
+                    id: `system_${String(i+1).padStart(3, '0')}`,
+                    name: name,
+                    level: Math.floor(Math.random() * 50) + 5,
+                    vip: Math.floor(Math.random() * 11),
+                    coins: [1000, 5000, 10000, 50000, 100000][Math.floor(Math.random() * 5)],
+                    diamonds: [100, 500, 1000, 5000, 10000][Math.floor(Math.random() * 5)],
+                    skin: 'classic',
+                    frame: 'default',
+                    title: '',
+                    inventory: []
+                });
+            }
+            renderPlayers();
+        }
+        
+        // 渲染玩家列表
+        function renderPlayers() {
+            const container = document.getElementById('playersContainer');
+            container.innerHTML = aiPlayers.map(player => `
+                <div class="player-card" onclick="showPlayerDetail('${player.id}')">
+                    <div class="player-avatar ${player.skin} ${player.frame}">
+                        🤖
+                        ${player.vip > 0 ? `<span class="vip-badge" style="color: ${getVIPColor(player.vip)}; border-color: ${getVIPColor(player.vip)}">VIP${player.vip}</span>` : ''}
+                    </div>
+                    <div class="player-name" style="color: ${getFrameColor(player.frame)}">
+                        ${player.frame !== 'default' ? getFrameIcon(player.frame) : ''} ${player.name}
+                    </div>
+                    
+                    ${player.title ? `<div class="player-title">${getTitleDisplay(player.title)}</div>` : ''}
+                    
+                    <div class="player-inventory">
+                        ${player.inventory.slice(0, 3).map(item => `
+                            <span class="inventory-item">${getItemIcon(item)}</span>
+                        `).join('')}
+                        ${player.inventory.length > 3 ? `<span class="inventory-item">+${player.inventory.length - 3}</span>` : ''}
+                    </div>
+                    
+                    <div class="player-currency">
+                        <span class="currency-diamonds">💎 ${player.diamonds.toLocaleString()}</span>
+                        <span class="currency-coins">🪙 ${player.coins.toLocaleString()}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 模拟所有玩家消费
+        function simulateAllPlayers() {
+            let totalPurchases = 0;
+            let totalEquipped = 0;
+            
+            aiPlayers.forEach(player => {
+                // 随机购买3-8个道具
+                const numItems = Math.floor(Math.random() * 6) + 3;
+                const possibleItems = [
+                    {id: 'skin_kawaii_pink', cost: 188, type: 'diamonds', icon: '🐱'},
+                    {id: 'skin_magic_crystal', cost: 388, type: 'diamonds', icon: '💎'},
+                    {id: 'skin_magic_dragon', cost: 588, type: 'diamonds', icon: '🐲'},
+                    {id: 'skin_nature_sakura', cost: 288, type: 'diamonds', icon: '🌸'},
+                    {id: 'skin_tech_cyber', cost: 488, type: 'diamonds', icon: '🤖'},
+                    {id: 'frame_gold', cost: 100, type: 'diamonds', icon: '🖼️'},
+                    {id: 'frame_diamond', cost: 200, type: 'diamonds', icon: '💠'},
+                    {id: 'frame_legend', cost: 500, type: 'diamonds', icon: '🔥'},
+                    {id: 'title_warrior', cost: 10000, type: 'coins', icon: '⚔️'},
+                    {id: 'title_master', cost: 50000, type: 'coins', icon: '🏆'},
+                    {id: 'taunt_pack', cost: 188, type: 'diamonds', icon: '🎭'}
+                ];
+                
+                for (let i = 0; i < numItems; i++) {
+                    const item = possibleItems[Math.floor(Math.random() * possibleItems.length)];
+                    if (item.type === 'diamonds' && player.diamonds >= item.cost) {
+                        player.diamonds -= item.cost;
+                        player.inventory.push(item.id);
+                        totalPurchases++;
+                    } else if (item.type === 'coins' && player.coins >= item.cost) {
+                        player.coins -= item.cost;
+                        player.inventory.push(item.id);
+                        totalPurchases++;
+                    }
+                }
+                
+                // 装备道具
+                const skins = player.inventory.filter(id => id.startsWith('skin_'));
+                const frames = player.inventory.filter(id => id.startsWith('frame_'));
+                const titles = player.inventory.filter(id => id.startsWith('title_'));
+                
+                if (skins.length > 0) {
+                    player.skin = skins[0];
+                    totalEquipped++;
+                }
+                if (frames.length > 0) {
+                    player.frame = frames[0];
+                    totalEquipped++;
+                }
+                if (titles.length > 0) {
+                    player.title = titles[0];
+                    totalEquipped++;
+                }
+            });
+            
+            renderPlayers();
+            document.getElementById('totalPurchases').textContent = totalPurchases;
+            document.getElementById('totalEquipped').textContent = totalEquipped;
+            
+            alert(`✅ 模拟完成！\n总购买: ${totalPurchases} 件\n已装备: ${totalEquipped} 件`);
+        }
+        
+        // 显示团战演示
+        function showTeamBattle() {
+            document.getElementById('battleDemo').style.display = 'block';
+            
+            // 随机选择2v2
+            const teamA = [aiPlayers[0], aiPlayers[1]];
+            const teamB = [aiPlayers[2], aiPlayers[3]];
+            
+            document.getElementById('teamAPlayers').innerHTML = teamA.map(p => renderBattlePlayer(p)).join('');
+            document.getElementById('teamBPlayers').innerHTML = teamB.map(p => renderBattlePlayer(p)).join('');
+            
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+        
+        // 渲染团战玩家
+        function renderBattlePlayer(player) {
+            const skinEffects = {
+                'classic': {bg: 'linear-gradient(135deg, #fff, #f8f8f8)', border: '#333'},
+                'skin_kawaii_pink': {bg: 'linear-gradient(135deg, #fff0f5, #ffe4e1)', border: '#ff69b4'},
+                'skin_magic_crystal': {bg: 'linear-gradient(135deg, #fff, #f0f8ff)', border: '#ff1493'},
+                'skin_magic_dragon': {bg: 'linear-gradient(135deg, #fff5f0, #ffe4e1)', border: '#ff4500'},
+                'skin_nature_sakura': {bg: 'linear-gradient(135deg, #fff, #fff0f5)', border: '#ffb7c5'},
+                'skin_tech_cyber': {bg: 'linear-gradient(135deg, #f0ffff, #e0ffff)', border: '#0ff'}
+            };
+            
+            const effect = skinEffects[player.skin] || skinEffects['classic'];
+            
+            return `
+                <div class="battle-player">
+                    <div class="battle-avatar ${player.skin} ${player.frame}" 
+                         style="background: ${effect.bg}; border: 3px solid ${effect.border}; box-shadow: 0 0 20px ${effect.border}80;">
+                        <span style="font-size: 40px;">🃏</span>
+                        ${player.vip > 0 ? `<span class="vip-badge" style="color: ${getVIPColor(player.vip)}">VIP${player.vip}</span>` : ''}
+                    </div>
+                    <div style="font-weight: bold; color: ${getFrameColor(player.frame)}">
+                        ${player.name}
+                    </div>
+                    ${player.title ? `<div style="font-size: 12px; color: #888;">${getTitleDisplay(player.title)}</div>` : ''}
+                    <div style="font-size: 11px; color: #666; margin-top: 5px;">
+                        ${player.skin.replace('skin_', '').replace('_', ' ')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 辅助函数
+        function getVIPColor(vip) {
+            const colors = ['#fff', '#95a5a6', '#3498db', '#9b59b6', '#f39c12', '#e74c3c', '#ff6b6b', '#ffd700', '#ffd700', '#ff00ff', '#ff00ff'];
+            return colors[vip] || '#fff';
+        }
+        
+        function getFrameColor(frame) {
+            const colors = {
+                'default': '#fff',
+                'frame_gold': '#ffd700',
+                'frame_diamond': '#0ff',
+                'frame_legend': '#ff6b6b'
+            };
+            return colors[frame] || '#fff';
+        }
+        
+        function getFrameIcon(frame) {
+            const icons = {
+                'frame_gold': '👑',
+                'frame_diamond': '💎',
+                'frame_legend': '🔥'
+            };
+            return icons[frame] || '';
+        }
+        
+        function getTitleDisplay(title) {
+            const displays = {
+                'title_warrior': '⚔️ 战士',
+                'title_master': '🏆 大师',
+                'title_legend': '👑 传说'
+            };
+            return displays[title] || title;
+        }
+        
+        function getItemIcon(item) {
+            const icons = {
+                'skin_kawaii_pink': '🐱',
+                'skin_magic_crystal': '💎',
+                'skin_magic_dragon': '🐲',
+                'skin_nature_sakura': '🌸',
+                'skin_tech_cyber': '🤖',
+                'frame_gold': '🖼️',
+                'frame_diamond': '💠',
+                'frame_legend': '🔥',
+                'title_warrior': '⚔️',
+                'title_master': '🏆',
+                'taunt_pack': '🎭'
+            };
+            return icons[item] || '📦';
+        }
+        
+        function showPlayerDetail(playerId) {
+            const player = aiPlayers.find(p => p.id === playerId);
+            if (player) {
+                alert(`玩家详情:\nID: ${player.id}\n昵称: ${player.name}\n等级: ${player.level}\nVIP: ${player.vip}\n皮肤: ${player.skin}\n头像框: ${player.frame}\n称号: ${player.title || '无'}\n背包: ${player.inventory.length} 件物品\n钻石: ${player.diamonds}\n金币: ${player.coins}`);
+            }
+        }
+        
+        // 初始化
+        initAIPlayers();
+    </script>
+</body>
+</html>

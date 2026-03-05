@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>命运之塔 - Tower of Fate 主大厅</title>
+    <script src="effects.js"></script>
+    <link rel="stylesheet" href="mobile_expert_framework.css">
+    <link rel="stylesheet" href="ui_global_responsive.css">
+    <link rel="stylesheet" href="device_adaptive.css">
+    <link rel="stylesheet" href="global_responsive.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .container { max-width: 87.5rem; margin: 0 auto; padding: var(--sp-lg); }
+        
+        /* 粒子效果Canvas */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        /* 头部导航 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--sp-lg) 0;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: var(--hand-suit);
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+        
+        .user-bar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .currency {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: var(--font-sm);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .currency .amount {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .user-avatar {
+            width: var(--btn-height);
+            height: var(--btn-height);
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--title-font);
+            cursor: pointer;
+            border: 3px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.1);
+            border-color: #ffd700;
+        }
+        
+        /* 欢迎区 */
+        .welcome-section {
+            text-align: center;
+            padding: 30px 0;
+        }
+        
+        .welcome-title {
+            font-size: 48px;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .welcome-subtitle {
+            color: #888;
+            font-size: var(--hand-rank);
+        }
+        
+        /* 主按钮区 */
+        .main-actions {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .action-btn {
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(255,215,0,0.3);
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+            color: #fff;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-5px);
+            border-color: #ffd700;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+        }
+        
+        .action-btn.primary {
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            color: #000;
+            border-color: #ffd700;
+        }
+        
+        .action-btn.primary:hover {
+            box-shadow: 0 15px 40px rgba(255,215,0,0.5);
+        }
+        
+        .action-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .action-title {
+            font-size: var(--destiny-icon);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .action-desc {
+            font-size: var(--font-sm);
+            opacity: 0.8;
+        }
+        
+        /* 功能网格 */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: var(--sp-md);
+            margin-bottom: 30px;
+        }
+        
+        .feature-item {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: var(--rd-lg);
+            padding: var(--sp-lg) 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .feature-item:hover {
+            background: rgba(255,215,0,0.1);
+            border-color: #ffd700;
+            transform: translateY(-3px);
+        }
+        
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .feature-name {
+            font-size: var(--font-sm);
+            color: #ffd700;
+        }
+        
+        /* 数据面板 */
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: var(--rd-lg);
+            padding: var(--sp-lg);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: var(--font-sm);
+            color: #888;
+        }
+        
+        /* 任务和公告区 */
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .info-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: var(--rd-lg);
+            padding: var(--sp-lg);
+        }
+        
+        .info-title {
+            font-size: var(--hand-rank);
+            color: #ffd700;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .task-item, .notice-item {
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: var(--rd-md);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .task-item:hover, .notice-item:hover {
+            background: rgba(255,215,0,0.1);
+        }
+        
+        .task-reward {
+            color: #ffd700;
+            font-size: var(--font-xs);
+        }
+        
+        /* 响应式 */
+        @media (max-width: 64rem) {
+            .feature-grid { grid-template-columns: repeat(3, 1fr); }
+            .main-actions { grid-template-columns: 1fr; }
+            .stats-panel { grid-template-columns: repeat(2, 1fr); }
+            .info-section { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 48rem) {
+            .feature-grid { grid-template-columns: repeat(2, 1fr); }
+            .welcome-title { font-size: 32px; }
+        }
+    </style>
+    <script src="music_system.js"></script>
+    <script src="responsive_adapter.js"></script>
+</head>
+<body class="safe-top safe-bottom" class="game-container touch-device-support">
+    <canvas id="particleCanvas"></canvas>
+    
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="logo">🏰 命运之塔</div>
+            <div class="user-bar">
+                <div class="currency">
+                    💰 <span class="amount" id="coinDisplay">10,000</span>
+                </div>
+                <div class="currency">
+                    💎 <span class="amount" id="diamondDisplay">500</span>
+                </div>
+                <div class="user-avatar" onclick="showUserProfile()" title="用户中心">
+                    👤
+                </div>
+            </div>
+        </div>
+        
+        <!-- 欢迎区 -->
+        <div class="welcome-section">
+            <div class="welcome-title">Tower of Fate</div>
+            <div class="welcome-subtitle">欢迎来到命运之塔主大厅 - 选择你的冒险</div>
+        </div>
+        
+        <!-- 主要操作按钮 -->
+        <div class="main-actions">
+            <a href="solo_game.html" class="action-btn primary" id="startGameBtn">
+                <div class="action-icon">🎮</div>
+                <div class="action-title">立即游戏</div>
+                <div class="action-desc">个人赛 1vs3AI</div>
+            </a>
+            
+            <a href="team_battle_v2.html" class="action-btn game-btn">
+                <div class="action-icon">👥</div>
+                <div class="action-title">团队赛</div>
+                <div class="action-desc">2v2/3v3/4v4/5v5</div>
+            </a>
+            
+            <a href="streak_challenge.html" class="action-btn game-btn" style="background: linear-gradient(135deg, rgba(255,71,71,0.3), rgba(255,107,107,0.2)); border: 2px solid #ff4757; animation: pulse 2s infinite;">
+                <div class="action-icon">🔥</div>
+                <div class="action-title" style="color: #ff4757; font-weight: bold;">连胜挑战</div>
+                <div class="action-desc" style="color: #ff6b6b;">连续13次！地狱难度</div>
+            </a>
+            
+            <a href="shop_v2.html" class="action-btn game-btn">
+                <div class="action-icon">🛍️</div>
+                <div class="action-title">商城</div>
+                <div class="action-desc">皮肤/充值/道具</div>
+            </a>
+        </div>
+        
+        <!-- 连胜挑战横幅 -->
+        <div style="background: linear-gradient(90deg, rgba(255,71,71,0.3), rgba(255,107,107,0.1)); border: 2px solid #ff4757; border-radius: 15px; padding: var(--sp-lg); margin: 20px 0; text-align: center;">
+            <div style="font-size: var(--destiny-icon); color: #ff4757; font-weight: bold; margin-bottom: 10px;">
+                🔥 排位赛重点推荐：连胜挑战 🔥
+            </div>
+            <div style="color: #888; font-size: var(--font-sm); margin-bottom: 15px;">
+                核心规则：必须<strong style="color: #ffd700;">连续</strong>比对成功13次！一旦失败立即结束！
+            </div>
+            <div style="display: flex; justify-content: center; gap: 30px; font-size: 13px; color: #aaa;">
+                <span>🎯 普通模式：连续晋级13层</span>
+                <span>🛡️ 守卫模式：登顶后连续守卫13次</span>
+            </div>
+        </div>
+        
+        <!-- 功能网格 -->
+        <div class="feature-grid">
+            <a href="streak_challenge.html" class="feature-item" style="min-height: 44px;" style="background: linear-gradient(135deg, rgba(255,71,71,0.2), rgba(255,107,107,0.1)); border: 2px solid #ff4757;">
+                <div class="feature-icon">🔥</div>
+                <div class="feature-name" style="color: #ff4757; font-weight: bold;">连胜挑战</div>
+                <div style="font-size: 11px; color: #ff6b6b;">排位赛核心</div>
+            </a>
+            
+            <a href="index.html?mode=ranked" class="feature-item" style="min-height: 44px;">
+                <div class="feature-icon">🏆</div>
+                <div class="feature-name">排位赛</div>
+            </a>
+            
+            <a href="tournament.html" class="feature-item" style="min-height: 44px;">
+                <div class="feature-icon">🌍</div>
+                <div class="feature-name">锦标赛</div>
+            </a>
+            
+            <a href="season_honors.html" class="feature-item" style="min-height: 44px;">
+                <div class="feature-icon">🎖️</div>
+                <div class="feature-name">赛季荣誉</div>
+            </a>
+            
+            <a href="ai_test_80.html" class="feature-item" style="min-height: 44px;">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-name">AI对战</div>
+            </a>
+            
+            <a href="recharge.html" class="feature-item" style="min-height: 44px;">
+                <div class="feature-icon">💎</div>
+                <div class="feature-name">充值</div>
+            </a>
+        </div>
+        
+        <!-- 数据面板 -->
+        <div class="stats-panel">
+            <div class="stat-card">
+                <div class="stat-value" id="userRank">黄金III</div>
+                <div class="stat-label">当前段位</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="winRate">57%</div>
+                <div class="stat-label">胜率</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalGames">156</div>
+                <div class="stat-label">总场次</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="achievements">23</div>
+                <div class="stat-label">成就</div>
+            </div>
+        </div>
+        
+        <!-- 任务和公告 -->
+        <div class="info-section">
+            <div class="info-card">
+                <div class="info-title">
+                    📋 每日任务
+                    <span style="font-size: var(--font-xs); color: #888;">查看更多 →</span>
+                </div>
+                <div class="task-item" onclick="startTaskGame(1)">
+                    <div>
+                        <div>完成3场对战</div>
+                        <div style="font-size: var(--font-xs); color: #888;">进度: 2/3</div>
+                    </div>
+                    <div class="task-reward">+50金币</div>
+                </div>
+                <div class="task-item" onclick="startTaskGame(2)">
+                    <div>
+                        <div>获得1场胜利</div>
+                        <div style="font-size: var(--font-xs); color: #888;">已完成 ✅</div>
+                    </div>
+                    <div class="task-reward">+30金币</div>
+                </div>
+                <div class="task-item" onclick="startTaskGame(3)">
+                    <div>
+                        <div>使用1次天命牌</div>
+                        <div style="font-size: var(--font-xs); color: #888;">进度: 0/1</div>
+                    </div>
+                    <div class="task-reward">+20金币</div>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-title">
+                    📢 游戏公告
+                    <span style="font-size: var(--font-xs); color: #888;"></span>
+                </div>
+                <div class="notice-item">
+                    <div>
+                        <div style="color: #ffd700;">🎉 S1赛季正式开启！</div>
+                        <div style="font-size: var(--font-xs); color: #888;">2026-03-01</div>
+                    </div>
+                </div>
+                <div class="notice-item">
+                    <div>
+                        <div style="color: #0ff;">⚔️ 团队赛系统上线</div>
+                        <div style="font-size: var(--font-xs); color: #888;">2026-03-03</div>
+                    </div>
+                </div>
+                <div class="notice-item">
+                    <div>
+                        <div>🎁 首充双倍活动进行中</div>
+                        <div style="font-size: var(--font-xs); color: #888;">限时活动</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 用户数据系统 - 基于 index.html 的完整逻辑
+        let userData = {
+            name: '金先生',
+            level: 15,
+            coins: 10000,
+            diamonds: 500,
+            vip: true,
+            rank: '黄金III',
+            totalGames: 156,
+            wins: 89,
+            achievements: 23
+        };
+        
+        // 页面加载时初始化
+        window.addEventListener('load', () => {
+            loadUserData();
+            initEffects();
+            console.log('🎮 命运之塔主大厅已加载');
+        });
+        
+        // 加载用户数据 - 与 index.html 相同的逻辑
+        function loadUserData() {
+            const saved = localStorage.getItem('towerOfFate_userData');
+            if (saved) {
+                userData = JSON.parse(saved);
+            }
+            updateDisplay();
+        }
+        
+        // 更新显示
+        function updateDisplay() {
+            document.getElementById('coinDisplay').textContent = userData.coins.toLocaleString();
+            document.getElementById('diamondDisplay').textContent = userData.diamonds.toLocaleString();
+            document.getElementById('userRank').textContent = userData.rank;
+            document.getElementById('winRate').textContent = Math.round(userData.wins / userData.totalGames * 100) + '%';
+            document.getElementById('totalGames').textContent = userData.totalGames;
+            document.getElementById('achievements').textContent = userData.achievements;
+        }
+        
+        // 初始化特效系统 - 与 index.html 相同的逻辑
+        function initEffects() {
+            if (typeof ParticleSystem !== 'undefined') {
+                const canvas = document.getElementById('particleCanvas');
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                
+                const particleSystem = new ParticleSystem(canvas);
+                particleSystem.animate();
+                
+                window.addEventListener('resize', () => {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                });
+            }
+        }
+        
+        // 显示用户资料 - 跳转到用户中心或游戏内用户界面
+        function showUserProfile() {
+            // 可以扩展为用户中心弹窗或跳转
+            alert('👤 用户中心功能\n\n用户名: ' + userData.name + '\n等级: ' + userData.level + '\n段位: ' + userData.rank);
+        }
+        
+        // 开始任务游戏 - 直接跳转到游戏界面
+        function startTaskGame(taskId) {
+            const taskNames = {
+                1: '完成3场对战',
+                2: '获得1场胜利',
+                3: '使用1次天命牌'
+            };
+            
+            console.log(`开始任务游戏: ${taskNames[taskId]}`);
+            // 直接跳转到游戏界面
+            window.location.href = 'index.html?task=' + taskId;
+        }
+        
+        // 保存数据 - 与 index.html 相同的逻辑
+        function saveUserData() {
+            localStorage.setItem('towerOfFate_userData', JSON.stringify(userData));
+        }
+    </script>
+    <script src="ui_components_system.js"></script>
+    <script src="device_adaptive_framework.js"></script>
+    <script src="global_responsive.js"></script>
+    <script src="touch_support.js"></script>
+</body>
+</html>

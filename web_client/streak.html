@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命运塔·首登者 - 连胜挑战</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .streak-display {
+            background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,107,107,0.1));
+            border: 3px solid #ffd700;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .streak-count {
+            font-size: 72px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255,215,0,0.5);
+            margin: 20px 0;
+        }
+        
+        .streak-label {
+            font-size: 20px;
+            color: #888;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ff6b6b);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .rewards-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .reward-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,215,0,0.2);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .reward-card:hover {
+            border-color: #ffd700;
+            transform: translateY(-5px);
+        }
+        
+        .reward-card.achieved {
+            border-color: #2ed573;
+            background: rgba(46, 213, 115, 0.1);
+        }
+        
+        .reward-card.current {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.3); }
+            50% { box-shadow: 0 0 40px rgba(255,215,0,0.6); }
+        }
+        
+        .streak-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .reward-name {
+            font-size: 16px;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        
+        .reward-items {
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .reward-status {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .status-achieved { background: #2ed573; }
+        .status-current { background: #ffd700; }
+        .status-locked { background: #666; }
+        
+        .challenge-btn {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 30px;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            border: none;
+            border-radius: 15px;
+            color: #000;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .challenge-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(255,215,0,0.4);
+        }
+        
+        .leaderboard {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .leaderboard-rank {
+            width: 40px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .leaderboard-player {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .leaderboard-streak {
+            font-size: 20px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 15px 40px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 10px;
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,215,0,0.2);
+        }
+        
+        .difficulty-note {
+            background: rgba(255,107,107,0.1);
+            border: 1px solid rgba(255,107,107,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #ff6b6b;
+        }
+    </style>
+    <script src="music_system.js"></script>
+    <script src="responsive_adapter.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 连胜挑战</h1>
+            <p style="color: #888; margin-top: 10px;">连续登顶，创造纪录，赢取丰厚奖励</p>
+        </div>
+        
+        <div class="difficulty-note">
+            ⚠️ 连胜越高，AI对手越强！当前AI强度: 120%
+        </div>
+        
+        <div class="streak-display">
+            <div class="streak-label">当前连胜</div>
+            <div class="streak-count" id="currentStreak">7</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 54%;"></div>
+            </div>
+            <div style="color: #888; font-size: 14px;">
+                目标: 13连胜 | 还需 <span id="streaksNeeded">6</span> 场胜利
+            </div>
+        </div>
+        
+        <button class="challenge-btn" onclick="startStreakChallenge()">
+            🎮 开始挑战
+        </button>
+        
+        
+        <div class="rewards-section">
+            <div class="section-title">🏆 连胜奖励</div>
+            
+            <div class="rewards-grid" id="rewardsGrid">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+        
+        
+        <div class="leaderboard">
+            <div class="section-title">📊 连胜排行榜</div>
+            
+            <div id="leaderboardList">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="new_index.html" class="back-btn">← 返回大厅</a>
+        </div>
+    </div>
+    
+    <script>
+        // 连胜奖励配置
+        const STREAK_REWARDS = [
+            { streak: 3, name: '初露锋芒', diamonds: 30, coins: 300, title: '连胜新手', achieved: true },
+            { streak: 5, name: '五连绝世', diamonds: 50, coins: 500, title: '连胜高手', achieved: true },
+            { streak: 7, name: '七连王者', diamonds: 100, coins: 1000, title: '连胜专家', achieved: true, current: true },
+            { streak: 10, name: '十连传说', diamonds: 200, coins: 2000, title: '连胜大师', achieved: false },
+            { streak: 13, name: '完美登顶', diamonds: 500, coins: 5000, title: '首登者', achieved: false, special: true }
+        ];
+        
+        // 排行榜数据
+        const LEADERBOARD = [
+            { rank: 1, name: '龙魂战神', avatar: '🐲', streak: 13 },
+            { rank: 2, name: '雷霆法师', avatar: '⚡', streak: 12 },
+            { rank: 3, name: '暗影刺客', avatar: '🗡️', streak: 11 },
+            { rank: 4, name: '圣光骑士', avatar: '⚔️', streak: 10 },
+            { rank: 5, name: '烈焰巫师', avatar: '🔥', streak: 9 }
+        ];
+        
+        let currentStreak = 7;
+        
+        // 渲染奖励
+        function renderRewards() {
+            const container = document.getElementById('rewardsGrid');
+            container.innerHTML = STREAK_REWARDS.map(reward => `
+                <div class="reward-card ${reward.achieved ? 'achieved' : ''} ${reward.current ? 'current' : ''}">
+                    <div class="reward-status ${reward.achieved ? 'status-achieved' : reward.current ? 'status-current' : 'status-locked'}">
+                        ${reward.achieved ? '✅' : reward.current ? '🔥' : '🔒'}
+                    </div>
+                    <div class="streak-number">${reward.streak}连</div>
+                    <div class="reward-name">${reward.name}</div>
+                    <div class="reward-items">
+                        💎 ${reward.diamonds} | 🪙 ${reward.coins}<br>
+                        🏆 ${reward.title}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 渲染排行榜
+        function renderLeaderboard() {
+            const container = document.getElementById('leaderboardList');
+            container.innerHTML = LEADERBOARD.map(player => `
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">#${player.rank}</div>
+                    <div class="leaderboard-player">
+                        <div class="player-avatar">${player.avatar}</div>
+                        <div>${player.name}</div>
+                    </div>
+                    <div class="leaderboard-streak">${player.streak}连胜 🔥</div>
+                </div>
+            `).join('');
+        }
+        
+        // 开始挑战
+        function startStreakChallenge() {
+            if (confirm(`开始连胜挑战？\n\n当前连胜: ${currentStreak}场\n目标: 13场\n\n⚠️ 失败将重置连胜记录！`)) {
+                window.location.href = 'index.html?mode=streak';
+            }
+        }
+        
+        // 初始化
+        renderRewards();
+        renderLeaderboard();
+        
+        // 更新进度
+        document.getElementById('progressFill').style.width = (currentStreak / 13 * 100) + '%';
+        document.getElementById('streaksNeeded').textContent = 13 - currentStreak;
+    </script>
+</body>
+</html>

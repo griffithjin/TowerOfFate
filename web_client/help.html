@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命运之塔 - 帮助中心</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            z-index: 100;
+            transition: transform 0.3s;
+        }
+        
+        .back-btn:hover { transform: scale(1.05); }
+        
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 42px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #888;
+            font-size: 16px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .nav-tab {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        
+        .nav-tab:hover, .nav-tab.active {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            border-color: #ffd700;
+        }
+        
+        .content-section {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 4px solid #ffd700;
+        }
+        
+        .section-content {
+            line-height: 1.8;
+            color: #ccc;
+        }
+        
+        .section-content h3 {
+            color: #ffd700;
+            margin: 20px 0 10px;
+            font-size: 18px;
+        }
+        
+        .section-content p {
+            margin-bottom: 15px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .feature-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .feature-name {
+            font-size: 18px;
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+        
+        .feature-desc {
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .rule-box {
+            background: rgba(255,215,0,0.1);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .rule-title {
+            font-size: 18px;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .faq-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .faq-question {
+            font-size: 16px;
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .faq-answer {
+            color: #888;
+            line-height: 1.6;
+        }
+        
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .contact-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .contact-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <a href="new_index.html" class="back-btn">🏠 返回首页</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>📖 帮助中心</h1>
+            <p>了解游戏玩法，掌握胜利技巧</p>
+        </div>
+        
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="showSection('intro')">游戏介绍</div>
+            <div class="nav-tab" onclick="showSection('rules')">游戏规则</div>
+            <div class="nav-tab" onclick="showSection('features')">功能说明</div>
+            <div class="nav-tab" onclick="showSection('tips')">进阶技巧</div>
+            <div class="nav-tab" onclick="showSection('faq')">常见问题</div>
+            <div class="nav-tab" onclick="showSection('contact')">联系我们</div>
+        </div>
+        
+        <!-- 游戏介绍 -->
+        <div id="intro" class="content-section">
+            <div class="section-title">🎮 游戏介绍</div>
+            <div class="section-content">
+                <p>《命运之塔》(Tower of Fate) 是一款创新的多人实时卡牌对战游戏。玩家将扮演命运挑战者，通过出牌、策略和运气的较量，攀塔晋级，最终到达塔顶A层获得胜利。</p>
+                
+                <h3>🌟 游戏特色</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <div class="feature-name">实时对战</div>
+                        <div class="feature-desc">4人实时匹配，快节奏对局，每局5-10分钟</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎴</div>
+                        <div class="feature-name">天命牌系统</div>
+                        <div class="feature-desc">5种特殊技能，逆转战局的关键</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏆</div>
+                        <div class="feature-name">段位晋升</div>
+                        <div class="feature-desc">从青铜到王者，6大段位等你挑战</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👥</div>
+                        <div class="feature-name">团队竞技</div>
+                        <div class="feature-desc">2v2/3v3/4v4/5v5，团队协作取胜</div>
+                    </div>
+                </div>
+                
+                <h3>🎯 核心玩法</h3>
+                <p>每轮游戏，系统会随机抽出一张"守卫牌"作为当轮的晋级条件。玩家从手牌中选择一张牌出牌，满足以下条件即可晋级：</p>
+                <ul style="margin-left: 20px; color: #888;">
+                    <li>✅ 花色匹配 - 与守卫牌花色相同</li>
+                    <li>✅ 数字匹配 - 与守卫牌数字相同</li>
+                    <li>🎉 完美匹配 - 花色和数字都相同，获得天命牌</li>
+                </ul>
+                <p>最先到达A层（第13层）的玩家获胜！</p>
+            </div>
+        </div>
+        
+        <!-- 游戏规则 -->
+        <div id="rules" class="content-section hidden">
+            <div class="section-title">📋 游戏规则</div>
+            <div class="section-content">
+                <div class="rule-box">
+                    <div class="rule-title">🎴 基本规则</div>
+                    <p>1. 游戏使用标准52张扑克牌（不含大小王）</p>
+                    <p>2. 每局游戏2-4名玩家参与</p>
+                    <p>3. 每位玩家初始手牌5张</p>
+                    <p>4. 每轮限时30秒出牌</p>
+                    <p>5. 超时未出牌系统自动出最小牌</p>
+                </div>
+                
+                <div class="rule-box">
+                    <div class="rule-title">🏆 晋级规则</div>
+                    <p>• 第2-10层：2/A/3/4/5/6/7/8/9/10</p>
+                    <p>• J/Q/K层：特殊层，奖励翻倍</p>
+                    <p>• A层：顶层，到达即获胜</p>
+                    <p>• 每晋级一层，手牌重新补满5张</p>
+                </div>
+                
+                <div class="rule-box">
+                    <div class="rule-title">✨ 天命牌系统</div>
+                    <p>完美匹配（花色+数字都相同）可获得天命牌：</p>
+                    <p>🎯 全军突击 - 所有玩家同时晋级</p>
+                    <p>🔄 换牌 - 重新抽取5张新手牌</p>
+                    <p>👁️ 看牌 - 提前查看下轮守卫牌</p>
+                    <p>🚀 带人 - 指定一名玩家一同晋级</p>
+                    <p>❌ 踢人 - 指定一名玩家本轮失败</p>
+                </div>
+                
+                <div class="rule-box">
+                    <div class="rule-title">💰 计分规则</div>
+                    <p>• 胜利：+100分</p>
+                    <p>• 花色/数字匹配晋级：+20分</p>
+                    <p>• 完美匹配：+100分 + 天命牌</p>
+                    <p>• 失败：+5分参与奖</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 功能说明 -->
+        <div id="features" class="content-section hidden">
+            <div class="section-title">🛠️ 功能说明</div>
+            <div class="section-content">
+                <h3>🎮 游戏模式</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">👤</div>
+                        <div class="feature-name">单人模式</div>
+                        <div class="feature-desc">与3个AI对战，练习技巧</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚔️</div>
+                        <div class="feature-name">经典对战</div>
+                        <div class="feature-desc">4人实时匹配对战</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏆</div>
+                        <div class="feature-name">排位赛</div>
+                        <div class="feature-desc">段位晋升，实力认证</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👥</div>
+                        <div class="feature-name">团队赛</div>
+                        <div class="feature-desc">2v2/3v3/4v4/5v5团队对战</div>
+                    </div>
+                </div>
+                
+                <h3>💎 货币系统</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">💰</div>
+                        <div class="feature-name">金币</div>
+                        <div class="feature-desc">游戏内货币，通过对局、任务获得</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💎</div>
+                        <div class="feature-name">钻石</div>
+                        <div class="feature-desc">充值货币，购买道具和皮肤</div>
+                    </div>
+                </div>
+                
+                <h3>📦 其他功能</h3>
+                <p>• 商城系统：购买皮肤、特效、头像框</p>
+                <p>• 抽奖系统：幸运转盘，赢取大奖</p>
+                <p>• 任务系统：每日/每周任务，丰厚奖励</p>
+                <p>• 好友系统：添加好友，组队对战</p>
+                <p>• 战队系统：创建/加入战队，团队竞技</p>
+                <p>• 观战系统：观看高手对局，学习技巧</p>
+            </div>
+        </div>
+        
+        <!-- 进阶技巧 -->
+        <div id="tips" class="content-section hidden">
+            <div class="section-title">🎯 进阶技巧</div>
+            <div class="section-content">
+                <div class="rule-box">
+                    <div class="rule-title">🧠 策略技巧</div>
+                    <p><strong>1. 牌型管理</strong> - 尽量保留多种花色的牌，增加匹配机会</p>
+                    <p><strong>2. 观察对手</strong> - 注意对手的出牌习惯，预测其手牌</p>
+                    <p><strong>3. 合理使用天命牌</strong> - 关键时刻使用，逆转战局</p>
+                    <p><strong>4. 控制节奏</strong> - 不要急于出牌，观察守卫牌后再决定</p>
+                    <p><strong>5. 团队配合</strong> - 团队赛中与队友沟通，制定策略</p>
+                </div>
+                
+                <div class="rule-box">
+                    <div class="rule-title">🎴 天命牌使用技巧</div>
+                    <p><strong>全军突击</strong> - 当你处于领先位置时使用，扩大优势</p>
+                    <p><strong>换牌</strong> - 手牌质量差时使用，寻求转机</p>
+                    <p><strong>看牌</strong> - 提前规划下轮出牌策略</p>
+                    <p><strong>带人</strong> - 团队赛中帮助落后队友</p>
+                    <p><strong>踢人</strong> - 阻止对手晋级，关键时刻使用</p>
+                </div>
+                
+                <div class="rule-box">
+                    <div class="rule-title">💰 资源获取技巧</div>
+                    <p>• 每日签到必做，连续签到奖励更丰厚</p>
+                    <p>• 完成任务获得金币和钻石</p>
+                    <p>• 参与活动获得限定奖励</p>
+                    <p>• 排位赛奖励比休闲赛更高</p>
+                    <p>• VIP玩家有额外收益加成</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 常见问题 -->
+        <div id="faq" class="content-section hidden">
+            <div class="section-title">❓ 常见问题</div>
+            <div class="section-content">
+                <div class="faq-item">
+                    <div class="faq-question">Q: 如何获得更多的金币？</div>
+                    <div class="faq-answer">A: 您可以通过以下方式获得金币：1）完成对局获得基础奖励；2）完成每日/每周任务；3）参与活动和锦标赛；4）每日签到奖励；5）VIP玩家有额外金币加成。</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Q: 天命牌怎么获得？</div>
+                    <div class="faq-answer">A: 当您出牌与守卫牌完全相同时（花色和数字都匹配），即可获得一张天命牌。VIP玩家开局就能获得额外的天命牌。</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Q: 排位赛的段位是如何划分的？</div>
+                    <div class="faq-answer">A: 排位赛共有6个段位：青铜、白银、黄金、铂金、钻石、王者。每个段位有5个小星级，达到5星后晋升下一段位。</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Q: 团队赛怎么玩？</div>
+                    <div class="faq-answer">A: 首先创建或加入一个团队，然后队长可以创建房间或开始匹配。团队赛支持2v2、3v3、4v4、5v5四种模式，需要团队协作才能获胜。</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Q: VIP有什么特权？</div>
+                    <div class="faq-answer">A: VIP特权包括：1）开局+1天命牌；2）金币收益+20%；3）积分加成+10%；4）专属头像框和标识；5）更多每日任务奖励。</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Q: 游戏卡顿怎么办？</div>
+                    <div class="faq-answer">A: 建议：1）检查网络连接；2）关闭其他占用网络的程序；3）降低游戏画质设置；4）清除浏览器缓存；5）使用Chrome或Firefox浏览器。</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 联系我们 -->
+        <div id="contact" class="content-section hidden">
+            <div class="section-title">📞 联系我们</div>
+            <div class="section-content">
+                <p>如果您遇到问题或有任何建议，欢迎通过以下方式联系我们：</p>
+                
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div style="font-weight: bold; margin-bottom: 5px;">客服邮箱</div>
+                        <div style="color: #888; font-size: 14px;">support@toweroffate.com</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">💬</div>
+                        <div style="font-weight: bold; margin-bottom: 5px;">官方QQ群</div>
+                        <div style="color: #888; font-size: 14px;">123456789</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📱</div>
+                        <div style="font-weight: bold; margin-bottom: 5px;">微信公众号</div>
+                        <div style="color: #888; font-size: 14px;">命运之塔官方</div>
+                    </div>
+                </div>
+                
+                <div class="rule-box" style="margin-top: 30px;">
+                    <div class="rule-title">⏰ 服务时间</div>
+                    <p>客服在线时间：每天 9:00 - 22:00</p>
+                    <p>紧急情况请发送邮件，我们会尽快回复</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showSection(sectionId) {
+            // 隐藏所有section
+            document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
+            // 显示选中的section
+            document.getElementById(sectionId).classList.remove('hidden');
+            // 更新标签状态
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
