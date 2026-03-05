@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>充值中心 - 命运塔·首登者</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
+            min-height: 100vh;
+            color: #fff;
+        }
+        .header {
+            background: linear-gradient(90deg, #6b2c91, #4a148c);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .back-btn { color: #fff; text-decoration: none; font-size: 16px; }
+        .header-title { color: #FFD700; font-size: 18px; font-weight: bold; }
+        .balance-display {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+        }
+        .balance-item {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        .balance-icon { font-size: 24px; margin-bottom: 5px; }
+        .balance-value { font-size: 24px; color: #FFD700; font-weight: bold; }
+        .balance-label { font-size: 12px; color: #888; }
+        
+        .section-title {
+            padding: 15px 20px;
+            font-size: 16px;
+            color: #FFD700;
+            font-weight: bold;
+        }
+        
+        .vip-section {
+            margin: 0 20px 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,165,0,0.1));
+            border: 2px solid #FFD700;
+            border-radius: 15px;
+        }
+        .vip-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .vip-icon { font-size: 30px; }
+        .vip-title { font-size: 18px; font-weight: bold; color: #FFD700; }
+        .vip-benefits {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .vip-benefit {
+            text-align: center;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+        }
+        .vip-benefit-icon { font-size: 20px; margin-bottom: 5px; }
+        .vip-benefit-text { font-size: 10px; color: #FFD700; }
+        .vip-price {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 10px;
+        }
+        .vip-price-now { font-size: 32px; color: #ff4757; font-weight: bold; }
+        .vip-price-old { font-size: 16px; color: #666; text-decoration: line-through; }
+        .vip-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+        .product-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid #444;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .product-card:hover, .product-card.selected {
+            border-color: #FFD700;
+            background: rgba(255,215,0,0.1);
+        }
+        .product-icon { font-size: 32px; margin-bottom: 8px; }
+        .product-name { font-size: 12px; color: #ccc; margin-bottom: 5px; }
+        .product-price { font-size: 16px; color: #ff4757; font-weight: bold; }
+        .product-bonus { font-size: 10px; color: #2ed573; }
+        
+        .payment-section {
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+        }
+        .payment-title { font-size: 14px; color: #888; margin-bottom: 15px; }
+        .payment-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .payment-option {
+            flex: 1;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid #444;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .payment-option.selected {
+            border-color: #2ed573;
+            background: rgba(46,213,115,0.1);
+        }
+        .payment-icon { font-size: 28px; margin-bottom: 5px; }
+        .payment-name { font-size: 12px; }
+        
+        .pay-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #2ed573, #26c281);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .pay-btn:disabled {
+            background: #444;
+            color: #666;
+        }
+        
+        .notice {
+            padding: 20px;
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html" class="back-btn">← 返回</a>
+        <div class="header-title">💎 充值中心</div>
+        <div style="width:40px"></div>
+    </div>
+
+    <!-- 余额显示 -->
+    <div class="balance-display">
+        <div class="balance-item">
+            <div class="balance-icon">💰</div>
+            <div class="balance-value" id="goldBalance">1,000</div>
+            <div class="balance-label">金币</div>
+        </div>
+        <div class="balance-item">
+            <div class="balance-icon">💎</div>
+            <div class="balance-value" id="diamondBalance">0</div>
+            <div class="balance-label">钻石</div>
+        </div>
+    </div>
+
+    <!-- VIP专区 -->
+    <div class="section-title">👑 VIP特权</div>
+    <div class="vip-section">
+        <div class="vip-header">
+            <div class="vip-icon">👑</div>
+            <div class="vip-title">VIP月卡</div>
+        </div>
+        <div class="vip-benefits">
+            <div class="vip-benefit">
+                <div class="vip-benefit-icon">💰</div>
+                <div class="vip-benefit-text">每日500金币</div>
+            </div>
+            <div class="vip-benefit">
+                <div class="vip-benefit-icon">✨</div>
+                <div class="vip-benefit-text">专属皮肤</div>
+            </div>
+            <div class="vip-benefit">
+                <div class="vip-benefit-icon">⚡</div>
+                <div class="vip-benefit-text">优先匹配</div>
+            </div>
+        </div>
+        
+        <div class="vip-price">
+            <span class="vip-price-now">¥18</span>
+            <span class="vip-price-old">¥30</span>
+        </div>
+        
+        <button class="vip-btn" onclick="buyVIP()">立即开通VIP</button>
+    </div>
+
+    <!-- 商品列表 -->
+    <div class="section-title">💎 充值钻石</div>
+    <div class="products-grid">
+        <div class="product-card" onclick="selectProduct(this, 'diamond_60', 6)">
+            <div class="product-icon">💎</div>
+            <div class="product-name">60钻石</div>
+            <div class="product-price">¥6</div>
+        </div>
+        
+        <div class="product-card" onclick="selectProduct(this, 'diamond_300', 30)">
+            <div class="product-icon">💎</div>
+            <div class="product-name">300钻石</div>
+            <div class="product-price">¥30</div>
+            <div class="product-bonus">送30</div>
+        </div>
+        
+        <div class="product-card" onclick="selectProduct(this, 'diamond_680', 68)">
+            <div class="product-icon">💎</div>
+            <div class="product-name">680钻石</div>
+            <div class="product-price">¥68</div>
+            <div class="product-bonus">送100</div>
+        </div>
+        
+        <div class="product-card" onclick="selectProduct(this, 'diamond_1280', 128)">
+            <div class="product-icon">💎</div>
+            <div class="product-name">1280钻石</div>
+            <div class="product-price">¥128</div>
+            <div class="product-bonus">送280</div>
+        </div>
+        
+        <div class="product-card" onclick="selectProduct(this, 'diamond_3280', 328)">
+            <div class="product-icon">💎</div>
+            <div class="product-name">3280钻石</div>
+            <div class="product-price">¥328</div>
+            <div class="product-bonus">送800</div>
+        </div>
+        
+        <div class="product-card" onclick="selectProduct(this, 'diamond_6480', 648)">
+            <div class="product-icon">💎</div>
+            <div class="product-name">6480钻石</div>
+            <div class="product-price">¥648</div>
+            <div class="product-bonus">送2000</div>
+        </div>
+    </div>
+
+    <!-- 支付方式 -->
+    <div class="payment-section">
+        <div class="payment-title">选择支付方式</div>
+        
+        <div class="payment-options">
+            <div class="payment-option selected" onclick="selectPayment('alipay')" id="alipayOption">
+                <div class="payment-icon">🔵</div>
+                <div class="payment-name">支付宝</div>
+            </div>
+            
+            <div class="payment-option" onclick="selectPayment('wechat')" id="wechatOption">
+                <div class="payment-icon">🟢</div>
+                <div class="payment-name">微信支付</div>
+            </div>
+        </div>
+        
+        <button class="pay-btn" id="payBtn" onclick="pay()" disabled>
+            请选择充值金额
+        </button>
+    </div>
+
+    <div class="notice">
+        充值即代表同意《用户充值协议》| 客服邮箱: support@toweroffate.com
+    </div>
+
+    <script>
+        let selectedProduct = null;
+        let selectedPrice = 0;
+        let selectedPayment = 'alipay';
+        
+        // 加载用户余额
+        function loadBalance() {
+            const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            if(user.gold) {
+                document.getElementById('goldBalance').textContent = user.gold.toLocaleString();
+            }
+            if(user.diamond) {
+                document.getElementById('diamondBalance').textContent = user.diamond.toLocaleString();
+            }
+        }
+        
+        // 选择商品
+        function selectProduct(element, productId, price) {
+            // 移除其他选中状态
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // 添加选中状态
+            element.classList.add('selected');
+            selectedProduct = productId;
+            selectedPrice = price;
+            
+            // 更新支付按钮
+            updatePayBtn();
+        }
+        
+        // 选择支付方式
+        function selectPayment(type) {
+            selectedPayment = type;
+            document.getElementById('alipayOption').classList.toggle('selected', type === 'alipay');
+            document.getElementById('wechatOption').classList.toggle('selected', type === 'wechat');
+        }
+        
+        // 更新支付按钮
+        function updatePayBtn() {
+            const btn = document.getElementById('payBtn');
+            if(selectedProduct) {
+                btn.disabled = false;
+                btn.textContent = `确认支付 ¥${selectedPrice}`;
+            }
+        }
+        
+        // 购买VIP
+        function buyVIP() {
+            selectedProduct = 'vip_month';
+            selectedPrice = 18;
+            updatePayBtn();
+            
+            // 滚动到支付区域
+            document.querySelector('.payment-section').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // 支付
+        function pay() {
+            if(!selectedProduct) {
+                alert('请选择充值金额');
+                return;
+            }
+            
+            const payTypeText = selectedPayment === 'alipay' ? '支付宝' : '微信支付';
+            
+            // 模拟支付流程
+            alert(`🔄 正在调起${payTypeText}...\n\n订单信息：\n商品: ${selectedProduct}\n金额: ¥${selectedPrice}\n\n（实际生产环境会调起支付宝/微信SDK）`);
+            
+            // TODO: 调用后端API创建订单
+            // 1. 调用 /api/order/create 创建订单
+            // 2. 获取支付参数，调起支付宝/微信支付
+            // 3. 支付成功后更新用户余额
+            
+            // 模拟支付成功
+            setTimeout(() => {
+                const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                
+                if(selectedProduct === 'vip_month') {
+                    user.vip = true;
+                    alert('🎉 VIP开通成功！');
+                } else if(selectedProduct.startsWith('diamond_')) {
+                    const diamondMap = {
+                        'diamond_60': 60,
+                        'diamond_300': 330,
+                        'diamond_680': 780,
+                        'diamond_1280': 1560,
+                        'diamond_3280': 4080,
+                        'diamond_6480': 8480
+                    };
+                    const diamond = diamondMap[selectedProduct] || 0;
+                    user.diamond = (user.diamond || 0) + diamond;
+                    alert(`🎉 充值成功！获得 ${diamond} 钻石`);
+                }
+                
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                loadBalance();
+            }, 1500);
+        }
+        
+        // 加载余额
+        loadBalance();
+    </script>
+</body>
+</html>
