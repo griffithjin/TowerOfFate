@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 命运塔·首登者</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        .login-box {
+            background: rgba(0,0,0,0.5);
+            border: 2px solid #FFD700;
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+        }
+        .logo { text-align: center; font-size: 48px; margin-bottom: 10px; }
+        .title { text-align: center; color: #FFD700; font-size: 24px; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #888; font-size: 12px; margin-bottom: 30px; }
+        
+        /* 切换标签 */
+        .tab-switch {
+            display: flex;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 25px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            font-weight: bold;
+        }
+        
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; color: #aaa; font-size: 12px; margin-bottom: 8px; }
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid #444;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        .verify-group { display: flex; gap: 10px; }
+        .verify-group input { flex: 1; }
+        .verify-btn {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .verify-btn:disabled { background: #444; color: #666; }
+        
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+        .remember-me { display: flex; align-items: center; gap: 5px; color: #aaa; }
+        .forgot-link { color: #FFD700; text-decoration: none; }
+        
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .alt-login {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .alt-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+        }
+        
+        .register-link {
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+        }
+        .register-link a { color: #FFD700; text-decoration: none; }
+        
+        .form-section { display: none; }
+        .form-section.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="logo">🏰</div>
+        <div class="title">登录命运塔</div>
+        <div class="subtitle">手机号/邮箱 + 验证码/密码 登录</div>
+        
+        <!-- 切换 -->
+        <div class="tab-switch">
+            <div class="tab-btn active" onclick="switchTab('phone')">📱 手机号</div>
+            <div class="tab-btn" onclick="switchTab('email')">📧 邮箱</div>
+            <div class="tab-btn" onclick="switchTab('password')">🔒 密码</div>
+        </div>
+        
+        <!-- 手机号+验证码登录 -->
+        <form id="phoneForm" class="form-section active">
+            <div class="input-group">
+                <label>📱 手机号</label>
+                <input type="tel" id="phone" placeholder="请输入手机号">
+            </div>
+            
+            <div class="input-group">
+                <label>🔐 短信验证码</label>
+                <div class="verify-group">
+                    <input type="text" id="phoneCode" placeholder="6位验证码">
+                    <button type="button" class="verify-btn" id="sendPhoneCode" onclick="sendPhoneVerify()">获取验证码</button>
+                </div>
+            </div>
+            
+            <button type="submit" class="login-btn">🎮 立即登录</button>
+        </form>
+        
+        <!-- 邮箱+验证码登录 -->
+        <form id="emailForm" class="form-section">
+            <div class="input-group">
+                <label>📧 邮箱地址</label>
+                <input type="email" id="email" placeholder="请输入邮箱">
+            </div>
+            
+            <div class="input-group">
+                <label>🔐 邮箱验证码</label>
+                <div class="verify-group">
+                    <input type="text" id="emailCode" placeholder="6位验证码">
+                    <button type="button" class="verify-btn" id="sendEmailCode" onclick="sendEmailVerify()">获取验证码</button>
+                </div>
+            </div>
+            
+            <button type="submit" class="login-btn">🎮 立即登录</button>
+        </form>
+        
+        <!-- 密码登录 -->
+        <form id="passwordForm" class="form-section">
+            <div class="input-group">
+                <label>📱 手机号 / 📧 邮箱</label>
+                <input type="text" id="account" placeholder="请输入手机号或邮箱">
+            </div>
+            
+            <div class="input-group">
+                <label>🔒 密码</label>
+                <input type="password" id="password" placeholder="请输入密码">
+            </div>
+            
+            <div class="options">
+                <label class="remember-me">
+                    <input type="checkbox" id="remember"> 记住我
+                </label>
+                <a href="#" class="forgot-link" onclick="forgotPassword()">忘记密码？</a>
+            </div>
+            
+            <button type="submit" class="login-btn">🎮 立即登录</button>
+        </form>
+        
+        <div class="divider">或</div>
+        
+        <div class="alt-login">
+            <button class="alt-btn" onclick="wechatLogin()">🟢 微信</button>
+            <button class="alt-btn" onclick="qqLogin()">🔵 QQ</button>
+        </div>
+        
+        <div class="register-link">
+            还没有账号？<a href="register-v2.html">立即注册</a>
+        </div>
+    </div>
+
+    <script>
+        // 切换登录方式
+        function switchTab(type) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.form-section').forEach(form => form.classList.remove('active'));
+            
+            const index = type === 'phone' ? 0 : type === 'email' ? 1 : 2;
+            document.querySelectorAll('.tab-btn')[index].classList.add('active');
+            
+            if(type === 'phone') {
+                document.getElementById('phoneForm').classList.add('active');
+            } else if(type === 'email') {
+                document.getElementById('emailForm').classList.add('active');
+            } else {
+                document.getElementById('passwordForm').classList.add('active');
+            }
+        }
+        
+        // 发送验证码（明天接入真实接口）
+        function sendPhoneVerify() {
+            const phone = document.getElementById('phone').value;
+            if(!/^1[3-9]\d{9}$/.test(phone)) {
+                alert('请输入有效的手机号');
+                return;
+            }
+            
+            // TODO: 明天接入短信接口
+            const code = Math.floor(100000 + Math.random() * 900000).toString();
+            alert(`📱 验证码: ${code}\n\n（明天接入真实短信接口）`);
+            startCountdown(document.getElementById('sendPhoneCode'));
+        }
+        
+        function sendEmailVerify() {
+            const email = document.getElementById('email').value;
+            if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                alert('请输入有效的邮箱');
+                return;
+            }
+            
+            // TODO: 接入邮件API
+            const code = Math.floor(100000 + Math.random() * 900000).toString();
+            alert(`📧 验证码: ${code}`);
+            startCountdown(document.getElementById('sendEmailCode'));
+        }
+        
+        function startCountdown(btn) {
+            let count = 60;
+            btn.disabled = true;
+            btn.textContent = count + 's';
+            const timer = setInterval(() => {
+                count--;
+                btn.textContent = count + 's';
+                if(count <= 0) {
+                    clearInterval(timer);
+                    btn.disabled = false;
+                    btn.textContent = '获取验证码';
+                }
+            }, 1000);
+        }
+        
+        // 登录逻辑
+        document.getElementById('phoneForm').onsubmit = function(e) {
+            e.preventDefault();
+            doLogin('phone');
+        };
+        
+        document.getElementById('emailForm').onsubmit = function(e) {
+            e.preventDefault();
+            doLogin('email');
+        };
+        
+        document.getElementById('passwordForm').onsubmit = function(e) {
+            e.preventDefault();
+            doLogin('password');
+        };
+        
+        function doLogin(type) {
+            let account;
+            if(type === 'phone') {
+                account = document.getElementById('phone').value;
+            } else if(type === 'email') {
+                account = document.getElementById('email').value;
+            } else {
+                account = document.getElementById('account').value;
+            }
+            
+            // 查找用户
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.phone === account || u.email === account);
+            
+            if(!user) {
+                alert('❌ 该账号未注册');
+                return;
+            }
+            
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            alert(`🎉 欢迎回来，${user.nickname}！`);
+            location.href = 'playable.html';
+        }
+        
+        function forgotPassword() {
+            alert('🔐 找回密码功能\n\n请使用手机号/邮箱验证码登录后修改密码');
+        }
+        
+        function wechatLogin() { alert('🟢 微信登录开发中...'); }
+        function qqLogin() { alert('🔵 QQ登录开发中...'); }
+    </script>
+</body>
+</html>
