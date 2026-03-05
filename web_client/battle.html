@@ -478,32 +478,268 @@
             }
         }
 
-        function playCard() {
-            if(config.selectedCard === null) return;
+        // ==================== 核心游戏逻辑 ====================
+        // 基于今天讨论的主逻辑：
+        // - 13守卫，每名守卫13张守卫牌 + 3张激怒牌
+        // - 3/6/9层守卫主动使用激怒牌
+        // - 匹配（花色或点数）则前进，激怒牌匹配则回退
+        
+        let Game = {
+            guards: [], // 13个守卫
             
-            // 简单逻辑
-            if(Math.random() > 0.5 && config.currentLevel < 12) {
-                config.currentLevel++;
+            // 生成守卫
+            initGuards() {
+                const suits = ['♥','♦','♣','♠'];
+                const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+                this.guards = [];
+                
+                for(let i = 0; i < 13; i++) {
+                    // 13张守卫牌
+                    const guardCards = [];
+                    for(let j = 0; j < 13; j++) {
+                        guardCards.push({
+                            suit: suits[Math.floor(Math.random() * 4)],
+                            rank: ranks[Math.floor(Math.random() * 13)]
+                        });
+                    }
+                    // 3张激怒牌（明牌）
+                    const provocationCards = [];
+                    for(let j = 0; j < 3; j++) {
+                        provocationCards.push({
+                            suit: suits[Math.floor(Math.random() * 4)],
+                            rank: ranks[Math.floor(Math.random() * 13)]
+                        });
+                    }
+                    this.guards.push({
+                        level: i,
+                        guardCards,
+                        usedGuardCards: [],
+                        provocationCards,
+                        usedProvocationCards: [],
+                        isDefeated: false
+                    });
+                }
+            },
+            
+            // 获取当前层守卫
+            getCurrentGuard() {
+                return this.guards[config.currentLevel];
+            },
+            
+            // 核心：出牌比对
+            playRound() {
+                if(config.selectedCard === null) return;
+                
+                const playerCard = config.hand[config.selectedCard];
+                const guard = this.getCurrentGuard();
+                
+                if(guard.guardCards.length === 0) {
+                    alert('本层守卫已被击败！自动上升一层');
+                    config.currentLevel++;
+                    this.afterPlay();
+                    return;
+                }
+                
+                // 守卫出一张牌
+                const guardCard = guard.guardCards.pop();
+                guard.usedGuardCards.push(guardCard);
+                
+                // 判断是否匹配
+                const isMatch = (playerCard.suit === guardCard.suit) || 
+                               (playerCard.rank === guardCard.rank);
+                
+                // 激怒牌判定（3/6/9层 - 索引2,5,8）
+                let provocationTriggered = false;
+                let matchedProvCard = null;
+                
+                if([2, 5, 8].includes(config.currentLevel)) {
+                    for(let provCard of guard.provocationCards) {
+                        if(playerCard.suit === provCard.suit || 
+                           playerCard.rank === provCard.rank) {
+                            provocationTriggered = true;
+                            matchedProvCard = provCard;
+                            break;
+                        }
+                    }
+                }
+                
+                // 移除手牌
+                config.hand.splice(config.selectedCard, 1);
+                config.selectedCard = null;
+                
+                // 显示结果
+                let resultMsg = `🎴 你出: ${playerCard.suit}${playerCard.rank}\n`;
+                resultMsg += `🛡️ 守卫出: ${guardCard.suit}${guardCard.rank}\n\n`;
+                
+                if(provocationTriggered) {
+                    resultMsg += `💥 激怒牌【${matchedProvCard.suit}${matchedProvCard.rank}】触发!\n`;
+                    resultMsg += `❌ 回退一层！`;
+                    if(config.currentLevel > 0) config.currentLevel--;
+                } else if(isMatch) {
+                    resultMsg += `✅ 匹配成功! 前进一层！`;
+                    config.currentLevel++;
+                    if(config.currentLevel >= 12) {
+                        setTimeout(() => alert('🎉 恭喜登顶！你成为首登者！'), 100);
+                    }
+                } else {
+                    resultMsg += `❌ 不匹配，留在本层`;
+                }
+                
+                alert(resultMsg);
+                
+                // 检查守卫是否被击败
+                if(guard.guardCards.length === 0) {
+                    guard.isDefeated = true;
+                }
+                
+                this.afterPlay();
+            },
+            
+            afterPlay() {
+                config.round++;
+                renderBattlefield();
+                renderHand();
+                document.getElementById('current-level').textContent = 
+                    ['2','3','4','5','6','7','8','9','10','J','Q','K','A'][config.currentLevel];
+                document.getElementById('round-count').textContent = config.round;
+                resetTimer();
             }
-            config.hand.splice(config.selectedCard, 1);
-            config.selectedCard = null;
-            config.round++;
+        };
+        
+        // 修改渲染函数以显示真实守卫数据
+        function renderBattlefield() {
+            const bf = document.getElementById('battlefield');
+            bf.innerHTML = '';
+
+            // 层数列
+            const levelCol = document.createElement('div');
+            levelCol.className = 'col col-level';
+            let levelHtml = '<div style="height:36px;background:rgba(255,255,255,0.1);border-bottom:1px solid #444;display:flex;align-items:center;justify-content:center;font-size:11px;color:#888">层</div>';
             
-            renderBattlefield();
-            renderHand();
-            document.getElementById('current-level').textContent = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'][config.currentLevel];
-            document.getElementById('round-count').textContent = config.round;
+            const levels = ['A','K','Q','J','10','9','8','7','6','5','4','3','2'];
+            const levelClasses = ['floor-A','floor-K','floor-Q','floor-J','floor-10','floor-9','floor-8','floor-7','floor-6','floor-5','floor-4','floor-3','floor-2'];
+            
+            levels.forEach((l, i) => {
+                const actualLevel = 12 - i;
+                const isCurrent = actualLevel === config.currentLevel;
+                levelHtml += `<div class="floor ${levelClasses[i]} ${isCurrent?'current':''}">${l}</div>`;
+            });
+            levelCol.innerHTML = levelHtml;
+            bf.appendChild(levelCol);
+
+            // 蓝队玩家列
+            for(let i=0; i<config.playersPerTeam; i++) {
+                const col = document.createElement('div');
+                col.className = 'col col-player';
+                let html = `<div class="player-header">👤${i+1}</div>`;
+                
+                const playerLevel = (i === config.myIndex && config.myTeam === 'blue') 
+                    ? config.currentLevel 
+                    : Math.floor(Math.random() * 5);
+                
+                for(let j=0; j<13; j++) {
+                    const actualJ = 12 - j;
+                    const hasPlayer = actualJ === playerLevel;
+                    const isMe = hasPlayer && i === config.myIndex && config.myTeam === 'blue';
+                    
+                    html += `<div class="player-cell ${hasPlayer?'has-player':''} ${isMe?'current-turn':''}">
+                        ${hasPlayer ? `<span class="player-avatar">${isMe?'👦':'👤'}</span>
+                        ${isMe?'<span class="player-check">●</span>':''}` : ''}
+                    </div>`;
+                }
+                col.innerHTML = html;
+                bf.appendChild(col);
+            }
+
+            // 守卫牌列 - 显示真实数据
+            const guardCol = document.createElement('div');
+            guardCol.className = 'col col-guard';
+            const currentGuard = Game.getCurrentGuard();
+            let guardHtml = `<div class="guard-header">守卫<br><small style="color:#FFD700">${currentGuard ? currentGuard.guardCards.length : 0}张</small></div>`;
+            
+            for(let i=0; i<13; i++) {
+                const guard = Game.guards[i];
+                const isCurrent = i === config.currentLevel;
+                guardHtml += `<div class="guard-cell ${isCurrent?'current':''}" style="${isCurrent?'background:rgba(255,215,0,0.2);':''}">
+                    ${isCurrent ? '🎴' : (guard && guard.isDefeated ? '✓' : '·')}
+                </div>`;
+            }
+            guardCol.innerHTML = guardHtml;
+            bf.appendChild(guardCol);
+
+            // 激怒牌列 - 显示真实数据
+            const provokeCol = document.createElement('div');
+            provokeCol.className = 'col col-provoke';
+            let provokeHtml = '<div class="provoke-header">激怒牌<br><small style="color:#ff6b6b">明牌</small></div>';
+            
+            for(let i=0; i<13; i++) {
+                const guard = Game.guards[i];
+                const isCurrent = i === config.currentLevel;
+                const isProvLevel = [2, 5, 8].includes(i);
+                
+                let content = '';
+                if(guard && guard.provocationCards.length > 0) {
+                    content = guard.provocationCards.map(c => c.suit + c.rank).join(' ');
+                }
+                
+                provokeHtml += `<div class="provoke-cell ${isCurrent?'current':''}" 
+                    style="${isCurrent?'background:rgba(255,0,0,0.1);':''} ${isProvLevel?'color:#ff4757;font-weight:bold;':''}">
+                    ${content || '-'}
+                </div>`;
+            }
+            provokeCol.innerHTML = provokeHtml;
+            bf.appendChild(provokeCol);
+
+            // 红队玩家列
+            for(let i=0; i<config.playersPerTeam; i++) {
+                const col = document.createElement('div');
+                col.className = 'col col-player';
+                let html = `<div class="player-header">👤${i+1}</div>`;
+                
+                const playerLevel = Math.floor(Math.random() * 6);
+                
+                for(let j=0; j<13; j++) {
+                    const actualJ = 12 - j;
+                    const hasPlayer = actualJ === playerLevel;
+                    html += `<div class="player-cell ${hasPlayer?'has-player':''}">
+                        ${hasPlayer ? '<span class="player-avatar">👤</span>' : ''}
+                    </div>`;
+                }
+                col.innerHTML = html;
+                bf.appendChild(col);
+            }
         }
 
+        function playCard() {
+            Game.playRound();
+        }
+
+        // 计时器
+        let timerInterval;
         function startTimer() {
-            setInterval(() => {
+            config.timer = 15;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
                 config.timer--;
-                if(config.timer <= 0) config.timer = 15;
-                document.getElementById('timer').textContent = config.timer + 's';
+                updateTimerDisplay();
+                if(config.timer <= 0) {
+                    config.selectedCard = 0;
+                    Game.playRound();
+                }
             }, 1000);
+        }
+        
+        function resetTimer() {
+            clearInterval(timerInterval);
+            startTimer();
+        }
+        
+        function updateTimerDisplay() {
+            document.getElementById('timer').textContent = config.timer + 's';
         }
 
         // 初始化
+        Game.initGuards();
         generateHand();
         renderBattlefield();
         renderHand();
