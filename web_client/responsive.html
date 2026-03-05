@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>命运塔·首登者</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        :root {
+            --header-h: 44px;
+            --ad-h: 32px;
+            --sidebar-w: 40px;
+            --right-w: 110px;
+            --bottom-h: 140px;
+            --card-h: 38px;
+        }
+        
+        html, body { 
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a1a;
+            color: #fff;
+            font-size: 12px;
+        }
+        
+        /* 移动端适配 */
+        @media (max-width: 375px) {
+            :root { --sidebar-w: 32px; --right-w: 90px; --bottom-h: 120px; }
+            body { font-size: 10px; }
+        }
+        
+        @media (min-width: 768px) {
+            :root { --sidebar-w: 50px; --right-w: 140px; --bottom-h: 160px; }
+            body { font-size: 14px; }
+        }
+        
+        /* 广告位 */
+        .ad-banner {
+            height: var(--ad-h);
+            background: linear-gradient(90deg, #ff6b6b, #feca57);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .ad-text {
+            animation: scroll 12s linear infinite;
+            color: #fff;
+            font-weight: bold;
+            padding: 0 20px;
+        }
+        @keyframes scroll {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        /* 队伍对战 */
+        .match-header {
+            height: var(--header-h);
+            background: linear-gradient(90deg, #1e3a5f, #2d2d44);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 0 10px;
+        }
+        .team-box {
+            text-align: center;
+            flex: 1;
+            max-width: 150px;
+        }
+        .team-name { font-size: 13px; font-weight: bold; color: #FFD700; }
+        .team-count { font-size: 10px; color: #aaa; }
+        .vs-box {
+            font-size: 16px;
+            color: #ff4757;
+            font-weight: bold;
+        }
+        
+        /* 主游戏区 */
+        .game-container {
+            display: flex;
+            height: calc(100% - var(--header-h) - var(--ad-h));
+        }
+        
+        /* 左侧层数 */
+        .level-sidebar {
+            width: var(--sidebar-w);
+            background: #0f0f1e;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .level-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #333;
+            font-weight: bold;
+            font-size: 11px;
+            min-height: 30px;
+        }
+        .level-A { background: #8B4513; color: #fff; }
+        .level-K { background: #CD853F; color: #fff; }
+        .level-Q { background: #D2691E; color: #fff; }
+        .level-J { background: #8B7355; color: #fff; }
+        .level-10 { background: #A0522D; color: #fff; }
+        .level-9 { background: #CD853F; color: #fff; }
+        .level-8 { background: #8B4513; color: #fff; }
+        .level-7 { background: #D2691E; color: #fff; }
+        .level-6 { background: #8B7355; color: #fff; }
+        .level-5 { background: #A0522D; color: #fff; }
+        .level-4 { background: #CD853F; color: #fff; }
+        .level-3 { background: #8B4513; color: #fff; }
+        .level-2 { background: #D2691E; color: #fff; }
+        .level-current { box-shadow: inset 0 0 0 2px #FFD700; }
+        
+        /* 中间塔区 */
+        .tower-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, #87CEEB, #E0F6FF);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #towerCanvas {
+            flex: 1;
+            width: 100%;
+            min-height: 0;
+        }
+        
+        /* 底部区域 */
+        .bottom-area {
+            background: rgba(15, 15, 30, 0.98);
+            border-top: 2px solid #333;
+            padding: 8px;
+        }
+        
+        .hand-section {
+            margin-bottom: 8px;
+        }
+        .hand-title {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 6px;
+        }
+        
+        .cards-scroll {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            padding: 4px 0;
+            scrollbar-width: none;
+        }
+        .cards-scroll::-webkit-scrollbar { display: none; }
+        
+        .player-card {
+            min-width: 36px;
+            height: 50px;
+            background: #fff;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .player-card.red { color: #d00; }
+        .player-card.black { color: #000; }
+        .player-card.selected {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(255,215,0,0.6);
+            border: 2px solid #FFD700;
+        }
+        .player-card .suit { font-size: 16px; }
+        .player-card .rank { font-size: 10px; font-weight: bold; }
+        
+        .play-btn {
+            width: 100%;
+            padding: 10px;
+            background: #444;
+            color: #666;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .play-btn.active {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+        }
+        
+        /* 日志区 */
+        .log-area {
+            max-height: 60px;
+            overflow-y: auto;
+            background: #0a0a15;
+            border-top: 1px solid #333;
+            font-size: 10px;
+        }
+        .log-header {
+            padding: 4px;
+            background: #1a1a2e;
+            color: #FFD700;
+            text-align: center;
+            font-size: 10px;
+        }
+        .log-item {
+            padding: 3px 8px;
+            border-bottom: 1px solid #222;
+            line-height: 1.3;
+        }
+        
+        /* 右侧守卫牌区 */
+        .right-panel {
+            width: var(--right-w);
+            display: flex;
+            background: #0f0f1e;
+        }
+        
+        .guard-area, .provoke-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #333;
+        }
+        
+        .area-header {
+            padding: 6px 2px;
+            text-align: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .guard-header { background: #ff4757; }
+        .provoke-header { background: #ff6b6b; }
+        
+        .cards-container {
+            flex: 1;
+            overflow-y: auto;
+            background: #ffeb3b;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-level {
+            flex: 1;
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding: 2px;
+        }
+        .card-level.current {
+            background: #ffc107;
+            box-shadow: inset 0 0 0 2px #ff0000;
+        }
+        
+        .guard-card {
+            width: 28px;
+            height: 36px;
+            background: linear-gradient(135deg, #1a5490, #0d2847);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #fff;
+        }
+        .guard-card.revealed {
+            background: #fff;
+            color: #000;
+            font-size: 10px;
+            flex-direction: column;
+        }
+        
+        .provoke-cards {
+            display: flex;
+            gap: 1px;
+        }
+        .provoke-card {
+            width: 18px;
+            height: 28px;
+            background: #ff4757;
+            border-radius: 2px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+        }
+        .provoke-card.black { background: #2c3e50; }
+        
+        /* 玩家弹窗 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        .modal-card {
+            background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
+            border: 2px solid #FFD700;
+            border-radius: 12px;
+            padding: 20px;
+            width: 100%;
+            max-width: 280px;
+            text-align: center;
+        }
+        .modal-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+        .modal-name { font-size: 16px; font-weight: bold; margin-bottom: 10px; }
+        .modal-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .stat-item {
+            background: rgba(255,255,255,0.1);
+            padding: 8px;
+            border-radius: 6px;
+        }
+        .stat-val { font-size: 18px; color: #FFD700; font-weight: bold; }
+        .stat-lbl { font-size: 10px; color: #888; }
+        .btn-primary {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #2ed573, #26c281);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="ad-banner">
+        <div class="ad-text">🎮 命运塔首登者 - VIP特惠 | 新用户送1000金币 🎮</div>
+    </div>
+
+    <div class="match-header">
+        <div class="team-box">
+            <div class="team-name">🐼 熊猫战队</div>
+            <div class="team-count">4人在线</div>
+        </div>
+        <div class="vs-box">VS</div>
+        <div class="team-box">
+            <div class="team-name">🐺 战狼军团</div>
+            <div class="team-count">5人在线</div>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <!-- 左侧层数 -->
+        <div class="level-sidebar" id="levelSidebar"></div>
+
+        <!-- 中间塔区 -->
+        <div class="tower-main">
+            <canvas id="towerCanvas"></canvas>
+            
+            <div class="bottom-area">
+                <div class="hand-section">
+                    <div class="hand-title">
+                        <span>🎴 手牌 <span id="handCount">52</span>张</span>
+                        <span>出一张少一张</span>
+                    </div>
+                    <div class="cards-scroll" id="handCards"></div>
+                    
+                    <button class="play-btn" id="playBtn">选择一张牌</button>
+                </div>
+                
+                <div class="log-area">
+                    <div class="log-header">📜 游戏记录</div>
+                    <div id="logList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧守卫牌 -->
+        <div class="right-panel">
+            <div class="guard-area">
+                <div class="area-header guard-header">🛡️ 守卫</div>
+                <div class="cards-container" id="guardCards"></div>
+            </div>
+            <div class="provoke-area">
+                <div class="area-header provoke-header">💢 激怒</div>
+                <div class="cards-container" id="provokeCards"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 玩家弹窗 -->
+    <div class="modal-overlay" id="playerModal">
+        <div class="modal-card">
+            <div class="modal-avatar" id="modalAvatar">😺</div>
+            <div class="modal-name" id="modalName">玩家</div>
+            
+            <div class="modal-stats">
+                <div class="stat-item">
+                    <div class="stat-val" id="modalLevel">7层</div>
+                    <div class="stat-lbl">当前层</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-val" id="modalScore">1250</div>
+                    <div class="stat-lbl">积分</div>
+                </div>
+            </div>
+            
+            <button class="btn-primary" onclick="closeModal()">➕ 加好友</button>
+        </div>
+    </div>
+
+    <script>
+        const LEVELS = ['A','K','Q','J','10','9','8','7','6','5','4','3','2'];
+        const AVATARS = ['😺','🐶','🐰','🦊','🐼','🐨','🐯','🦁','🐸','🐙'];
+        
+        let myLevel = 7;
+        let myAvatar = '😺';
+        let selectedCard = null;
+        let hand = [];
+        let guards = [];
+        let players = [];
+        let canvas, ctx;
+
+        function init() {
+            canvas = document.getElementById('towerCanvas');
+            ctx = canvas.getContext('2d');
+            
+            generateData();
+            renderUI();
+            drawTower();
+            setupEvents();
+            
+            window.addEventListener('resize', () => {
+                drawTower();
+            });
+        }
+
+        function generateData() {
+            const suits = ['♥','♦','♣','♠'];
+            const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+            
+            // 生成手牌
+            hand = [];
+            for(let s of suits) {
+                for(let r of ranks) {
+                    hand.push({suit: s, rank: r, isRed: s==='♥'||s==='♦'});
+                }
+            }
+            hand.sort(()=>Math.random()-0.5);
+            
+            // 生成守卫
+            guards = [];
+            for(let i=0; i<13; i++) {
+                const gc = [], pc = [];
+                for(let j=0; j<13; j++) gc.push({
+                    suit: suits[Math.floor(Math.random()*4)],
+                    rank: ranks[Math.floor(Math.random()*13)]
+                });
+                for(let j=0; j<3; j++) pc.push({
+                    suit: suits[Math.floor(Math.random()*4)],
+                    rank: ranks[Math.floor(Math.random()*13)]
+                });
+                guards.push({guardCards: gc, provocationCards: pc});
+            }
+            
+            // 生成玩家
+            players = [];
+            for(let i=0; i<5; i++) {
+                players.push({
+                    avatar: AVATARS[i+1],
+                    name: '玩家' + (i+1),
+                    level: Math.floor(Math.random() * 13),
+                    score: 1000 + Math.floor(Math.random() * 500)
+                });
+            }
+        }
+
+        function renderUI() {
+            // 左侧层数
+            const sidebar = document.getElementById('levelSidebar');
+            sidebar.innerHTML = '';
+            LEVELS.forEach((lv, i) => {
+                const div = document.createElement('div');
+                div.className = `level-item level-${lv} ${i===myLevel?'level-current':''}`;
+                div.textContent = lv;
+                sidebar.appendChild(div);
+            });
+            
+            // 右侧守卫牌
+            const gContainer = document.getElementById('guardCards');
+            const pContainer = document.getElementById('provokeCards');
+            gContainer.innerHTML = '';
+            pContainer.innerHTML = '';
+            
+            LEVELS.forEach((lv, i) => {
+                const g = guards[i];
+                const isCurrent = i === myLevel;
+                
+                // 守卫牌
+                const gDiv = document.createElement('div');
+                gDiv.className = `card-level ${isCurrent?'current':''}`;
+                gDiv.innerHTML = `<div class="guard-card">🎴</div>`;
+                gContainer.appendChild(gDiv);
+                
+                // 激怒牌
+                const pDiv = document.createElement('div');
+                pDiv.className = `card-level ${isCurrent?'current':''}`;
+                let pcHtml = '<div class="provoke-cards">';
+                g.provocationCards.forEach(c => {
+                    const isRed = c.suit==='♥'||c.suit==='♦';
+                    pcHtml += `<div class="provoke-card ${isRed?'':'black'}">${c.suit}</div>`;
+                });
+                pcHtml += '</div>';
+                pDiv.innerHTML = pcHtml;
+                pContainer.appendChild(pDiv);
+            });
+            
+            renderHand();
+        }
+
+        function renderHand() {
+            const container = document.getElementById('handCards');
+            container.innerHTML = '';
+            
+            hand.forEach((c, i) => {
+                const div = document.createElement('div');
+                div.className = `player-card ${c.isRed?'red':'black'} ${selectedCard===i?'selected':''}`;
+                div.innerHTML = `<div class="suit">${c.suit}</div><div class="rank">${c.rank}</div>`;
+                div.onclick = () => {
+                    selectedCard = selectedCard===i?null:i;
+                    renderHand();
+                    updateBtn();
+                };
+                container.appendChild(div);
+            });
+            
+            document.getElementById('handCount').textContent = hand.length;
+        }
+
+        function updateBtn() {
+            const btn = document.getElementById('playBtn');
+            btn.className = selectedCard!==null?'play-btn active':'play-btn';
+            btn.textContent = selectedCard!==null?'确认出牌':'选择一张牌';
+        }
+
+        function drawTower() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height - document.querySelector('.bottom-area').offsetHeight;
+            
+            const w = canvas.width;
+            const h = canvas.height;
+            const floorH = h / 13;
+            
+            ctx.clearRect(0, 0, w, h);
+            
+            // 天空
+            const grad = ctx.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, '#87CEEB');
+            grad.addColorStop(1, '#E0F6FF');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+            
+            // 比萨斜塔
+            const tx = w / 2;
+            const tw = Math.min(w * 0.4, 150);
+            
+            LEVELS.forEach((lv, i) => {
+                const y = i * floorH;
+                const p = i / 12;
+                const cw = tw * (1 - p * 0.25);
+                const ox = p * 20;
+                const x = tx - cw/2 + ox;
+                
+                // 塔层
+                const b = 220 - i * 10;
+                ctx.fillStyle = `rgb(${b}, ${b-15}, ${b-30})`;
+                ctx.fillRect(x, y, cw, floorH - 1);
+                
+                // 边框
+                ctx.strokeStyle = '#8B7355';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(x, y, cw, floorH - 1);
+                
+                // 窗户
+                ctx.fillStyle = '#5C4033';
+                for(let j=0; j<2; j++) {
+                    ctx.beginPath();
+                    ctx.arc(x + cw/3 * (j+1), y + floorH/2, cw/8, 0, Math.PI*2);
+                    ctx.fill();
+                }
+            });
+            
+            // 玩家
+            drawAvatar(tx - 30, myLevel * floorH + floorH/2 - 15, myAvatar, true);
+            players.forEach((p, i) => {
+                const ox = ((i%2)*2-1) * (40 + Math.floor(i/2)*15);
+                drawAvatar(tx + ox, p.level * floorH + floorH/2 - 15, p.avatar, false, i);
+            });
+        }
+
+        function drawAvatar(x, y, av, isSelf, pid) {
+            const s = 28;
+            
+            // 记录位置用于点击
+            if(pid !== undefined) {
+                players[pid].hitX = x + s/2;
+                players[pid].hitY = y + s/2;
+                players[pid].hitR = s/2;
+            }
+            
+            // 背景
+            ctx.fillStyle = isSelf?'#FFD700':'#4ECDC4';
+            ctx.beginPath();
+            ctx.arc(x + s/2, y + s/2, s/2, 0, Math.PI*2);
+            ctx.fill();
+            
+            // 头像
+            ctx.font = '18px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(av, x + s/2, y + s/2 + 2);
+        }
+
+        function setupEvents() {
+            // 出牌
+            document.getElementById('playBtn').onclick = () => {
+                if(selectedCard === null) return;
+                
+                const card = hand[selectedCard];
+                hand.splice(selectedCard, 1);
+                selectedCard = null;
+                
+                renderHand();
+                updateBtn();
+                addLog(`出${card.suit}${card.rank}，剩余${hand.length}张`);
+            };
+            
+            // 点击头像
+            canvas.onclick = (e) => {
+                const r = canvas.getBoundingClientRect();
+                const x = e.clientX - r.left;
+                const y = e.clientY - r.top;
+                
+                players.forEach((p, i) => {
+                    if(p.hitX) {
+                        const dx = x - p.hitX;
+                        const dy = y - p.hitY;
+                        if(Math.sqrt(dx*dx + dy*dy) < p.hitR) {
+                            showModal(p);
+                        }
+                    }
+                });
+            };
+        }
+
+        function addLog(msg) {
+            const list = document.getElementById('logList');
+            const div = document.createElement('div');
+            div.className = 'log-item';
+            div.innerHTML = `<span style="color:#FFD700">第${list.children.length+1}轮</span>: ${msg}`;
+            list.insertBefore(div, list.firstChild);
+        }
+
+        function showModal(p) {
+            document.getElementById('modalAvatar').textContent = p.avatar;
+            document.getElementById('modalName').textContent = p.name;
+            document.getElementById('modalLevel').textContent = LEVELS[p.level] + '层';
+            document.getElementById('modalScore').textContent = p.score;
+            document.getElementById('playerModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('playerModal').classList.remove('active');
+        }
+
+        init();
+    </script>
+</body>
+</html>
