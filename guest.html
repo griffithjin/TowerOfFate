@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命运塔·首登者 - 游客模式</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #1a1a3e 0%, #0d1b2a 100%); color: #fff; }
+        
+        .container { 
+            max-width: 430px; 
+            margin: 0 auto; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            padding: 20px;
+        }
+        
+        .header { text-align: center; margin: 40px 0; }
+        .logo { font-size: 56px; margin-bottom: 10px; }
+        .title { font-size: 24px; font-weight: bold; color: #FFD700; margin-bottom: 5px; }
+        .subtitle { font-size: 14px; color: #888; }
+        
+        .guest-banner {
+            background: linear-gradient(90deg, rgba(255,215,0,0.2), rgba(255,215,0,0.1));
+            border: 1px solid #FFD700;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .guest-badge { 
+            background: #FFD700; 
+            color: #000; 
+            padding: 4px 12px; 
+            border-radius: 12px; 
+            font-size: 12px; 
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .guest-text { font-size: 13px; color: #ccc; line-height: 1.6; }
+        
+        .mode-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .mode-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .mode-card:hover, .mode-card:active {
+            background: rgba(255,215,0,0.1);
+            border-color: #FFD700;
+            transform: translateY(-2px);
+        }
+        .mode-icon { font-size: 32px; margin-bottom: 8px; }
+        .mode-name { font-size: 14px; font-weight: bold; margin-bottom: 4px; }
+        .mode-desc { font-size: 11px; color: #888; }
+        
+        .rules-section {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .rule-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .rule-num {
+            width: 20px;
+            height: 20px;
+            background: #FFD700;
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .rule-text { color: #ccc; }
+        
+        .action-btns { margin-top: auto; }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn:hover { transform: scale(1.02); }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 规则弹窗 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .modal-overlay.active { display: block; }
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
+            border: 2px solid #FFD700;
+            border-radius: 16px;
+            padding: 25px;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFD700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .rule-detail {
+            margin-bottom: 20px;
+        }
+        .rule-detail h4 {
+            color: #FFD700;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .rule-detail p {
+            font-size: 13px;
+            color: #ccc;
+            line-height: 1.6;
+        }
+        .rule-detail ul {
+            margin: 8px 0;
+            padding-left: 20px;
+            font-size: 12px;
+            color: #aaa;
+        }
+        .rule-detail li { margin-bottom: 5px; }
+        .close-btn {
+            width: 100%;
+            padding: 12px;
+            background: #FFD700;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🏰</div>
+            <div class="title">命运塔·首登者</div>
+            <div class="subtitle">Tower of Fate: First Ascender</div>
+        </div>
+
+        <div class="guest-banner">
+            <span class="guest-badge">👤 游客模式</span>
+            <div class="guest-text">
+                您正在以游客身份体验游戏。<br>
+                注册账号可保存进度并参与排行榜！
+            </div>
+        </div>
+
+        <div class="mode-grid">
+            <div class="mode-card" onclick="startGame('solo')">
+                <div class="mode-icon">👤</div>
+                <div class="mode-name">单人练习</div>
+                <div class="mode-desc">熟悉游戏规则</div>
+            </div>
+            <div class="mode-card" onclick="startGame('4p')">
+                <div class="mode-icon">👥</div>
+                <div class="mode-name">4人乱斗</div>
+                <div class="mode-desc">与AI对战</div>
+            </div>
+            <div class="mode-card" onclick="showRules()">
+                <div class="mode-icon">📖</div>
+                <div class="mode-name">游戏规则</div>
+                <div class="mode-desc">查看详细规则</div>
+            </div>
+            <div class="mode-card" onclick="location.href='shop.html'">
+                <div class="mode-icon">🛒</div>
+                <div class="mode-name">浏览商城</div>
+                <div class="mode-desc">查看道具</div>
+            </div>
+        </div>
+
+        <div class="rules-section">
+            <div class="section-title">
+                <span>🎯</span>
+                <span>快速上手</span>
+            </div>
+            <div class="rule-item">
+                <span class="rule-num">1</span>
+                <span class="rule-text">选择手牌，与守卫牌或激怒牌匹配</span>
+            </div>
+            <div class="rule-item">
+                <span class="rule-num">2</span>
+                <span class="rule-text">匹配成功则上升一层，失败则停留</span>
+            </div>
+            <div class="rule-item">
+                <span class="rule-num">3</span>
+                <span class="rule-text">第3/6/9层激怒惩罚，匹配则下降</span>
+            </div>
+            <div class="rule-item">
+                <span class="rule-num">4</span>
+                <span class="rule-text">首位到达A层的玩家成为首登者！</span>
+            </div>
+        </div>
+
+        <div class="action-btns">
+            <button class="btn btn-primary" onclick="startGame('solo')">🎮 开始游戏</button>
+            <button class="btn btn-secondary" onclick="location.href='register-v2.html'">📝 注册账号</button>
+            <button class="btn btn-secondary" onclick="location.href='login-v2.html'">🔑 登录账号</button>
+        </div>
+
+        <div class="footer">
+            <p>游客数据仅在本地保存，清除浏览器将丢失</p>
+            <p>© 2025 命运塔·首登者</p>
+        </div>
+    </div>
+
+    <!-- 规则弹窗 -->
+    <div class="modal-overlay" id="rulesModal">
+        <div class="modal-content">
+            <div class="modal-title">📖 游戏规则</div>
+            
+            <div class="rule-detail">
+                <h4>🎯 游戏目标</h4>
+                <p>从第2层开始攀登，首位到达A层（第13层）的玩家成为"首登者"获胜！</p>
+            </div>
+
+            <div class="rule-detail">
+                <h4>🎴 出牌规则</h4>
+                <ul>
+                    <li>手牌：52张标准扑克牌</li>
+                    <li>匹配条件：点数相同 或 花色相同</li>
+                    <li>每回合30秒出牌时间</li>
+                </ul>
+            </div>
+
+            <div class="rule-detail">
+                <h4>🏰 守卫牌</h4>
+                <p>每层有13张守卫牌，匹配成功即可上升一层。</p>
+            </div>
+
+            <div class="rule-detail">
+                <h4>💢 激怒牌</h4>
+                <p>第3/6/9层有激怒牌，若匹配则下降1-2层！</p>
+            </div>
+
+            <div class="rule-detail">
+                <h4>🏆 计分规则</h4>
+                <ul>
+                    <li>基础分：200分</li>
+                    <li>每层上升：+50分</li>
+                    <li>成为首登者：+500分</li>
+                    <li>激怒惩罚：-30分/张</li>
+                </ul>
+            </div>
+
+            <button class="close-btn" onclick="hideRules()">知道了</button>
+        </div>
+    </div>
+
+    <script>
+        // 检查是否是游客
+        function checkGuestMode() {
+            const isLoggedIn = localStorage.getItem('userToken');
+            if (isLoggedIn) {
+                // 已登录，跳转到首页
+                location.href = 'index.html';
+            }
+        }
+
+        // 开始游戏
+        function startGame(mode) {
+            // 保存游客标识
+            localStorage.setItem('isGuest', 'true');
+            localStorage.setItem('guestMode', mode);
+            
+            if (mode === 'solo') {
+                location.href = 'playable.html';
+            } else if (mode === '4p') {
+                location.href = 'playable-solo-4p.html';
+            }
+        }
+
+        // 显示规则
+        function showRules() {
+            document.getElementById('rulesModal').classList.add('active');
+        }
+
+        // 隐藏规则
+        function hideRules() {
+            document.getElementById('rulesModal').classList.remove('active');
+        }
+
+        // 初始化
+        checkGuestMode();
+    </script>
+</body>
+</html>
