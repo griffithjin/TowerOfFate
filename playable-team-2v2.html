@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命运塔·首登者 - 2v2团队战</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, sans-serif; background: #0a0a1a; color: #fff; font-size: 12px; }
+        .app { display: flex; flex-direction: column; height: 100%; }
+        
+        /* 顶部队伍信息 */
+        .team-header {
+            background: linear-gradient(90deg, #1e3a5f 0%, #2d2d44 50%, #8b4513 100%);
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .team-info { text-align: center; flex: 1; }
+        .team-name { font-size: 14px; font-weight: bold; color: #FFD700; }
+        .team-score { font-size: 11px; color: #888; margin-top: 2px; }
+        .vs-divider { font-size: 18px; color: #ff4757; font-weight: bold; margin: 0 20px; }
+        .mode-badge { background: rgba(255,215,0,0.2); border: 1px solid #FFD700; padding: 4px 10px; border-radius: 12px; color: #FFD700; font-size: 10px; }
+        
+        /* 队友状态 */
+        .teammate-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            background: rgba(46,213,115,0.1);
+            border-bottom: 1px solid #333;
+        }
+        .teammate-card {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+        .teammate-avatar { font-size: 24px; }
+        .teammate-info { text-align: left; }
+        .teammate-name { font-size: 11px; color: #888; }
+        .teammate-level { font-size: 12px; color: #2ed573; font-weight: bold; }
+        
+        /* 主战场 */
+        .battlefield { flex: 1; display: flex; overflow: hidden; }
+        
+        .level-col {
+            width: 32px;
+            background: #0f0f1e;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+        }
+        .level-cell {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            border-bottom: 1px solid #333;
+        }
+        .level-A { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
+        .level-K { background: linear-gradient(135deg, #E0E0E0, #C0C0C0); color: #000; }
+        .level-Q { background: linear-gradient(135deg, #CD7F32, #B87333); color: #fff; }
+        .level-J { background: linear-gradient(135deg, #8B7355, #A0826D); color: #fff; }
+        .level-10 { background: linear-gradient(135deg, #4169E1, #1E90FF); color: #fff; }
+        .level-9 { background: linear-gradient(135deg, #2F4F4F, #708090); color: #fff; }
+        .level-8 { background: linear-gradient(135deg, #8B4513, #A0522D); color: #fff; }
+        .level-7 { background: linear-gradient(135deg, #D2691E, #CD853F); color: #fff; }
+        .level-6 { background: linear-gradient(135deg, #CD853F, #D2691E); color: #fff; }
+        .level-5 { background: linear-gradient(135deg, #A0522D, #8B4513); color: #fff; }
+        .level-4 { background: linear-gradient(135deg, #8B7355, #CD853F); color: #fff; }
+        .level-3 { background: linear-gradient(135deg, #D2691E, #8B4513); color: #fff; }
+        .level-2 { background: linear-gradient(135deg, #8B4513, #A0522D); color: #fff; }
+        .level-current { box-shadow: inset 0 0 0 3px #00ff00; }
+        
+        /* 团队共享塔区 */
+        .tower-area {
+            flex: 1;
+            display: flex;
+            background: linear-gradient(180deg, #1a1a3e 0%, #0d1b2a 100%);
+        }
+        .team-lane {
+            flex: 1;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .lane-header {
+            padding: 8px;
+            text-align: center;
+            font-size: 11px;
+            border-bottom: 1px solid #333;
+        }
+        .lane-header.blue { background: rgba(65,105,225,0.3); color: #4169E1; }
+        .lane-header.red { background: rgba(255,71,87,0.3); color: #ff4757; }
+        .lane-level {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            gap: 5px;
+        }
+        .lane-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: 2px solid #fff;
+        }
+        .lane-avatar.blue { background: linear-gradient(135deg, #4169E1, #1E90FF); }
+        .lane-avatar.red { background: linear-gradient(135deg, #ff4757, #c0392b); }
+        .lane-avatar.self { box-shadow: 0 0 10px rgba(255,215,0,0.8); border-color: #FFD700; }
+        
+        /* 右侧守卫和激怒 */
+        .guard-col {
+            width: 38px;
+            background: rgba(0,0,0,0.3);
+            border-left: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+        }
+        .guard-header {
+            padding: 8px 2px;
+            text-align: center;
+            background: #ff4757;
+            font-size: 9px;
+            font-weight: bold;
+        }
+        .guard-cell {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffeb3b;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .guard-icon {
+            width: 26px;
+            height: 34px;
+            background: linear-gradient(135deg, #1a5490, #0d2847);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #fff;
+        }
+        
+        .provoke-col {
+            width: 50px;
+            background: rgba(0,0,0,0.3);
+            border-left: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+        }
+        .provoke-header {
+            padding: 8px 2px;
+            text-align: center;
+            background: #ff6b6b;
+            font-size: 9px;
+            font-weight: bold;
+        }
+        .provoke-cell {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffeb3b;
+            gap: 1px;
+            padding: 2px;
+        }
+        .provoke-mini {
+            width: 12px;
+            height: 20px;
+            background: #ff4757;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+        }
+        
+        /* 底部 */
+        .bottom-area {
+            background: #0f0f1e;
+            border-top: 2px solid #333;
+            padding: 10px;
+        }
+        .timer-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: rgba(46,213,115,0.1);
+            border-radius: 8px;
+        }
+        .timer-display { font-size: 22px; font-weight: bold; color: #2ed573; }
+        .team-buff {
+            display: flex;
+            gap: 8px;
+        }
+        .buff-tag {
+            padding: 4px 10px;
+            background: rgba(255,215,0,0.2);
+            border-radius: 10px;
+            font-size: 10px;
+            color: #FFD700;
+        }
+        
+        .hand-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .hand-label { font-size: 11px; color: #888; }
+        .hand-cards {
+            flex: 1;
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            padding: 5px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+        .hand-card {
+            min-width: 34px;
+            height: 48px;
+            background: #fff;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .hand-card.red { color: #d00; }
+        .hand-card.black { color: #000; }
+        .hand-card.selected { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(255,215,0,0.6); border: 2px solid #FFD700; }
+        .hand-card .suit { font-size: 16px; }
+        .hand-card .rank { font-size: 10px; font-weight: bold; }
+        
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+        .play-btn {
+            padding: 12px 20px;
+            background: #444;
+            color: #666;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .play-btn.active { background: linear-gradient(135deg, #2ed573, #26c281); color: #fff; }
+        .help-btn {
+            padding: 12px 15px;
+            background: rgba(255,215,0,0.2);
+            border: 1px solid #FFD700;
+            border-radius: 8px;
+            color: #FFD700;
+            font-size: 12px;
+        }
+        
+        .bottom-menu {
+            display: flex;
+            justify-content: space-around;
+            padding: 8px;
+            background: rgba(0,0,0,0.3);
+        }
+        .menu-btn {
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- 顶部队伍 -->
+        <div class="team-header">
+            <div class="team-info">
+                <div class="team-name">🔵 蓝队</div>
+                <div class="team-score">队伍平均分: 6.5层</div>
+            </div>
+            <div class="vs-divider">2v2</div>
+            <div class="team-info">
+                <div class="team-name">🔴 红队</div>
+                <div class="team-score">队伍平均分: 5.0层</div>
+            </div>
+            <div class="mode-badge">团队战</div>
+        </div>
+
+        <!-- 队友状态 -->
+        <div class="teammate-bar">
+            <div class="teammate-card">
+                <div class="teammate-avatar">😺</div>
+                <div class="teammate-info">
+                    <div class="teammate-name">我 (队长)</div>
+                    <div class="teammate-level">7层 ⬆️</div>
+                </div>
+            </div>
+            <div class="teammate-card">
+                <div class="teammate-avatar">🐶</div>
+                <div class="teammate-info">
+                    <div class="teammate-name">队友</div>
+                    <div class="teammate-level">6层 ➡️</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主战场 -->
+        <div class="battlefield">
+            <!-- 层数 -->
+            <div class="level-col" id="levelCol"></div>
+
+            <!-- 蓝队赛道 -->
+            <div class="tower-area">
+                <div class="team-lane">
+                    <div class="lane-header blue">🔵 蓝队攀登区</div>
+                    <div id="blueLane"></div>
+                </div>
+                
+                <div class="team-lane">
+                    <div class="lane-header red">🔴 红队攀登区</div>
+                    <div id="redLane"></div>
+                </div>
+            </div>
+
+            <!-- 守卫牌 -->
+            <div class="guard-col">
+                <div class="guard-header">🛡️</div>
+                <div id="guardList"></div>
+            </div>
+
+            <!-- 激怒牌 -->
+            <div class="provoke-col">
+                <div class="provoke-header">💢</div>
+                <div id="provokeList"></div>
+            </div>
+        </div>
+
+        <!-- 底部 -->
+        <div class="bottom-area">
+            <div class="timer-bar">
+                <span style="color:#888;font-size:11px">团队战 - 回合剩余</span>
+                <span class="timer-display" id="timer">30</span>
+                <div class="team-buff">
+                    <span class="buff-tag">🛡️ 团队护盾</span>
+                    <span class="buff-tag">⚡ 加速</span>
+                </div>
+            </div>
+            
+            <div class="hand-section">
+                <span class="hand-label">🎴 手牌</span>
+                <div class="hand-cards" id="handCards"></div>
+                
+                <div class="action-btns">
+                    <button class="help-btn">🆘 求助队友</button>
+                    <button class="play-btn" id="playBtn">出牌</button>
+                </div>
+            </div>
+
+            <div class="bottom-menu">
+                <button class="menu-btn" onclick="location.href='shop.html'">🛒 商城</button>
+                <button class="menu-btn" onclick="location.href='inventory.html'">🎒 背包</button>
+                <button class="menu-btn" onclick="location.href='playable-solo-4p.html'">👤 切换Solo</button>
+                <button class="menu-btn" onclick="location.href='playable-team-3v3.html'">🔄 切换3v3</button>
+                <button class="menu-btn" onclick="location.href='index.html'">⬅️ 退出</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LEVELS = ['A','K','Q','J','10','9','8','7','6','5','4','3','2'];
+        
+        function init() {
+            renderLevelCol();
+            renderLanes();
+            renderRightPanel();
+            renderHand();
+            startTimer();
+        }
+
+        function renderLevelCol() {
+            const col = document.getElementById('levelCol');
+            col.innerHTML = '';
+            LEVELS.forEach((lv, i) => {
+                const div = document.createElement('div');
+                div.className = `level-cell level-${lv} ${i===7?'level-current':''}`;
+                div.textContent = lv;
+                col.appendChild(div);
+            });
+        }
+
+        function renderLanes() {
+            // 蓝队赛道
+            const blueLane = document.getElementById('blueLane');
+            blueLane.innerHTML = '';
+            LEVELS.forEach((lv, i) => {
+                const cell = document.createElement('div');
+                cell.className = 'lane-level';
+                if(i===7) cell.innerHTML = '<div class="lane-avatar blue self">😺</div>';
+                if(i===6) cell.innerHTML = '<div class="lane-avatar blue">🐶</div>';
+                blueLane.appendChild(cell);
+            });
+
+            // 红队赛道
+            const redLane = document.getElementById('redLane');
+            redLane.innerHTML = '';
+            LEVELS.forEach((lv, i) => {
+                const cell = document.createElement('div');
+                cell.className = 'lane-level';
+                if(i===5) cell.innerHTML = '<div class="lane-avatar red">🐰</div>';
+                if(i===4) cell.innerHTML = '<div class="lane-avatar red">🦊</div>';
+                redLane.appendChild(cell);
+            });
+        }
+
+        function renderRightPanel() {
+            const guardList = document.getElementById('guardList');
+            const provokeList = document.getElementById('provokeList');
+            guardList.innerHTML = '';
+            provokeList.innerHTML = '';
+            
+            LEVELS.forEach((lv, i) => {
+                const guardCell = document.createElement('div');
+                guardCell.className = `guard-cell ${i===7?'current':''}`;
+                guardCell.innerHTML = '<div class="guard-icon">🎴</div>';
+                guardList.appendChild(guardCell);
+                
+                const provokeCell = document.createElement('div');
+                provokeCell.className = `provoke-cell ${i===7?'current':''}`;
+                provokeCell.innerHTML = '<div class="provoke-mini">♥</div><div class="provoke-mini">♣</div>';
+                provokeList.appendChild(provokeCell);
+            });
+        }
+
+        function renderHand() {
+            const container = document.getElementById('handCards');
+            container.innerHTML = '';
+            const suits = ['♥','♦','♣','♠'];
+            const ranks = ['A','K','Q','J','10'];
+            
+            for(let i=0; i<6; i++) {
+                const s = suits[i%4];
+                const r = ranks[i%5];
+                const div = document.createElement('div');
+                div.className = `hand-card ${s==='♥'||s==='♦'?'red':'black'}`;
+                div.innerHTML = `<div class="suit">${s}</div><div class="rank">${r}</div>`;
+                div.onclick = () => {
+                    document.querySelectorAll('.hand-card').forEach(c=>c.classList.remove('selected'));
+                    div.classList.add('selected');
+                    document.getElementById('playBtn').classList.add('active');
+                };
+                container.appendChild(div);
+            }
+        }
+
+        function startTimer() {
+            let t = 30;
+            setInterval(() => {
+                t--;
+                document.getElementById('timer').textContent = t;
+                if(t<=0) t = 30;
+            }, 1000);
+        }
+
+        document.getElementById('playBtn').onclick = () => {
+            alert('团队配合出牌成功！');
+        };
+
+        document.querySelector('.help-btn').onclick = () => {
+            alert('🆘 已向队友发送求助信号！');
+        };
+
+        init();
+    </script>
+</body>
+</html>
