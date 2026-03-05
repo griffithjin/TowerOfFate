@@ -9,24 +9,12 @@
         
         :root {
             --header-h: 44px;
-            --ad-h: 32px;
+            --ad-h: 36px;
             --sidebar-w: 40px;
             --right-w: 110px;
             --bottom-h: 140px;
-            --card-h: 38px;
         }
         
-        html, body { 
-            width: 100%; 
-            height: 100%; 
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a1a;
-            color: #fff;
-            font-size: 12px;
-        }
-        
-        /* 移动端适配 */
         @media (max-width: 375px) {
             :root { --sidebar-w: 32px; --right-w: 90px; --bottom-h: 120px; }
             body { font-size: 10px; }
@@ -37,27 +25,138 @@
             body { font-size: 14px; }
         }
         
-        /* 广告位 */
+        html, body { 
+            width: 100%; height: 100%; overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a1a; color: #fff; font-size: 12px;
+        }
+        
+        /* 广告位 - 可点击 */
         .ad-banner {
             height: var(--ad-h);
-            background: linear-gradient(90deg, #ff6b6b, #feca57);
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+            background-size: 300% 100%;
+            animation: gradient 8s ease infinite;
             display: flex;
             align-items: center;
             overflow: hidden;
-            white-space: nowrap;
+            cursor: pointer;
+            position: relative;
+        }
+        .ad-banner:active { opacity: 0.9; }
+        @keyframes gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
         .ad-text {
-            animation: scroll 12s linear infinite;
+            animation: scroll 10s linear infinite;
             color: #fff;
             font-weight: bold;
             padding: 0 20px;
+            white-space: nowrap;
         }
         @keyframes scroll {
             0% { transform: translateX(100vw); }
             100% { transform: translateX(-100%); }
         }
+        .ad-indicator {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+        }
         
-        /* 队伍对战 */
+        /* 促销弹窗 */
+        .promo-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+        .promo-modal.active { display: block; }
+        
+        .promo-header {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+        .promo-close {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .promo-content {
+            padding: 15px;
+        }
+        
+        .promo-card {
+            background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .promo-title {
+            color: #FFD700;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .promo-desc { color: #aaa; font-size: 12px; margin-bottom: 10px; }
+        .promo-price {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .price-now { font-size: 24px; color: #ff4757; font-weight: bold; }
+        .price-old { font-size: 14px; color: #666; text-decoration: line-through; }
+        .promo-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #ff4757, #c0392b);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        /* VIP特权 */
+        .vip-benefits {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .vip-item {
+            background: rgba(255,215,0,0.1);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .vip-icon { font-size: 24px; margin-bottom: 5px; }
+        .vip-text { font-size: 10px; color: #FFD700; }
+        
+        /* 主游戏样式... */
         .match-header {
             height: var(--header-h);
             background: linear-gradient(90deg, #1e3a5f, #2d2d44);
@@ -67,26 +166,16 @@
             gap: 15px;
             padding: 0 10px;
         }
-        .team-box {
-            text-align: center;
-            flex: 1;
-            max-width: 150px;
-        }
+        .team-box { text-align: center; flex: 1; max-width: 150px; }
         .team-name { font-size: 13px; font-weight: bold; color: #FFD700; }
         .team-count { font-size: 10px; color: #aaa; }
-        .vs-box {
-            font-size: 16px;
-            color: #ff4757;
-            font-weight: bold;
-        }
+        .vs-box { font-size: 16px; color: #ff4757; font-weight: bold; }
         
-        /* 主游戏区 */
         .game-container {
             display: flex;
             height: calc(100% - var(--header-h) - var(--ad-h));
         }
         
-        /* 左侧层数 */
         .level-sidebar {
             width: var(--sidebar-w);
             background: #0f0f1e;
@@ -105,22 +194,21 @@
             font-size: 11px;
             min-height: 30px;
         }
-        .level-A { background: #8B4513; color: #fff; }
-        .level-K { background: #CD853F; color: #fff; }
-        .level-Q { background: #D2691E; color: #fff; }
-        .level-J { background: #8B7355; color: #fff; }
-        .level-10 { background: #A0522D; color: #fff; }
-        .level-9 { background: #CD853F; color: #fff; }
-        .level-8 { background: #8B4513; color: #fff; }
-        .level-7 { background: #D2691E; color: #fff; }
-        .level-6 { background: #8B7355; color: #fff; }
-        .level-5 { background: #A0522D; color: #fff; }
-        .level-4 { background: #CD853F; color: #fff; }
-        .level-3 { background: #8B4513; color: #fff; }
-        .level-2 { background: #D2691E; color: #fff; }
+        .level-A { background: #8B4513; }
+        .level-K { background: #CD853F; }
+        .level-Q { background: #D2691E; }
+        .level-J { background: #8B7355; }
+        .level-10 { background: #A0522D; }
+        .level-9 { background: #CD853F; }
+        .level-8 { background: #8B4513; }
+        .level-7 { background: #D2691E; }
+        .level-6 { background: #8B7355; }
+        .level-5 { background: #A0522D; }
+        .level-4 { background: #CD853F; }
+        .level-3 { background: #8B4513; }
+        .level-2 { background: #D2691E; }
         .level-current { box-shadow: inset 0 0 0 2px #FFD700; }
         
-        /* 中间塔区 */
         .tower-main {
             flex: 1;
             display: flex;
@@ -129,23 +217,14 @@
             position: relative;
             overflow: hidden;
         }
+        #towerCanvas { flex: 1; width: 100%; min-height: 0; }
         
-        #towerCanvas {
-            flex: 1;
-            width: 100%;
-            min-height: 0;
-        }
-        
-        /* 底部区域 */
         .bottom-area {
             background: rgba(15, 15, 30, 0.98);
             border-top: 2px solid #333;
             padding: 8px;
         }
-        
-        .hand-section {
-            margin-bottom: 8px;
-        }
+        .hand-section { margin-bottom: 8px; }
         .hand-title {
             display: flex;
             justify-content: space-between;
@@ -153,13 +232,11 @@
             color: #888;
             margin-bottom: 6px;
         }
-        
         .cards-scroll {
             display: flex;
             gap: 4px;
             overflow-x: auto;
             padding: 4px 0;
-            scrollbar-width: none;
         }
         .cards-scroll::-webkit-scrollbar { display: none; }
         
@@ -200,7 +277,6 @@
             color: #000;
         }
         
-        /* 日志区 */
         .log-area {
             max-height: 60px;
             overflow-y: auto;
@@ -221,20 +297,17 @@
             line-height: 1.3;
         }
         
-        /* 右侧守卫牌区 */
         .right-panel {
             width: var(--right-w);
             display: flex;
             background: #0f0f1e;
         }
-        
         .guard-area, .provoke-area {
             flex: 1;
             display: flex;
             flex-direction: column;
             border-left: 1px solid #333;
         }
-        
         .area-header {
             padding: 6px 2px;
             text-align: center;
@@ -243,7 +316,6 @@
         }
         .guard-header { background: #ff4757; }
         .provoke-header { background: #ff6b6b; }
-        
         .cards-container {
             flex: 1;
             overflow-y: auto;
@@ -251,7 +323,6 @@
             display: flex;
             flex-direction: column;
         }
-        
         .card-level {
             flex: 1;
             min-height: 30px;
@@ -265,7 +336,6 @@
             background: #ffc107;
             box-shadow: inset 0 0 0 2px #ff0000;
         }
-        
         .guard-card {
             width: 28px;
             height: 36px;
@@ -277,17 +347,7 @@
             font-size: 16px;
             color: #fff;
         }
-        .guard-card.revealed {
-            background: #fff;
-            color: #000;
-            font-size: 10px;
-            flex-direction: column;
-        }
-        
-        .provoke-cards {
-            display: flex;
-            gap: 1px;
-        }
+        .provoke-cards { display: flex; gap: 1px; }
         .provoke-card {
             width: 18px;
             height: 28px;
@@ -301,8 +361,7 @@
         }
         .provoke-card.black { background: #2c3e50; }
         
-        /* 玩家弹窗 */
-        .modal-overlay {
+        .player-modal {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -312,8 +371,7 @@
             justify-content: center;
             padding: 20px;
         }
-        .modal-overlay.active { display: flex; }
-        
+        .player-modal.active { display: flex; }
         .modal-card {
             background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
             border: 2px solid #FFD700;
@@ -334,20 +392,6 @@
             font-size: 36px;
             background: linear-gradient(135deg, #FFD700, #FFA500);
         }
-        .modal-name { font-size: 16px; font-weight: bold; margin-bottom: 10px; }
-        .modal-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .stat-item {
-            background: rgba(255,255,255,0.1);
-            padding: 8px;
-            border-radius: 6px;
-        }
-        .stat-val { font-size: 18px; color: #FFD700; font-weight: bold; }
-        .stat-lbl { font-size: 10px; color: #888; }
         .btn-primary {
             width: 100%;
             padding: 10px;
@@ -361,10 +405,84 @@
     </style>
 </head>
 <body>
-    <div class="ad-banner">
-        <div class="ad-text">🎮 命运塔首登者 - VIP特惠 | 新用户送1000金币 🎮</div>
+    <!-- 可点击广告 -->
+    <div class="ad-banner" onclick="showPromo()">
+        <div class="ad-text">🎮 命运塔首登者 - VIP限时特惠 | 新用户注册送1000金币 | 商城道具5折起 🎮</div>
+        <div class="ad-indicator">点击查看></div>
     </div>
 
+    <!-- 促销弹窗 -->
+    <div class="promo-modal" id="promoModal">
+        <div class="promo-header">
+            🎁 VIP限时特惠
+            <span class="promo-close" onclick="closePromo()">×</span>
+        </div>
+        
+        <div class="promo-content">
+            <!-- VIP月卡 -->
+            <div class="promo-card">
+                <div class="promo-title">👑 VIP月卡</div>
+                <div class="promo-desc">解锁专属特权，每日领取金币加成</div>
+                <div class="vip-benefits">
+                    <div class="vip-item"><div class="vip-icon">💰</div><div class="vip-text">每日500金币</div></div>
+                    <div class="vip-item"><div class="vip-icon">🎨</div><div class="vip-text">专属皮肤</div></div>
+                    <div class="vip-item"><div class="vip-icon">⚡</div><div class="vip-text">优先匹配</div></div>
+                </div>
+                
+                <div class="promo-price">
+                    <span class="price-now">¥18</span>
+                    <span class="price-old">¥30</span>
+                </div>
+                
+                <button class="promo-btn" onclick="buyItem('vip_month')">立即开通</button>
+            </div>
+            
+            <!-- 新用户礼包 -->
+            <div class="promo-card">
+                <div class="promo-title">🎁 新用户专属礼包</div>
+                <div class="promo-desc">注册即送，助力登顶！</div>
+                <div style="display:flex;gap:10px;margin:10px 0;flex-wrap:wrap">
+                    <span style="background:rgba(255,215,0,0.2);padding:5px 10px;border-radius:15px;font-size:11px">💰 1000金币</span>
+                    <span style="background:rgba(255,215,0,0.2);padding:5px 10px;border-radius:15px;font-size:11px">✨ 黄金皮肤</span>
+                    <span style="background:rgba(255,215,0,0.2);padding:5px 10px;border-radius:15px;font-size:11px">🔥 火焰特效</span>
+                </div>
+                <div class="promo-price">
+                    <span class="price-now">免费</span>
+                    <span class="price-old">¥68</span>
+                </div>
+                
+                <button class="promo-btn" onclick="buyItem('newbie_pack')">免费领取</button>
+            </div>
+            
+            <!-- 商城特惠 -->
+            <div class="promo-card">
+                <div class="promo-title">🛒 商城道具5折起</div>
+                <div class="promo-desc">限时24小时，错过再等一年！</div>
+                
+                <div style="display:flex;gap:8px;margin:10px 0;overflow-x:auto">
+                    <div style="min-width:80px;text-align:center">
+                        <div style="font-size:30px">✨</div>
+                        <div style="font-size:10px;color:#aaa">黄金皮肤</div>
+                        <div style="font-size:12px;color:#ff4757">¥5</div>
+                    </div>
+                    <div style="min-width:80px;text-align:center">
+                        <div style="font-size:30px">🔥</div>
+                        <div style="font-size:10px;color:#aaa">火焰特效</div>
+                        <div style="font-size:12px;color:#ff4757">¥3</div>
+                    </div>
+                    <div style="min-width:80px;text-align:center">
+                        <div style="font-size:30px">🐉</div>
+                        <div style="font-size:10px;color:#aaa">龙背卡背</div>
+                        <div style="font-size:12px;color:#ff4757">¥8</div>
+                    </div>
+                </div>
+                
+                <button class="promo-btn" onclick="location.href='shop.html'">进入商城</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主游戏界面 -->
     <div class="match-header">
         <div class="team-box">
             <div class="team-name">🐼 熊猫战队</div>
@@ -378,10 +496,8 @@
     </div>
 
     <div class="game-container">
-        <!-- 左侧层数 -->
         <div class="level-sidebar" id="levelSidebar"></div>
 
-        <!-- 中间塔区 -->
         <div class="tower-main">
             <canvas id="towerCanvas"></canvas>
             
@@ -403,7 +519,6 @@
             </div>
         </div>
 
-        <!-- 右侧守卫牌 -->
         <div class="right-panel">
             <div class="guard-area">
                 <div class="area-header guard-header">🛡️ 守卫</div>
@@ -416,37 +531,20 @@
         </div>
     </div>
 
-    <!-- 玩家弹窗 -->
-    <div class="modal-overlay" id="playerModal">
+    <div class="player-modal" id="playerModal">
         <div class="modal-card">
             <div class="modal-avatar" id="modalAvatar">😺</div>
-            <div class="modal-name" id="modalName">玩家</div>
-            
-            <div class="modal-stats">
-                <div class="stat-item">
-                    <div class="stat-val" id="modalLevel">7层</div>
-                    <div class="stat-lbl">当前层</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-val" id="modalScore">1250</div>
-                    <div class="stat-lbl">积分</div>
-                </div>
-            </div>
-            
-            <button class="btn-primary" onclick="closeModal()">➕ 加好友</button>
+            <div id="modalName">玩家</div>
+            <button class="btn-primary" onclick="closePlayerModal()">关闭</button>
         </div>
     </div>
 
     <script>
         const LEVELS = ['A','K','Q','J','10','9','8','7','6','5','4','3','2'];
-        const AVATARS = ['😺','🐶','🐰','🦊','🐼','🐨','🐯','🦁','🐸','🐙'];
+        const AVATARS = ['😺','🐶','🐰','🦊','🐼','🐨'];
         
-        let myLevel = 7;
-        let myAvatar = '😺';
-        let selectedCard = null;
-        let hand = [];
-        let guards = [];
-        let players = [];
+        let myLevel = 7, myAvatar = '😺', selectedCard = null;
+        let hand = [], guards = [], players = [];
         let canvas, ctx;
 
         function init() {
@@ -458,53 +556,34 @@
             drawTower();
             setupEvents();
             
-            window.addEventListener('resize', () => {
-                drawTower();
-            });
+            window.addEventListener('resize', drawTower);
         }
 
         function generateData() {
             const suits = ['♥','♦','♣','♠'];
             const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
             
-            // 生成手牌
             hand = [];
-            for(let s of suits) {
-                for(let r of ranks) {
-                    hand.push({suit: s, rank: r, isRed: s==='♥'||s==='♦'});
-                }
+            for(let s of suits) for(let r of ranks) {
+                hand.push({suit: s, rank: r, isRed: s==='♥'||s==='♦'});
             }
             hand.sort(()=>Math.random()-0.5);
             
-            // 生成守卫
             guards = [];
             for(let i=0; i<13; i++) {
                 const gc = [], pc = [];
-                for(let j=0; j<13; j++) gc.push({
-                    suit: suits[Math.floor(Math.random()*4)],
-                    rank: ranks[Math.floor(Math.random()*13)]
-                });
-                for(let j=0; j<3; j++) pc.push({
-                    suit: suits[Math.floor(Math.random()*4)],
-                    rank: ranks[Math.floor(Math.random()*13)]
-                });
+                for(let j=0; j<13; j++) gc.push({suit: suits[Math.floor(Math.random()*4)], rank: ranks[Math.floor(Math.random()*13)]});
+                for(let j=0; j<3; j++) pc.push({suit: suits[Math.floor(Math.random()*4)], rank: ranks[Math.floor(Math.random()*13)]});
                 guards.push({guardCards: gc, provocationCards: pc});
             }
             
-            // 生成玩家
             players = [];
             for(let i=0; i<5; i++) {
-                players.push({
-                    avatar: AVATARS[i+1],
-                    name: '玩家' + (i+1),
-                    level: Math.floor(Math.random() * 13),
-                    score: 1000 + Math.floor(Math.random() * 500)
-                });
+                players.push({avatar: AVATARS[i+1], name: '玩家'+(i+1), level: Math.floor(Math.random()*13), score: 1000+Math.floor(Math.random()*500)});
             }
         }
 
         function renderUI() {
-            // 左侧层数
             const sidebar = document.getElementById('levelSidebar');
             sidebar.innerHTML = '';
             LEVELS.forEach((lv, i) => {
@@ -514,7 +593,6 @@
                 sidebar.appendChild(div);
             });
             
-            // 右侧守卫牌
             const gContainer = document.getElementById('guardCards');
             const pContainer = document.getElementById('provokeCards');
             gContainer.innerHTML = '';
@@ -524,13 +602,11 @@
                 const g = guards[i];
                 const isCurrent = i === myLevel;
                 
-                // 守卫牌
                 const gDiv = document.createElement('div');
                 gDiv.className = `card-level ${isCurrent?'current':''}`;
                 gDiv.innerHTML = `<div class="guard-card">🎴</div>`;
                 gContainer.appendChild(gDiv);
                 
-                // 激怒牌
                 const pDiv = document.createElement('div');
                 pDiv.className = `card-level ${isCurrent?'current':''}`;
                 let pcHtml = '<div class="provoke-cards">';
@@ -549,19 +625,13 @@
         function renderHand() {
             const container = document.getElementById('handCards');
             container.innerHTML = '';
-            
             hand.forEach((c, i) => {
                 const div = document.createElement('div');
                 div.className = `player-card ${c.isRed?'red':'black'} ${selectedCard===i?'selected':''}`;
                 div.innerHTML = `<div class="suit">${c.suit}</div><div class="rank">${c.rank}</div>`;
-                div.onclick = () => {
-                    selectedCard = selectedCard===i?null:i;
-                    renderHand();
-                    updateBtn();
-                };
+                div.onclick = () => { selectedCard = selectedCard===i?null:i; renderHand(); updateBtn(); };
                 container.appendChild(div);
             });
-            
             document.getElementById('handCount').textContent = hand.length;
         }
 
@@ -576,20 +646,17 @@
             canvas.width = rect.width;
             canvas.height = rect.height - document.querySelector('.bottom-area').offsetHeight;
             
-            const w = canvas.width;
-            const h = canvas.height;
+            const w = canvas.width, h = canvas.height;
             const floorH = h / 13;
             
             ctx.clearRect(0, 0, w, h);
             
-            // 天空
             const grad = ctx.createLinearGradient(0, 0, 0, h);
             grad.addColorStop(0, '#87CEEB');
             grad.addColorStop(1, '#E0F6FF');
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, w, h);
             
-            // 比萨斜塔
             const tx = w / 2;
             const tw = Math.min(w * 0.4, 150);
             
@@ -600,17 +667,14 @@
                 const ox = p * 20;
                 const x = tx - cw/2 + ox;
                 
-                // 塔层
                 const b = 220 - i * 10;
                 ctx.fillStyle = `rgb(${b}, ${b-15}, ${b-30})`;
                 ctx.fillRect(x, y, cw, floorH - 1);
                 
-                // 边框
                 ctx.strokeStyle = '#8B7355';
                 ctx.lineWidth = 1;
                 ctx.strokeRect(x, y, cw, floorH - 1);
                 
-                // 窗户
                 ctx.fillStyle = '#5C4033';
                 for(let j=0; j<2; j++) {
                     ctx.beginPath();
@@ -619,7 +683,6 @@
                 }
             });
             
-            // 玩家
             drawAvatar(tx - 30, myLevel * floorH + floorH/2 - 15, myAvatar, true);
             players.forEach((p, i) => {
                 const ox = ((i%2)*2-1) * (40 + Math.floor(i/2)*15);
@@ -629,21 +692,17 @@
 
         function drawAvatar(x, y, av, isSelf, pid) {
             const s = 28;
-            
-            // 记录位置用于点击
             if(pid !== undefined) {
                 players[pid].hitX = x + s/2;
                 players[pid].hitY = y + s/2;
                 players[pid].hitR = s/2;
             }
             
-            // 背景
             ctx.fillStyle = isSelf?'#FFD700':'#4ECDC4';
             ctx.beginPath();
             ctx.arc(x + s/2, y + s/2, s/2, 0, Math.PI*2);
             ctx.fill();
             
-            // 头像
             ctx.font = '18px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -651,20 +710,15 @@
         }
 
         function setupEvents() {
-            // 出牌
             document.getElementById('playBtn').onclick = () => {
                 if(selectedCard === null) return;
-                
-                const card = hand[selectedCard];
                 hand.splice(selectedCard, 1);
                 selectedCard = null;
-                
                 renderHand();
                 updateBtn();
-                addLog(`出${card.suit}${card.rank}，剩余${hand.length}张`);
+                addLog('出牌成功，剩余' + hand.length + '张');
             };
             
-            // 点击头像
             canvas.onclick = (e) => {
                 const r = canvas.getBoundingClientRect();
                 const x = e.clientX - r.left;
@@ -675,7 +729,7 @@
                         const dx = x - p.hitX;
                         const dy = y - p.hitY;
                         if(Math.sqrt(dx*dx + dy*dy) < p.hitR) {
-                            showModal(p);
+                            showPlayerModal(p);
                         }
                     }
                 });
@@ -690,16 +744,28 @@
             list.insertBefore(div, list.firstChild);
         }
 
-        function showModal(p) {
+        function showPlayerModal(p) {
             document.getElementById('modalAvatar').textContent = p.avatar;
-            document.getElementById('modalName').textContent = p.name;
-            document.getElementById('modalLevel').textContent = LEVELS[p.level] + '层';
-            document.getElementById('modalScore').textContent = p.score;
+            document.getElementById('modalName').textContent = p.name + ' - ' + LEVELS[p.level] + '层';
             document.getElementById('playerModal').classList.add('active');
         }
 
-        function closeModal() {
+        function closePlayerModal() {
             document.getElementById('playerModal').classList.remove('active');
+        }
+
+        // 促销弹窗功能
+        function showPromo() {
+            document.getElementById('promoModal').classList.add('active');
+        }
+
+        function closePromo() {
+            document.getElementById('promoModal').classList.remove('active');
+        }
+
+        function buyItem(itemId) {
+            alert('🛒 已添加到购物车: ' + itemId);
+            closePromo();
         }
 
         init();
