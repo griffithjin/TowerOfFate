@@ -545,19 +545,31 @@
                 const levelCell = createCell(lv, `level-cell level-${lv} ${isMyLevel?'level-current':''}`);
                 grid.appendChild(levelCell);
                 
-                // 玩家区域
+                // 玩家区域 - 只显示当前层玩家
                 const playersCell = document.createElement('div');
                 playersCell.className = 'players-cell';
                 
-                // 显示当前层玩家（简化：只显示自己）
-                if(isMyLevel) {
-                    const avatarClass = gameState.myPlayer.isAscender ? 'player-avatar self ascender' : 'player-avatar self';
-                    playersCell.innerHTML = `<div class="${avatarClass}">${gameState.myPlayer.avatar}</div>`;
-                } else if(i === 0 && !gameState.myPlayer.isAscender) {
-                    // 其他层显示其他玩家（简化）
-                    const avatars = ['🐶','🐰','🦊','🐼','🐨','🐯','🦁','🐸','🐙'];
-                    const avatar = avatars[i % avatars.length];
-                    playersCell.innerHTML = `<div class="player-avatar">${avatar}</div>`;
+                // 检查当前层是否有玩家
+                let playerAtLevel = null;
+                
+                // 检查是否是自己
+                if (isMyLevel) {
+                    playerAtLevel = gameState.myPlayer;
+                } else {
+                    // 简化：其他玩家根据层数分配不同头像
+                    const botAvatars = ['🐶','🐰','🦊','🐼','🐨','🐯','🦁','🐸','🐙'];
+                    const botIndex = (i * 3) % botAvatars.length;
+                    playerAtLevel = { 
+                        avatar: botAvatars[botIndex], 
+                        isBot: true,
+                        level: i 
+                    };
+                }
+                
+                if (playerAtLevel) {
+                    const avatarClass = playerAtLevel.isAscender ? 'player-avatar ascender' : 
+                                       playerAtLevel === gameState.myPlayer ? 'player-avatar self' : 'player-avatar';
+                    playersCell.innerHTML = `<div class="${avatarClass}">${playerAtLevel.avatar}</div>`;
                 }
                 grid.appendChild(playersCell);
                 
