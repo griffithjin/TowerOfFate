@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>锦标赛 - 命运塔·首登者</title>
+    <link rel="stylesheet" href="style-v1.0.css">
+    <style>
+        .tournament-container {
+            width: 100%;
+            height: 100%;
+            max-width: var(--content-max-width);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-mid) 100%);
+        }
+        
+        .tournament-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tournament-title {
+            font-size: var(--font-xl);
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary-color), #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* 我的战绩卡片 */
+        .stats-card {
+            margin: 12px 16px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 16px;
+        }
+        
+        .stats-title {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-md);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        /* 锦标赛列表 */
+        .tournament-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 16px 12px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            margin: 16px 0 12px;
+            color: var(--text-muted);
+        }
+        
+        .tournament-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tournament-card.featured {
+            background: linear-gradient(135deg, rgba(255,71,87,0.1), rgba(255,71,87,0.05));
+            border-color: rgba(255,71,87,0.3);
+        }
+        
+        .featured-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: linear-gradient(135deg, #ff4757, #ff6348);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: var(--radius-xl);
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .tournament-header-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: 12px;
+        }
+        
+        .tournament-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255,215,0,0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .tournament-name {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .tournament-time {
+            font-size: 12px;
+            color: var(--secondary-color);
+        }
+        
+        .tournament-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .detail-item {
+            text-align: center;
+            padding: 8px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+        
+        .detail-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .detail-label {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        
+        .tournament-actions {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+        
+        .tournament-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            min-height: 44px;
+        }
+        
+        .tournament-btn.register {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: #000;
+        }
+        
+        .tournament-btn.register:disabled {
+            background: #444;
+            color: #666;
+        }
+        
+        .tournament-btn.details {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-light);
+        }
+        
+        /* 已报名标签 */
+        .registered-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #4CAF50;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: var(--radius-xl);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="tournament-container">
+        <!-- 头部 -->
+        <header class="tournament-header">
+            <button class="back-btn" onclick="backToHome()">←</button>
+            <span class="tournament-title">锦标赛</span>
+            <button class="menu-btn" onclick="showRules()">规则</button>
+        </header>
+
+        <!-- 我的战绩 -->
+        <div class="stats-card">
+            <div class="stats-title">我的战绩</div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="stats-played">0</div>
+                    <div class="stat-label">参赛次数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stats-won">0</div>
+                    <div class="stat-label">冠军次数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stats-earnings">0</div>
+                    <div class="stat-label">累计奖金</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 锦标赛列表 -->
+        <div class="tournament-list" id="tournament-list">
+            <!-- 由JS动态生成 -->
+        </div>
+    </div>
+
+    <script>
+        // 锦标赛数据
+        const TOURNAMENTS = [
+            {
+                id: 'daily_1',
+                name: '🏆 每日争霸赛',
+                icon: '🏆',
+                entryFee: 100,
+                prizePool: 10000,
+                maxPlayers: 32,
+                currentPlayers: 24,
+                startTime: Date.now() + 3600000, // 1小时后
+                featured: false,
+                type: 'daily'
+            },
+            {
+                id: 'weekend_1',
+                name: '💎 周末大奖赛',
+                icon: '💎',
+                entryFee: 500,
+                prizePool: 50000,
+                maxPlayers: 64,
+                currentPlayers: 45,
+                startTime: Date.now() + 86400000, // 24小时后
+                featured: true,
+                type: 'weekend'
+            },
+            {
+                id: 'monthly_1',
+                name: '👑 月度王者赛',
+                icon: '👑',
+                entryFee: 1000,
+                prizePool: 200000,
+                maxPlayers: 128,
+                currentPlayers: 67,
+                startTime: Date.now() + 172800000, // 48小时后
+                featured: true,
+                type: 'monthly'
+            },
+            {
+                id: 'streak_1',
+                name: '⚡ 连胜挑战赛',
+                icon: '⚡',
+                entryFee: 200,
+                prizePool: 20000,
+                maxPlayers: 50,
+                currentPlayers: 31,
+                startTime: Date.now() + 7200000, // 2小时后
+                featured: false,
+                type: 'special'
+            }
+        ];
+
+        // 用户数据
+        let userStats = {
+            played: 12,
+            won: 3,
+            earnings: 45000
+        };
+
+        let registeredTournaments = [];
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserData();
+            renderStats();
+            renderTournaments();
+            startCountdowns();
+        });
+
+        // 加载用户数据
+        function loadUserData() {
+            const saved = localStorage.getItem('tof_tournament_stats');
+            if (saved) {
+                userStats = JSON.parse(saved);
+            }
+            
+            const registered = localStorage.getItem('tof_registered_tournaments');
+            if (registered) {
+                registeredTournaments = JSON.parse(registered);
+            }
+        }
+
+        // 渲染战绩
+        function renderStats() {
+            document.getElementById('stats-played').textContent = userStats.played;
+            document.getElementById('stats-won').textContent = userStats.won;
+            document.getElementById('stats-earnings').textContent = 
+                userStats.earnings >= 10000 
+                    ? (userStats.earnings / 10000).toFixed(1) + '万'
+                    : userStats.earnings;
+        }
+
+        // 渲染锦标赛列表
+        function renderTournaments() {
+            const list = document.getElementById('tournament-list');
+            list.innerHTML = '<div class="section-title">进行中的赛事</div>';
+            
+            TOURNAMENTS.forEach(tournament => {
+                const isRegistered = registeredTournaments.includes(tournament.id);
+                const progress = (tournament.currentPlayers / tournament.maxPlayers) * 100;
+                const timeLeft = tournament.startTime - Date.now();
+                
+                const card = document.createElement('div');
+                card.className = `tournament-card ${tournament.featured ? 'featured' : ''}`;
+                card.innerHTML = `
+                    ${tournament.featured ? '<span class="featured-badge">热门</span>' : ''}
+                    
+                    <div class="tournament-header-info">
+                        <div class="tournament-icon">${tournament.icon}</div>
+                        <div>
+                            <div class="tournament-name">${tournament.name}</div>
+                            <div class="tournament-time" data-time="${tournament.startTime}">
+                                开始倒计时: 计算中...
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tournament-details">
+                        <div class="detail-item">
+                            <div class="detail-value">💰 ${tournament.entryFee}</div>
+                            <div class="detail-label">报名费</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-value">💎 ${tournament.prizePool >= 10000 ? (tournament.prizePool/10000).toFixed(0) + '万' : tournament.prizePool}</div>
+                            <div class="detail-label">奖金池</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-value">${tournament.currentPlayers}/${tournament.maxPlayers}</div>
+                            <div class="detail-label">已报名</div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                    
+                    <div class="tournament-actions">
+                        ${isRegistered 
+                            ? '<span class="registered-badge">✓ 已报名</span>'
+                            : `<button class="tournament-btn register" 
+                                    onclick="registerTournament('${tournament.id}')"
+                                    ${progress >= 100 ? 'disabled' : ''}>
+                                💰 ${tournament.entryFee} 报名
+                            </button>`
+                        }
+                        <button class="tournament-btn details" onclick="showDetails('${tournament.id}')">
+                            详情
+                        </button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        // 开始倒计时
+        function startCountdowns() {
+            setInterval(() => {
+                document.querySelectorAll('.tournament-time').forEach(el => {
+                    const startTime = parseInt(el.dataset.time);
+                    const timeLeft = startTime - Date.now();
+                    
+                    if (timeLeft <= 0) {
+                        el.textContent = '比赛进行中';
+                        return;
+                    }
+                    
+                    const hours = Math.floor(timeLeft / 3600000);
+                    const minutes = Math.floor((timeLeft % 3600000) / 60000);
+                    const seconds = Math.floor((timeLeft % 60000) / 1000);
+                    
+                    if (hours > 0) {
+                        el.textContent = `开始倒计时: ${hours}小时${minutes}分`;
+                    } else if (minutes > 0) {
+                        el.textContent = `开始倒计时: ${minutes}分${seconds}秒`;
+                    } else {
+                        el.textContent = `开始倒计时: ${seconds}秒`;
+                    }
+                });
+            }, 1000);
+        }
+
+        // 报名锦标赛
+        function registerTournament(tournamentId) {
+            const tournament = TOURNAMENTS.find(t => t.id === tournamentId);
+            if (!tournament) return;
+            
+            // 检查金币
+            const user = JSON.parse(localStorage.getItem('tof_user') || '{}');
+            if ((user.coins || 0) < tournament.entryFee) {
+                alert('金币不足！');
+                return;
+            }
+            
+            // 扣除金币
+            user.coins -= tournament.entryFee;
+            localStorage.setItem('tof_user', JSON.stringify(user));
+            
+            // 添加到已报名
+            registeredTournaments.push(tournamentId);
+            localStorage.setItem('tof_registered_tournaments', JSON.stringify(registeredTournaments));
+            
+            // 增加报名人数
+            tournament.currentPlayers++;
+            
+            // 重新渲染
+            renderTournaments();
+            
+            alert(`成功报名 ${tournament.name}！`);
+        }
+
+        // 显示详情
+        function showDetails(tournamentId) {
+            const tournament = TOURNAMENTS.find(t => t.id === tournamentId);
+            if (!tournament) return;
+            
+            const prizeDistribution = [
+                { rank: 1, percent: 50, amount: tournament.prizePool * 0.5 },
+                { rank: 2, percent: 25, amount: tournament.prizePool * 0.25 },
+                { rank: 3, percent: 15, amount: tournament.prizePool * 0.15 },
+                { rank: 4, percent: 5, amount: tournament.prizePool * 0.05 },
+                { rank: 5, percent: 2.5, amount: tournament.prizePool * 0.025 },
+                { rank: 6, percent: 2.5, amount: tournament.prizePool * 0.025 }
+            ];
+            
+            let details = `${tournament.name}\n\n`;
+            details += `奖金分配:\n`;
+            prizeDistribution.forEach(p => {
+                details += `第${p.rank}名: ${p.percent}% (${Math.floor(p.amount)}金币)\n`;
+            });
+            details += `\n比赛规则:\n`;
+            details += `- 单败淘汰制\n`;
+            details += `- 每局15秒出牌时间\n`;
+            details += `- 首登者机制开启\n`;
+            details += `- 激怒牌完全生效`;
+            
+            alert(details);
+        }
+
+        // 显示规则
+        function showRules() {
+            alert(`锦标赛规则:
+
+1. 每日争霸赛: 报名费100, 奖金池10000
+2. 周末大奖赛: 报名费500, 奖金池50000  
+3. 月度王者赛: 报名费1000, 奖金池200000
+
+比赛采用单败淘汰制，每轮随机匹配对手。
+胜利者晋级，失败者淘汰。
+
+祝你好运！`);
+        }
+
+        // 返回首页
+        function backToHome() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
