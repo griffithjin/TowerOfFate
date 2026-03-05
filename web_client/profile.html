@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 命运塔·首登者</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
+            min-height: 100vh;
+            color: #fff;
+            padding-bottom: 80px;
+        }
+        
+        /* 用户信息卡片 */
+        .profile-header {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,165,0,0.1));
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            font-size: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 20px rgba(255,215,0,0.5);
+        }
+        .profile-name { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+        .profile-id { font-size: 12px; color: #888; margin-bottom: 10px; }
+        .profile-title {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255,215,0,0.2);
+            border-radius: 15px;
+            font-size: 12px;
+            color: #FFD700;
+        }
+        
+        /* 货币显示 */
+        .currency-bar {
+            display: flex;
+            gap: 15px;
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.3);
+        }
+        .currency-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+        .currency-icon { font-size: 20px; }
+        .currency-info { flex: 1; }
+        .currency-value { font-size: 16px; font-weight: bold; color: #FFD700; }
+        .currency-label { font-size: 10px; color: #888; }
+        .currency-add {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #2ed573;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        /* 菜单列表 */
+        .menu-list {
+            padding: 20px;
+        }
+        .menu-group {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .menu-group-title {
+            padding: 12px 15px;
+            font-size: 12px;
+            color: #888;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .menu-item:hover { background: rgba(255,255,255,0.05); }
+        .menu-item:not(:last-child) {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .menu-icon { font-size: 24px; width: 30px; text-align: center; }
+        .menu-text { flex: 1; }
+        .menu-name { font-size: 14px; }
+        .menu-desc { font-size: 11px; color: #888; margin-top: 2px; }
+        .menu-arrow { color: #666; }
+        .menu-badge {
+            background: #ff4757;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0f0f1e;
+            border-top: 1px solid #333;
+            display: flex;
+            padding: 10px 0;
+        }
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            color: #888;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .nav-item.active { color: #FFD700; }
+        .nav-icon { font-size: 24px; margin-bottom: 3px; }
+    </style>
+</head>
+<body>
+    <!-- 用户信息 -->
+    <div class="profile-header">
+        <div class="profile-avatar" id="userAvatar">😺</div>
+        <div class="profile-name" id="userName">玩家昵称</div>
+        <div class="profile-id">ID: <span id="userId">12345678</span></div>
+        <div class="profile-title">🏃 攀登者</div>
+    </div>
+
+    <!-- 货币 -->
+    <div class="currency-bar">
+        <div class="currency-item">
+            <div class="currency-icon">💰</div>
+            <div class="currency-info">
+                <div class="currency-value" id="goldAmount">1,000</div>
+                <div class="currency-label">金币</div>
+            </div>
+            <div class="currency-add" onclick="location.href='recharge.html'">+</div>
+        </div>
+        
+        <div class="currency-item">
+            <div class="currency-icon">💎</div>
+            <div class="currency-info">
+                <div class="currency-value" id="diamondAmount">0</div>
+                <div class="currency-label">钻石</div>
+            </div>
+            <div class="currency-add" onclick="location.href='recharge.html'">+</div>
+        </div>
+    </div>
+
+    <!-- 菜单 -->
+    <div class="menu-list">
+        <!-- 游戏数据 -->
+        <div class="menu-group">
+            <div class="menu-group-title">游戏数据</div>
+            
+            <div class="menu-item" onclick="location.href='honor.html'">
+                <div class="menu-icon">🏅</div>
+                <div class="menu-text">
+                    <div class="menu-name">荣誉成就</div>
+                    <div class="menu-desc">成就、称号、徽章</div>
+                </div>
+                <div class="menu-badge">8</div>
+                <div class="menu-arrow">›</div>
+            </div>
+            
+            <div class="menu-item" onclick="location.href='ranked.html'">
+                <div class="menu-icon">💎</div>
+                <div class="menu-text">
+                    <div class="menu-name">排位赛</div>
+                    <div class="menu-desc">当前段位: 钻石III</div>
+                </div>
+                <div class="menu-arrow">›</div>
+            </div>
+            
+            <div class="menu-item" onclick="location.href='streak.html'">
+                <div class="menu-icon">🔥</div>
+                <div class="menu-text">
+                    <div class="menu-name">连胜模式</div>
+                    <div class="menu-desc">当前连胜: 5场</div>
+                </div>
+                <div class="menu-arrow">›</div>
+            </div>
+            
+            <div class="menu-item" onclick="location.href='tournament.html'">
+                <div class="menu-icon">🏆</div>
+                <div class="menu-text">
+                    <div class="menu-name">我的锦标赛</div>
+                    <div class="menu-desc">参赛记录、奖励</div>
+                </div>
+                <div class="menu-arrow">›</div>
+            </div>
+        </div>
+
+        <!-- 背包商城 -->
+        <div class="menu-group">
+            <div class="menu-group-title">背包商城</div>
+            
+            <div class="menu-item" onclick="location.href='shop.html'">
+                <div class="menu-icon">🛒</div>
+                <div class="menu-text">
+                    <div class="menu-name">商城</div>
+                    <div class="menu-desc">皮肤、特效、卡背</div>
+                </div>
+                <div class="menu-arrow">›</div>
+            </div>
+            
+            <div class="menu-item" onclick="showInventory()">
+                <div class="menu-icon">🎒</div>
+                <div class="menu-text">
+                    <div class="menu-name">我的背包</div>
+                    <div class="menu-desc">已购买的道具</div>
+                </div>
+                <div class="menu-arrow">›</div>
+            </div>
+        </div>
+
+        <!-- 账号设置 -->
+        <div class="menu-group">
+            <div class="menu-group-title">账号设置</div>
+            
+            <div class="menu-item" onclick="editProfile()">
+                <div class="menu-icon">✏️</div>
+                <div class="menu-text">
+                    <div class="menu-name">编辑资料</div>
+                    <div class="menu-desc">昵称、头像、绑定</div>
+                </div>
+                <div class="menu-arrow">›</div>
+            </div>
+            
+            <div class="menu-item" onclick="showSettings()">
+                <div class="menu-icon">⚙️</div>
+                <div class="menu-text">
+                    <div class="menu-name">系统设置</div>
+                    <div class="menu-desc">声音、通知、语言</div>
+                </div>
+                <div class="menu-arrow">›</div>
+            </div>
+            
+            <div class="menu-item" onclick="logout()">
+                <div class="menu-icon">🚪</div>
+                <div class="menu-text">
+                    <div class="menu-name">退出登录</div>
+                </div>
+                <div class="menu-arrow">›</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="location.href='index.html'">
+            <div class="nav-icon">🏠</div>
+            <div>首页</div>
+        </div>
+        <div class="nav-item" onclick="location.href='playable.html'">
+            <div class="nav-icon">🎮</div>
+            <div>对战</div>
+        </div>
+        <div class="nav-item" onclick="location.href='shop.html'">
+            <div class="nav-icon">🛒</div>
+            <div>商城</div>
+        </div>
+        <div class="nav-item active" onclick="location.href='profile.html'">
+            <div class="nav-icon">👤</div>
+            <div>我的</div>
+        </div>
+    </div>
+
+    <script>
+        // 加载用户信息
+        function loadUserInfo() {
+            const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+            if(user.nickname) {
+                document.getElementById('userName').textContent = user.nickname;
+            }
+            if(user.avatar) {
+                document.getElementById('userAvatar').textContent = user.avatar;
+            }
+            if(user.id) {
+                document.getElementById('userId').textContent = user.id;
+            }
+            
+            document.getElementById('goldAmount').textContent = (user.gold || 1000).toLocaleString();
+            document.getElementById('diamondAmount').textContent = (user.diamond || 0).toLocaleString();
+        }
+        
+        function showInventory() {
+            alert('🎒 背包功能开发中...');
+        }
+        
+        function editProfile() {
+            location.href = 'edit-profile.html';
+        }
+        
+        function showSettings() {
+            alert('⚙️ 设置功能开发中...');
+        }
+        
+        function logout() {
+            if(confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('currentUser');
+                location.href = 'login.html';
+            }
+        }
+        
+        // 加载用户信息
+        loadUserInfo();
+    </script>
+</body>
+</html>
