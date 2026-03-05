@@ -819,13 +819,13 @@
                 grid.appendChild(levelCell);
                 
                 // 10个玩家格子 - 只显示当前在该层的玩家
+                const playersAtLevel = Object.values(gameState.players).filter(p => p.level === idx);
                 for(let i=0; i<10; i++) {
                     const cell = document.createElement('div');
                     cell.className = `player-cell`;
                     
-                    // 找到当前层的第i个玩家（如果有）
-                    const playersAtLevel = Object.values(gameState.players).filter(p => p.level === idx);
-                    if(playersAtLevel[i]) {
+                    // 只显示该层的玩家，每个玩家占一个格子
+                    if(i < playersAtLevel.length) {
                         const player = playersAtLevel[i];
                         const isSelf = player.id === gameState.myPlayer.id;
                         cell.innerHTML = `<div class="player-avatar ${isSelf?'self':''}" title="${player.name}">${player.avatar}</div>`;
