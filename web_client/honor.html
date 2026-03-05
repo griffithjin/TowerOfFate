@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>荣誉系统 - 命运塔·首登者</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
+            min-height: 100vh;
+            color: #fff;
+        }
+        .header {
+            background: linear-gradient(90deg, #6b2c91, #4a148c);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .back-btn { color: #fff; text-decoration: none; font-size: 16px; }
+        .header-title { color: #FFD700; font-size: 18px; font-weight: bold; }
+        
+        /* 荣誉总览 */
+        .honor-overview {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,165,0,0.1));
+            border: 2px solid #FFD700;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px;
+            text-align: center;
+        }
+        .honor-score { font-size: 48px; font-weight: bold; color: #FFD700; }
+        .honor-label { color: #888; margin-top: 5px; }
+        .honor-badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .honor-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(255,215,0,0.2);
+            border: 2px solid #FFD700;
+        }
+        
+        /* 成就列表 */
+        .achievements {
+            padding: 20px;
+        }
+        .section-title {
+            font-size: 16px;
+            color: #FFD700;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .achievement-list {
+            display: grid;
+            gap: 10px;
+        }
+        .achievement-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            border: 2px solid transparent;
+        }
+        .achievement-item.unlocked {
+            border-color: #2ed573;
+        }
+        .achievement-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(255,255,255,0.1);
+        }
+        .achievement-item.unlocked .achievement-icon {
+            background: rgba(46,213,115,0.2);
+        }
+        .achievement-info { flex: 1; }
+        .achievement-name { font-weight: bold; margin-bottom: 3px; }
+        .achievement-desc { font-size: 12px; color: #888; }
+        .achievement-reward { color: #FFD700; font-size: 12px; }
+        .achievement-status {
+            font-size: 20px;
+        }
+        
+        /* 称号展示 */
+        .titles-section {
+            padding: 20px;
+        }
+        .titles-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .title-card {
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+        .title-card.active {
+            border-color: #FFD700;
+            background: rgba(255,215,0,0.1);
+        }
+        .title-icon { font-size: 32px; margin-bottom: 8px; }
+        .title-name { font-weight: bold; font-size: 14px; }
+        .title-condition { font-size: 11px; color: #888; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html" class="back-btn">← 返回</a>
+        <div class="header-title">🏅 荣誉系统</div>
+        <div style="width:40px"></div>
+    </div>
+
+    <!-- 荣誉总览 -->
+    <div class="honor-overview">
+        <div class="honor-score">2,580</div>
+        <div class="honor-label">荣誉积分</div>
+        
+        <div class="honor-badges">
+            <div class="honor-badge">🥇</div>
+            <div class="honor-badge">🏆</div>
+            <div class="honor-badge">💎</div>
+            <div class="honor-badge">🔥</div>
+        </div>
+    </div>
+
+    <!-- 称号展示 -->
+    <div class="titles-section">
+        <div class="section-title">👑 我的称号</div>
+        
+        <div class="titles-grid">
+            <div class="title-card active">
+                <div class="title-icon">🏃</div>
+                <div class="title-name">攀登者</div>
+                <div class="title-condition">首次登顶</div>
+            </div>
+            
+            <div class="title-card">
+                <div class="title-icon">👑</div>
+                <div class="title-name">首登者</div>
+                <div class="title-condition">成为守卫</div>
+            </div>
+            
+            <div class="title-card">
+                <div class="title-icon">🔥</div>
+                <div class="title-name">连胜王</div>
+                <div class="title-condition">10连胜</div>
+            </div>
+            
+            <div class="title-card">
+                <div class="title-icon">💰</div>
+                <div class="title-name">土豪</div>
+                <div class="title-condition">消费1000元</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成就列表 -->
+    <div class="achievements">
+        <div class="section-title">
+            <span>🏆 成就列表 (8/20)</span>
+            <span style="font-size:12px;color:#888">完成成就获得荣誉积分</span>
+        </div>
+        
+        <div class="achievement-list">
+            <div class="achievement-item unlocked">
+                <div class="achievement-icon">🎯</div>
+                <div class="achievement-info">
+                    <div class="achievement-name">初出茅庐</div>
+                    <div class="achievement-desc">完成第一场比赛</div>
+                </div>
+                <div class="achievement-reward">+50积分</div>
+                <div class="achievement-status">✅</div>
+            </div>
+            
+            <div class="achievement-item unlocked">
+                <div class="achievement-icon">🏃</div>
+                <div class="achievement-info">
+                    <div class="achievement-name">命运攀登者</div>
+                    <div class="achievement-desc">首次到达顶层</div>
+                </div>
+                <div class="achievement-reward">+100积分</div>
+                <div class="achievement-status">✅</div>
+            </div>
+            
+            <div class="achievement-item unlocked">
+                <div class="achievement-icon">🔥</div>
+                <div class="achievement-info">
+                    <div class="achievement-name">连胜新星</div>
+                    <div class="achievement-desc">获得3连胜</div>
+                </div>
+                <div class="achievement-reward">+100积分</div>
+                <div class="achievement-status">✅</div>
+            </div>
+            
+            <div class="achievement-item">
+                <div class="achievement-icon">👑</div>
+                <div class="achievement-info">
+                    <div class="achievement-name">首登者</div>
+                    <div class="achievement-desc">成为守卫击败10人</div>
+                </div>
+                <div class="achievement-reward">+200积分</div>
+                <div class="achievement-status">⏳</div>
+            </div>
+            
+            <div class="achievement-item">
+                <div class="achievement-icon">💎</div>
+                <div class="achievement-info">
+                    <div class="achievement-name">钻石玩家</div>
+                    <div class="achievement-desc">达到钻石段位</div>
+                </div>
+                <div class="achievement-reward">+300积分</div>
+                <div class="achievement-status">⏳</div>
+            </div>
+            
+            <div class="achievement-item">
+                <div class="achievement-icon">🏆</div>
+                <div class="achievement-info">
+                    <div class="achievement-name">锦标赛冠军</div>
+                    <div class="achievement-desc">获得一次锦标赛冠军</div>
+                </div>
+                <div class="achievement-reward">+500积分</div>
+                <div class="achievement-status">⏳</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
