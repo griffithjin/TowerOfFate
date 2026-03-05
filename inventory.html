@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的背包 - 命运塔·首登者</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
+            min-height: 100vh;
+            color: #fff;
+            padding-bottom: 80px;
+        }
+        .header {
+            background: linear-gradient(90deg, #6b2c91, #4a148c);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .back-btn { color: #fff; text-decoration: none; font-size: 16px; }
+        .header-title { color: #FFD700; font-size: 18px; font-weight: bold; }
+        
+        /* 当前装备展示 */
+        .equipped-section {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,165,0,0.1));
+            border: 2px solid #FFD700;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px;
+        }
+        .equipped-title { font-size: 14px; color: #FFD700; margin-bottom: 15px; text-align: center; }
+        .equipped-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .equipped-slot {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px 10px;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+        .equipped-slot.active {
+            border-color: #2ed573;
+            background: rgba(46,213,115,0.1);
+        }
+        .equipped-icon { font-size: 32px; margin-bottom: 5px; }
+        .equipped-name { font-size: 10px; color: #888; }
+        
+        /* 背包分类 */
+        .inventory-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            overflow-x: auto;
+            background: rgba(0,0,0,0.3);
+        }
+        .inv-tab {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            white-space: nowrap;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .inv-tab.active {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            font-weight: bold;
+        }
+        
+        /* 背包物品 */
+        .inventory-list {
+            padding: 15px;
+        }
+        .inv-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 2px solid transparent;
+        }
+        .inv-item.equipped {
+            border-color: #2ed573;
+            background: rgba(46,213,115,0.05);
+        }
+        .inv-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            background: rgba(255,255,255,0.1);
+        }
+        .inv-info { flex: 1; }
+        .inv-name { font-weight: bold; margin-bottom: 3px; }
+        .inv-desc { font-size: 12px; color: #888; }
+        .inv-type { font-size: 10px; color: #FFD700; margin-top: 5px; }
+        .inv-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .inv-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .inv-btn.equip {
+            background: linear-gradient(135deg, #2ed573, #26c281);
+            color: #fff;
+        }
+        .inv-btn.unequip {
+            background: #444;
+            color: #888;
+        }
+        .inv-btn.preview {
+            background: rgba(255,215,0,0.2);
+            color: #FFD700;
+        }
+        
+        /* 预览弹窗 */
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .preview-modal.active { display: flex; }
+        .preview-box {
+            background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
+            border: 2px solid #FFD700;
+            border-radius: 15px;
+            padding: 25px;
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+        .preview-title { color: #FFD700; font-size: 18px; margin-bottom: 20px; }
+        .preview-card {
+            width: 80px;
+            height: 110px;
+            margin: 0 auto 20px;
+            background: #fff;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 5px 20px rgba(255,215,0,0.3);
+        }
+        .preview-desc { color: #888; font-size: 14px; margin-bottom: 20px; }
+        .preview-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 20px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* 效果展示 */
+        .effect-demo {
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            margin: 0 20px 20px;
+            border-radius: 10px;
+        }
+        .effect-title { font-size: 14px; color: #FFD700; margin-bottom: 15px; }
+        .effect-list { display: flex; gap: 10px; flex-wrap: wrap; }
+        .effect-tag {
+            padding: 8px 15px;
+            background: rgba(255,215,0,0.1);
+            border-radius: 15px;
+            font-size: 12px;
+            color: #FFD700;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="profile.html" class="back-btn">← 返回</a>
+        <div class="header-title">🎒 我的背包</div>
+        <div style="width:40px"></div>
+    </div>
+
+    <!-- 当前装备 -->
+    <div class="equipped-section">
+        <div class="equipped-title">✨ 当前装备 (游戏中生效)</div>
+        
+        <div class="equipped-grid">
+            <div class="equipped-slot active" id="slot-skin">
+                <div class="equipped-icon">✨</div>
+                <div class="equipped-name">黄金皮肤</div>
+            </div>
+            
+            <div class="equipped-slot active" id="slot-effect">
+                <div class="equipped-icon">🔥</div>
+                <div class="equipped-name">火焰特效</div>
+            </div>
+            
+            <div class="equipped-slot" id="slot-back">
+                <div class="equipped-icon">🃏</div>
+                <div class="equipped-name">默认卡背</div>
+            </div>
+            
+            <div class="equipped-slot active" id="slot-frame">
+                <div class="equipped-icon">👑</div>
+                <div class="equipped-name">王者框</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 道具效果说明 -->
+    <div class="effect-demo">
+        <div class="effect-title">🎮 道具在游戏中的效果</div>
+        <div class="effect-list">
+            <div class="effect-tag">✨ 皮肤: 卡牌外观</div>
+            <div class="effect-tag">🔥 特效: 出牌动画</div>
+            <div class="effect-tag">🃏 卡背: 牌背样式</div>
+            <div class="effect-tag">👑 头像框: 个人展示</div>
+        </div>
+    </div>
+
+    <!-- 分类标签 -->
+    <div class="inventory-tabs">
+        <div class="inv-tab active" onclick="switchTab('all', this)">全部</div>
+        <div class="inv-tab" onclick="switchTab('skin', this)">皮肤</div>
+        <div class="inv-tab" onclick="switchTab('effect', this)">特效</div>
+        <div class="inv-tab" onclick="switchTab('cardback', this)">卡背</div>
+        <div class="inv-tab" onclick="switchTab('frame', this)">头像框</div>
+    </div>
+
+    <!-- 背包列表 -->
+    <div class="inventory-list" id="inventoryList">
+        <!-- 黄金皮肤 -->
+        <div class="inv-item equipped" data-type="skin" data-id="skin_gold">
+            <div class="inv-icon" style="background:linear-gradient(135deg,#FFD700,#FFA500)">✨</div>
+            <div class="inv-info">
+                <div class="inv-name">黄金皮肤</div>
+                <div class="inv-desc">尊贵金色卡牌外观</div>
+                <div class="inv-type">皮肤 - 已装备</div>
+            </div>
+            <div class="inv-actions">
+                <button class="inv-btn unequip" onclick="unequipItem('skin_gold')">取消装备</button>
+                <button class="inv-btn preview" onclick="previewItem('skin_gold')">预览</button>
+            </div>
+        </div>
+
+        <!-- 火焰特效 -->
+        <div class="inv-item equipped" data-type="effect" data-id="effect_fire">
+            <div class="inv-icon" style="background:linear-gradient(135deg,#ff4757,#c0392b)">🔥</div>
+            <div class="inv-info">
+                <div class="inv-name">火焰特效</div>
+                <div class="inv-desc">出牌时火焰燃烧效果</div>
+                <div class="inv-type">特效 - 已装备</div>
+            </div>
+            <div class="inv-actions">
+                <button class="inv-btn unequip" onclick="unequipItem('effect_fire')">取消装备</button>
+            </div>
+        </div>
+
+        <!-- 王者头像框 -->
+        <div class="inv-item equipped" data-type="frame" data-id="frame_king">
+            <div class="inv-icon" style="background:linear-gradient(135deg,#FFD700,#FFA500)">👑</div>
+            <div class="inv-info">
+                <div class="inv-name">王者头像框</div>
+                <div class="inv-desc">尊贵金色头像框</div>
+                <div class="inv-type">头像框 - 已装备</div>
+            </div>
+            <div class="inv-actions">
+                <button class="inv-btn unequip" onclick="unequipItem('frame_king')">取消装备</button>
+            </div>
+        </div>
+
+        <!-- 水晶皮肤 -->
+        <div class="inv-item" data-type="skin" data-id="skin_crystal">
+            <div class="inv-icon" style="background:linear-gradient(135deg,#00d9ff,#00a8ff)">💎</div>
+            <div class="inv-info">
+                <div class="inv-name">水晶皮肤</div>
+                <div class="inv-desc">晶莹剔透的卡牌外观</div>
+                <div class="inv-type">皮肤</div>
+            </div>
+            <div class="inv-actions">
+                <button class="inv-btn equip" onclick="equipItem('skin_crystal')">装备</button>
+                <button class="inv-btn preview" onclick="previewItem('skin_crystal')">预览</button>
+            </div>
+        </div>
+
+        <!-- 龙纹卡背 -->
+        <div class="inv-item" data-type="cardback" data-id="back_dragon">
+            <div class="inv-icon" style="background:linear-gradient(135deg,#8B4513,#A0522D)">🐉</div>
+            <div class="inv-info">
+                <div class="inv-name">龙纹卡背</div>
+                <div class="inv-desc">霸气龙纹牌背样式</div>
+                <div class="inv-type">卡背</div>
+            </div>
+            <div class="inv-actions">
+                <button class="inv-btn equip" onclick="equipItem('back_dragon')">装备</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 预览弹窗 -->
+    <div class="preview-modal" id="previewModal">
+        <div class="preview-box">
+            <div class="preview-title">卡牌皮肤预览</div>
+            <div class="preview-card" id="previewCard">
+                <div>♠</div>
+                <div style="font-size:20px">A</div>
+            </div>
+            <div class="preview-desc">这是你在游戏中看到的卡牌效果</div>
+            
+            <button class="preview-btn" onclick="closePreview()">知道了</button>
+        </div>
+    </div>
+
+    <script>
+        // 切换分类
+        function switchTab(type, element) {
+            document.querySelectorAll('.inv-tab').forEach(tab => tab.classList.remove('active'));
+            element.classList.add('active');
+            
+            document.querySelectorAll('.inv-item').forEach(item => {
+                if(type === 'all' || item.dataset.type === type) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // 装备道具
+        function equipItem(itemId) {
+            // 获取当前已装备的同类道具并取消装备
+            const item = document.querySelector(`[data-id="${itemId}"]`);
+            const type = item.dataset.type;
+            
+            document.querySelectorAll(`[data-type="${type}"]`).forEach(i => {
+                i.classList.remove('equipped');
+                i.querySelector('.inv-type').textContent = type === 'skin' ? '皮肤' : 
+                                                             type === 'effect' ? '特效' :
+                                                             type === 'cardback' ? '卡背' : '头像框';
+                
+                const btn = i.querySelector('.inv-btn.equip, .inv-btn.unequip');
+                if(btn) {
+                    btn.className = 'inv-btn equip';
+                    btn.textContent = '装备';
+                    btn.onclick = () => equipItem(i.dataset.id);
+                }
+            });
+            
+            // 装备新道具
+            item.classList.add('equipped');
+            item.querySelector('.inv-type').textContent = 
+                (type === 'skin' ? '皮肤' : 
+                 type === 'effect' ? '特效' :
+                 type === 'cardback' ? '卡背' : '头像框') + ' - 已装备';
+            
+            const btn = item.querySelector('.inv-btn.equip');
+            btn.className = 'inv-btn unequip';
+            btn.textContent = '取消装备';
+            btn.onclick = () => unequipItem(itemId);
+            
+            // 更新装备栏
+            updateEquippedSlot(type, item.querySelector('.inv-icon').textContent, 
+                             item.querySelector('.inv-name').textContent);
+            
+            // 保存到本地存储
+            saveEquippedItem(itemId, type);
+            
+            alert('✅ 装备成功！效果将在下局游戏生效');
+        }
+        
+        // 取消装备
+        function unequipItem(itemId) {
+            const item = document.querySelector(`[data-id="${itemId}"]`);
+            const type = item.dataset.type;
+            
+            item.classList.remove('equipped');
+            item.querySelector('.inv-type').textContent = 
+                type === 'skin' ? '皮肤' : 
+                type === 'effect' ? '特效' :
+                type === 'cardback' ? '卡背' : '头像框';
+            
+            const btn = item.querySelector('.inv-btn.unequip');
+            btn.className = 'inv-btn equip';
+            btn.textContent = '装备';
+            btn.onclick = () => equipItem(itemId);
+            
+            // 恢复默认
+            updateEquippedSlot(type, getDefaultIcon(type), getDefaultName(type));
+            
+            // 移除本地存储
+            removeEquippedItem(type);
+            
+            alert('已取消装备');
+        }
+        
+        // 更新装备栏显示
+        function updateEquippedSlot(type, icon, name) {
+            const slotMap = { skin: 'slot-skin', effect: 'slot-effect', 
+                            cardback: 'slot-back', frame: 'slot-frame' };
+            const slot = document.getElementById(slotMap[type]);
+            
+            slot.querySelector('.equipped-icon').textContent = icon;
+            slot.querySelector('.equipped-name').textContent = name;
+            slot.classList.add('active');
+        }
+        
+        function getDefaultIcon(type) {
+            return { skin: '✨', effect: '✨', cardback: '🃏', frame: '👤' }[type];
+        }
+        
+        function getDefaultName(type) {
+            return { skin: '默认皮肤', effect: '默认特效', 
+                    cardback: '默认卡背', frame: '默认框' }[type];
+        }
+        
+        // 预览
+        function previewItem(itemId) {
+            const item = document.querySelector(`[data-id="${itemId}"]`);
+            const icon = item.querySelector('.inv-icon').textContent;
+            
+            document.getElementById('previewCard').textContent = icon;
+            document.getElementById('previewModal').classList.add('active');
+        }
+        
+        function closePreview() {
+            document.getElementById('previewModal').classList.remove('active');
+        }
+        
+        // 保存装备状态
+        function saveEquippedItem(itemId, type) {
+            let equipped = JSON.parse(localStorage.getItem('equippedItems') || '{}');
+            equipped[type] = itemId;
+            localStorage.setItem('equippedItems', JSON.stringify(equipped));
+        }
+        
+        function removeEquippedItem(type) {
+            let equipped = JSON.parse(localStorage.getItem('equippedItems') || '{}');
+            delete equipped[type];
+            localStorage.setItem('equippedItems', JSON.stringify(equipped));
+        }
+        
+        // 加载装备状态
+        function loadEquippedItems() {
+            const equipped = JSON.parse(localStorage.getItem('equippedItems') || '{}');
+            
+            for(let type in equipped) {
+                const item = document.querySelector(`[data-id="${equipped[type]}"]`);
+                if(item) {
+                    equipItem(equipped[type]);
+                }
+            }
+        }
+        
+        // 初始化
+        loadEquippedItems();
+    </script>
+</body>
+</html>
