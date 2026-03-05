@@ -5,43 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>命运塔·首登者 V1.0</title>
     <style>
+        /* ===== CSS 变量定义 - 移动端适配 ===== */
+        :root {
+            /* 布局尺寸 */
+            --max-content-width: 480px;
+            --tower-max-width: 280px;
+            --btn-max-width: 300px;
+            --card-width: 50px;
+            --card-height: 70px;
+            --guard-card-width: 60px;
+            --guard-card-height: 84px;
+            --provoke-card-width: 40px;
+            --provoke-card-height: 56px;
+            --back-btn-size: 36px;
+            --spinner-size: 50px;
+            
+            /* 间距 */
+            --spacing-xs: 2px;
+            --spacing-sm: 5px;
+            --spacing-md: 8px;
+            --spacing-lg: 10px;
+            --spacing-xl: 15px;
+            --spacing-xxl: 20px;
+            --spacing-xxxl: 30px;
+            
+            /* 字体大小 */
+            --font-xs: 11px;
+            --font-sm: 12px;
+            --font-md: 14px;
+            --font-lg: 16px;
+            --font-xl: 18px;
+            --font-xxl: 24px;
+            --font-xxxl: 28px;
+            --font-icon: 80px;
+            --font-suit: 20px;
+            
+            /* 圆角 */
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 10px;
+            --radius-xxl: 12px;
+            --radius-xxxl: 16px;
+            
+            /* 颜色 */
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #0d1b2a;
+            --bg-tertiary: #1a1a3e;
+            --gold: #FFD700;
+            --gold-dark: #FFA500;
+            --text-muted: #888;
+            --red: #d00;
+            --black: #000;
+        }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, sans-serif; background: #0a0a1a; color: #fff; height: 100vh; overflow: hidden; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg-primary); color: #fff; height: 100vh; overflow: hidden; }
         .screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; flex-direction: column; }
         .screen.active { display: flex; }
         
         /* 首页 */
-        #home-screen { background: linear-gradient(180deg, #0d1b2a 0%, #1a1a3e 50%, #0a0a1a 100%); }
-        .home-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; max-width: 480px; margin: 0 auto; }
-        .tower-main { font-size: 80px; margin-bottom: 10px; animation: float 3s ease-in-out infinite; filter: drop-shadow(0 0 20px rgba(255,215,0,0.5)); }
+        #home-screen { background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-tertiary) 50%, var(--bg-primary) 100%); }
+        .home-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--spacing-xxl); max-width: var(--max-content-width); margin: 0 auto; }
+        .tower-main { font-size: var(--font-icon); margin-bottom: var(--spacing-lg); animation: float 3s ease-in-out infinite; filter: drop-shadow(0 0 20px rgba(255,215,0,0.5)); }
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        .title { font-size: 28px; font-weight: bold; background: linear-gradient(45deg, #FFD700, #ffed4e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
-        .subtitle { color: #888; font-size: 14px; margin-bottom: 30px; }
-        .btn-main { width: 100%; max-width: 300px; padding: 18px; background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; border: none; border-radius: 16px; font-size: 18px; font-weight: bold; margin-bottom: 15px; cursor: pointer; }
+        .title { font-size: var(--font-xxxl); font-weight: bold; background: linear-gradient(45deg, var(--gold), #ffed4e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: var(--spacing-sm); }
+        .subtitle { color: var(--text-muted); font-size: var(--font-md); margin-bottom: var(--spacing-xxxl); }
+        .btn-main { width: 100%; max-width: var(--btn-max-width); padding: var(--spacing-xl); background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); border: none; border-radius: var(--radius-xxxl); font-size: var(--font-xl); font-weight: bold; margin-bottom: var(--spacing-lg); cursor: pointer; }
         .btn-main:active { transform: scale(0.98); }
-        .modes { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-        .mode-btn { padding: 12px 24px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 12px; color: #fff; cursor: pointer; font-size: 14px; }
+        .modes { display: flex; gap: var(--spacing-lg); flex-wrap: wrap; justify-content: center; }
+        .mode-btn { padding: var(--spacing-md) var(--spacing-xl); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: var(--radius-xxl); color: #fff; cursor: pointer; font-size: var(--font-md); }
         .mode-btn:active { background: rgba(255,215,0,0.2); }
         
         /* 游戏界面 */
-        #game-screen { background: #0d1b2a; }
-        .game-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: rgba(0,0,0,0.3); }
-        .back-btn { width: 36px; height: 36px; background: rgba(255,255,255,0.1); border: none; border-radius: 10px; color: #fff; font-size: 18px; cursor: pointer; }
+        #game-screen { background: var(--bg-secondary); }
+        .game-header { display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-lg) var(--spacing-xl); background: rgba(0,0,0,0.3); }
+        .back-btn { width: var(--back-btn-size); height: var(--back-btn-size); background: rgba(255,255,255,0.1); border: none; border-radius: var(--radius-xl); color: #fff; font-size: var(--font-lg); cursor: pointer; }
         .game-info { text-align: center; }
-        .game-info .label { font-size: 11px; color: #888; }
-        .game-info .value { font-size: 16px; color: #FFD700; font-weight: bold; }
+        .game-info .label { font-size: var(--font-xs); color: var(--text-muted); }
+        .game-info .value { font-size: var(--font-lg); color: var(--gold); font-weight: bold; }
         
         /* 塔区域 */
-        .tower-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; overflow-y: auto; }
-        .tower { display: flex; flex-direction: column-reverse; gap: 2px; width: 100%; max-width: 280px; }
-        .level { height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; border-radius: 4px; transition: all 0.3s; }
-        .level.current { box-shadow: 0 0 0 2px #FFD700, 0 0 10px rgba(255,215,0,0.5); transform: scale(1.05); z-index: 10; }
+        .tower-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--spacing-lg); overflow-y: auto; }
+        .tower { display: flex; flex-direction: column-reverse; gap: var(--spacing-xs); width: 100%; max-width: var(--tower-max-width); }
+        .level { height: 22px; display: flex; align-items: center; justify-content: center; font-size: var(--font-sm); font-weight: bold; border-radius: var(--radius-sm); transition: all 0.3s; }
+        .level.current { box-shadow: 0 0 0 2px var(--gold), 0 0 10px rgba(255,215,0,0.5); transform: scale(1.05); z-index: 10; }
         /* 塔层颜色 - 从下到上渐变 */
-        .l1 { width: 95%; background: linear-gradient(90deg, #e0f7fa, #b2ebf2); color: #000; }
-        .l2 { width: 92%; background: linear-gradient(90deg, #b2ebf2, #80deea); color: #000; }
-        .l3 { width: 89%; background: linear-gradient(90deg, #80deea, #4dd0e1); color: #000; }
-        .l4 { width: 86%; background: linear-gradient(90deg, #4dd0e1, #26c6da); color: #000; }
-        .l5 { width: 83%; background: linear-gradient(90deg, #26c6da, #00bcd4); color: #000; }
+        .l1 { width: 95%; background: linear-gradient(90deg, #e0f7fa, #b2ebf2); color: var(--black); }
+        .l2 { width: 92%; background: linear-gradient(90deg, #b2ebf2, #80deea); color: var(--black); }
+        .l3 { width: 89%; background: linear-gradient(90deg, #80deea, #4dd0e1); color: var(--black); }
+        .l4 { width: 86%; background: linear-gradient(90deg, #4dd0e1, #26c6da); color: var(--black); }
+        .l5 { width: 83%; background: linear-gradient(90deg, #26c6da, #00bcd4); color: var(--black); }
         .l6 { width: 80%; background: linear-gradient(90deg, #00bcd4, #00acc1); color: #fff; }
         .l7 { width: 77%; background: linear-gradient(90deg, #00acc1, #0097a7); color: #fff; }
         .l8 { width: 74%; background: linear-gradient(90deg, #0097a7, #00838f); color: #fff; }
@@ -49,33 +103,33 @@
         .l10 { width: 68%; background: linear-gradient(90deg, #006064, #01579b); color: #fff; }
         .l11 { width: 65%; background: linear-gradient(90deg, #01579b, #0d47a1); color: #fff; }
         .l12 { width: 62%; background: linear-gradient(90deg, #0d47a1, #1a237e); color: #fff; }
-        .l13 { width: 59%; background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; box-shadow: 0 0 15px rgba(255,215,0,0.5); }
+        .l13 { width: 59%; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); box-shadow: 0 0 15px rgba(255,215,0,0.5); }
         
         /* 守卫区域 */
-        .guard-section { padding: 15px; background: rgba(0,0,0,0.3); margin: 0 15px 10px; border-radius: 12px; }
-        .guard-title { text-align: center; font-size: 12px; color: #888; margin-bottom: 10px; }
-        .guard-card { width: 60px; height: 84px; background: linear-gradient(135deg, #1a5490, #0d2847); border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-        .guard-card.revealed { background: #fff; color: #000; }
-        .provocation { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
-        .provocation-card { width: 40px; height: 56px; background: linear-gradient(135deg, rgba(255,71,87,0.8), rgba(255,99,71,0.6)); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 1px solid rgba(255,71,87,0.5); }
+        .guard-section { padding: var(--spacing-xl); background: rgba(0,0,0,0.3); margin: 0 var(--spacing-xl) var(--spacing-lg); border-radius: var(--radius-xxl); }
+        .guard-title { text-align: center; font-size: var(--font-sm); color: var(--text-muted); margin-bottom: var(--spacing-lg); }
+        .guard-card { width: var(--guard-card-width); height: var(--guard-card-height); background: linear-gradient(135deg, #1a5490, #0d2847); border: 2px solid rgba(255,255,255,0.2); border-radius: var(--radius-lg); margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: var(--font-xxl); }
+        .guard-card.revealed { background: #fff; color: var(--black); }
+        .provocation { display: flex; gap: var(--spacing-md); justify-content: center; margin-top: var(--spacing-lg); }
+        .provocation-card { width: var(--provoke-card-width); height: var(--provoke-card-height); background: linear-gradient(135deg, rgba(255,71,87,0.8), rgba(255,99,71,0.6)); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: var(--font-md); border: 1px solid rgba(255,71,87,0.5); }
         
         /* 手牌区域 */
-        .hand-section { padding: 15px; background: rgba(0,0,0,0.5); }
-        .hand-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; color: #888; }
-        .hand-cards { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; }
+        .hand-section { padding: var(--spacing-xl); background: rgba(0,0,0,0.5); }
+        .hand-header { display: flex; justify-content: space-between; margin-bottom: var(--spacing-lg); font-size: var(--font-sm); color: var(--text-muted); }
+        .hand-cards { display: flex; gap: var(--spacing-md); overflow-x: auto; padding: var(--spacing-sm) 0; }
         .hand-cards::-webkit-scrollbar { display: none; }
-        .card { width: 50px; height: 70px; background: #fff; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: transform 0.2s; }
-        .card.red { color: #d00; }
-        .card.black { color: #000; }
+        .card { width: var(--card-width); height: var(--card-height); background: #fff; border-radius: var(--radius-lg); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: transform 0.2s; }
+        .card.red { color: var(--red); }
+        .card.black { color: var(--black); }
         .card.selected { transform: translateY(-10px); box-shadow: 0 8px 20px rgba(255,215,0,0.5); }
-        .card .suit { font-size: 20px; }
-        .card .rank { font-size: 12px; }
-        .btn-play { width: 100%; padding: 15px; margin-top: 10px; background: #444; color: #666; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; }
-        .btn-play.active { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
+        .card .suit { font-size: var(--font-suit); }
+        .card .rank { font-size: var(--font-sm); }
+        .btn-play { width: 100%; padding: var(--spacing-xl); margin-top: var(--spacing-lg); background: #444; color: #666; border: none; border-radius: var(--radius-xl); font-size: var(--font-lg); font-weight: bold; }
+        .btn-play.active { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); }
         
         /* 加载 */
-        #loading-screen { align-items: center; justify-content: center; background: #0a0a1a; }
-        .spinner { width: 50px; height: 50px; border: 4px solid rgba(255,215,0,0.2); border-top-color: #FFD700; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        #loading-screen { align-items: center; justify-content: center; background: var(--bg-primary); }
+        .spinner { width: var(--spinner-size); height: var(--spinner-size); border: 4px solid rgba(255,215,0,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: var(--spacing-xl); }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>

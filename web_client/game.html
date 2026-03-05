@@ -5,156 +5,202 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>命运塔·首登者 - 团队对战</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
-        body { background: #0a0a1a; color: #fff; height: 100vh; overflow: hidden; font-size: 12px; }
-        
-        /* 顶部标题 */
-        .header { 
-            background: linear-gradient(90deg, #6b2c91, #4a148c); 
-            padding: 8px; 
-            text-align: center; 
-            font-size: 16px; 
-            font-weight: bold;
-            color: #FFD700;
-            border-bottom: 2px solid #FFD700;
+        /* ===== CSS 变量定义 - 便于移动端适配 ===== */
+        :root {
+            /* 布局尺寸 */
+            --sidebar-width: 80px;
+            --right-panel-width: 140px;
+            --level-cell-width: 35px;
+            --row-height: 32px;
+            --header-height: 36px;
+
+            /* 间距 */
+            --spacing-xs: 2px;
+            --spacing-sm: 4px;
+            --spacing-md: 6px;
+            --spacing-lg: 8px;
+            --spacing-xl: 10px;
+
+            /* 字体大小 */
+            --font-xs: 10px;
+            --font-sm: 11px;
+            --font-md: 12px;
+            --font-lg: 13px;
+            --font-xl: 14px;
+            --font-xxl: 16px;
+
+            /* 颜色 */
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #0f0f1e;
+            --bg-tertiary: #1a1a2e;
+            --bg-quaternary: #161625;
+            --border-color: #333;
+            --border-light: #444;
+            --text-primary: #fff;
+            --text-secondary: #888;
+            --text-muted: #666;
+            --gold: #FFD700;
+            --gold-dark: #FFA500;
+            --green: #2ed573;
+            --red: #ff4757;
+            --red-light: #ff6b6b;
+            --blue: #74b9ff;
         }
-        
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
+        body { background: var(--bg-primary); color: var(--text-primary); height: 100vh; overflow: hidden; font-size: var(--font-md); }
+
+        /* 顶部标题 */
+        .header {
+            background: linear-gradient(90deg, #6b2c91, #4a148c);
+            padding: var(--spacing-lg);
+            text-align: center;
+            font-size: var(--font-xxl);
+            font-weight: bold;
+            color: var(--gold);
+            border-bottom: 2px solid var(--gold);
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* 主布局 - 三栏 */
-        .main { display: flex; height: calc(100vh - 36px); }
-        
+        .main { display: flex; height: calc(100vh - var(--header-height)); }
+
         /* ========== 左侧广告位/菜单 ========== */
-        .left-ads { 
-            width: 80px; 
-            background: #0f0f1e; 
-            border-right: 1px solid #333;
+        .left-ads {
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
         }
-        .left-menu-item { 
-            padding: 8px 4px; 
-            text-align: center; 
-            border-bottom: 1px solid #333;
-            font-size: 11px;
+        .left-menu-item {
+            padding: var(--spacing-lg) var(--spacing-sm);
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            font-size: var(--font-sm);
         }
-        .menu-red { color: #ff4757; font-weight: bold; }
-        .menu-green { color: #2ed573; }
+        .menu-red { color: var(--red); font-weight: bold; }
+        .menu-green { color: var(--green); }
         .menu-yellow { color: #ffa502; }
-        .menu-blue { color: #74b9ff; }
-        
+        .menu-blue { color: var(--blue); }
+
         /* 倒计时区域 */
         .timer-box {
             background: rgba(255,215,0,0.1);
-            padding: 10px 4px;
+            padding: var(--spacing-xl) var(--spacing-sm);
             text-align: center;
-            border-bottom: 1px solid #444;
+            border-bottom: 1px solid var(--border-light);
         }
-        .timer-label { font-size: 10px; color: #888; }
-        .timer-value { font-size: 18px; color: #FFD700; font-weight: bold; }
-        
+        .timer-label { font-size: var(--font-xs); color: var(--text-secondary); }
+        .timer-value { font-size: 18px; color: var(--gold); font-weight: bold; }
+
         /* ========== 中间游戏区 ========== */
-        .game-area { 
-            flex: 1; 
-            display: flex; 
+        .game-area {
+            flex: 1;
+            display: flex;
             flex-direction: column;
             overflow: hidden;
         }
-        
+
         /* 队伍标题行 */
-        .teams-header { 
-            display: flex; 
-            background: #1a1a2e;
-            border-bottom: 1px solid #444;
+        .teams-header {
+            display: flex;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-light);
             text-align: center;
         }
-        .team-section { 
-            flex: 1; 
-            padding: 6px; 
+        .team-section {
+            flex: 1;
+            padding: var(--spacing-md);
             font-weight: bold;
-            font-size: 13px;
+            font-size: var(--font-lg);
         }
-        .team-dragon { 
-            background: linear-gradient(90deg, #1e3a5f, #2d5a87); 
-            color: #74b9ff; 
-            border-right: 1px solid #444;
+        .team-dragon {
+            background: linear-gradient(90deg, #1e3a5f, #2d5a87);
+            color: var(--blue);
+            border-right: 1px solid var(--border-light);
         }
-        .team-panda { 
-            background: linear-gradient(90deg, #8b4513, #a0522d); 
-            color: #fab1a0; 
+        .team-panda {
+            background: linear-gradient(90deg, #8b4513, #a0522d);
+            color: #fab1a0;
         }
-        .vs-divider { 
-            width: 30px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
+        .vs-divider {
+            width: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background: #2d2d44;
             font-weight: bold;
         }
-        
+
         /* 玩家标题行 */
         .players-header {
             display: flex;
-            background: #0f0f1e;
-            border-bottom: 1px solid #444;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-light);
         }
-        .level-header { 
-            width: 35px; 
-            padding: 6px; 
-            text-align: center; 
-            background: #1a1a2e;
-            border-right: 1px solid #444;
-            font-size: 11px;
-            color: #888;
+        .level-header {
+            width: var(--level-cell-width);
+            padding: var(--spacing-md);
+            text-align: center;
+            background: var(--bg-tertiary);
+            border-right: 1px solid var(--border-light);
+            font-size: var(--font-sm);
+            color: var(--text-secondary);
         }
         .player-header-cell {
             flex: 1;
-            padding: 6px 2px;
+            padding: var(--spacing-md) var(--spacing-xs);
             text-align: center;
-            font-size: 11px;
-            border-right: 1px solid #333;
+            font-size: var(--font-sm);
+            border-right: 1px solid var(--border-color);
         }
-        .player-dragon { background: rgba(30, 58, 95, 0.3); color: #74b9ff; }
+        .player-dragon { background: rgba(30, 58, 95, 0.3); color: var(--blue); }
         .player-panda { background: rgba(139, 69, 19, 0.3); color: #fab1a0; }
-        
+
         /* 战场表格 */
-        .battlefield { 
-            flex: 1; 
+        .battlefield {
+            flex: 1;
             overflow-y: auto;
-            background: #161625;
+            background: var(--bg-quaternary);
         }
         .battlefield::-webkit-scrollbar { width: 6px; }
-        .battlefield::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
-        
+        .battlefield::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+
         .battle-row {
             display: flex;
             border-bottom: 1px solid rgba(255,255,255,0.05);
-            height: 32px;
+            height: var(--row-height);
         }
-        
-        .level-cell { 
-            width: 35px; 
-            display: flex; 
-            align-items: center; 
+
+        .level-cell {
+            width: var(--level-cell-width);
+            display: flex;
+            align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 13px;
-            border-right: 1px solid #444;
+            font-size: var(--font-lg);
+            border-right: 1px solid var(--border-light);
             background: rgba(0,0,0,0.2);
         }
-        /* 层颜色 - A在顶部，2在底部 */
-        .level-A { background: linear-gradient(90deg, #FFD700, #FFA500); color: #000; }
-        .level-K { background: linear-gradient(90deg, #ff6b6b, #ee5a24); color: #fff; }
-        .level-Q { background: linear-gradient(90deg, #a29bfe, #6c5ce7); color: #fff; }
-        .level-J { background: linear-gradient(90deg, #74b9ff, #0984e3); color: #fff; }
-        .level-10 { background: linear-gradient(90deg, #81ecec, #00cec9); color: #000; }
-        .level-9 { background: linear-gradient(90deg, #55efc4, #00b894); color: #000; }
-        .level-8 { background: linear-gradient(90deg, #dfe6e9, #b2bec3); color: #000; }
-        .level-7 { background: linear-gradient(90deg, #74b9ff, #0984e3); color: #fff; }
-        .level-6 { background: linear-gradient(90deg, #0984e3, #0769c3); color: #fff; }
-        .level-5 { background: linear-gradient(90deg, #0769c3, #054f93); color: #fff; }
-        .level-4 { background: linear-gradient(90deg, #054f93, #043563); color: #fff; }
-        .level-3 { background: linear-gradient(90deg, #6c5ce7, #5f3dc4); color: #fff; }
-        .level-2 { background: linear-gradient(90deg, #00b894, #00a383); color: #fff; }
-        
+        /* 层颜色 - A在顶部，2在底部 (金色渐变从上到下) */
+        .level-A { background: linear-gradient(90deg, var(--gold), var(--gold-dark), var(--gold)); color: #000; text-shadow: 0 0 5px rgba(255,255,255,0.5); box-shadow: 0 0 15px rgba(255,215,0,0.4); }
+        .level-K { background: linear-gradient(90deg, #ff6b6b, #ee5a24, #ff6b6b); color: #fff; }
+        .level-Q { background: linear-gradient(90deg, #a29bfe, #6c5ce7, #a29bfe); color: #fff; }
+        .level-J { background: linear-gradient(90deg, #74b9ff, #0984e3, #74b9ff); color: #fff; }
+        .level-10 { background: linear-gradient(90deg, #00cec9, #81ecec, #00cec9); color: #000; }
+        .level-9 { background: linear-gradient(90deg, #55efc4, #00b894, #55efc4); color: #000; }
+        .level-8 { background: linear-gradient(90deg, #b2bec3, #dfe6e9, #b2bec3); color: #000; }
+        .level-7 { background: linear-gradient(90deg, #0984e3, #74b9ff, #0984e3); color: #fff; }
+        .level-6 { background: linear-gradient(90deg, #0769c3, #0984e3, #0769c3); color: #fff; }
+        .level-5 { background: linear-gradient(90deg, #054f93, #0769c3, #054f93); color: #fff; }
+        .level-4 { background: linear-gradient(90deg, #043563, #054f93, #043563); color: #fff; }
+        .level-3 { background: linear-gradient(90deg, #5f3dc4, #6c5ce7, #5f3dc4); color: #fff; }
+        .level-2 { background: linear-gradient(90deg, #00a383, #00b894, #00a383); color: #fff; }
+
         .player-cell {
             flex: 1;
             display: flex;
@@ -163,20 +209,59 @@
             border-right: 1px solid rgba(255,255,255,0.05);
             position: relative;
         }
-        .player-cell.has-player { background: rgba(46, 213, 115, 0.15); }
-        .player-cell.current-player { 
-            background: rgba(255, 215, 0, 0.3);
-            box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.5);
+        .player-cell.has-player {
+            background: linear-gradient(135deg, rgba(46, 213, 115, 0.15), rgba(46, 213, 115, 0.05));
         }
-        .player-avatar { font-size: 16px; }
-        .player-check { 
-            position: absolute; 
-            bottom: 2px; 
-            right: 2px; 
-            font-size: 10px; 
-            color: #2ed573;
+        .player-cell.current-player {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.4), rgba(255, 215, 0, 0.1));
+            box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.6);
         }
-        
+
+        /* 玩家头像样式 */
+        .player-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-lg);
+            background: linear-gradient(135deg, #2d3436, #000);
+            border: 2px solid #636e72;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            transition: all 0.3s;
+        }
+        .player-cell.has-player .player-avatar {
+            background: linear-gradient(135deg, #00b894, #00a383);
+            border-color: #00cec9;
+            box-shadow: 0 0 10px rgba(0,206,201,0.4);
+        }
+        .player-cell.current-player .player-avatar {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-color: #fff;
+            box-shadow: 0 0 15px rgba(255,215,0,0.6);
+            animation: glow 2s ease-in-out infinite;
+        }
+        @keyframes glow {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(255,215,0,0.6); }
+            50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(255,215,0,0.9); }
+        }
+
+        .player-check {
+            position: absolute;
+            bottom: var(--spacing-xs);
+            right: var(--spacing-xs);
+            font-size: var(--font-xs);
+            color: var(--green);
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* 气泡提示 */
         .tooltip-bubble {
             position: absolute;
@@ -185,59 +270,59 @@
             transform: translateX(-50%);
             background: #fff;
             color: #000;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 10px;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--spacing-sm);
+            font-size: var(--font-xs);
             white-space: nowrap;
             z-index: 100;
         }
-        
+
         /* 出发层 */
         .start-floor {
             display: flex;
-            background: #0f0f1e;
-            border-top: 2px solid #333;
-            border-bottom: 2px solid #333;
-            padding: 8px;
+            background: var(--bg-secondary);
+            border-top: 2px solid var(--border-color);
+            border-bottom: 2px solid var(--border-color);
+            padding: var(--spacing-lg);
         }
-        .start-label { 
-            width: 60px; 
-            color: #888; 
-            display: flex; 
+        .start-label {
+            width: 60px;
+            color: var(--text-secondary);
+            display: flex;
             align-items: center;
-            font-size: 11px;
+            font-size: var(--font-sm);
         }
-        .start-players { 
-            flex: 1; 
-            display: flex; 
-            gap: 15px; 
+        .start-players {
+            flex: 1;
+            display: flex;
+            gap: 15px;
             flex-wrap: wrap;
         }
         .start-avatar { font-size: 18px; opacity: 0.6; }
-        
+
         /* 手牌区 */
         .hand-section {
-            background: #0a0a15;
-            border-bottom: 1px solid #333;
-            padding: 8px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: var(--spacing-lg);
         }
         .section-label {
-            font-size: 11px;
-            color: #888;
-            margin-bottom: 6px;
+            font-size: var(--font-sm);
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
         }
         .hand-cards {
             display: flex;
-            gap: 8px;
+            gap: var(--spacing-lg);
             overflow-x: auto;
-            padding: 5px 0;
+            padding: var(--spacing-sm) 0;
         }
         .hand-cards::-webkit-scrollbar { display: none; }
         .card {
             min-width: 45px;
             height: 63px;
             background: linear-gradient(135deg, #fff, #f0f0f0);
-            border-radius: 6px;
+            border-radius: var(--spacing-md);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -250,174 +335,208 @@
         .card.selected {
             transform: translateY(-8px);
             box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6);
-            border: 2px solid #FFD700;
+            border: 2px solid var(--gold);
         }
         .card-suit { font-size: 18px; }
-        .card-rank { font-size: 11px; font-weight: bold; }
-        
+        .card-rank { font-size: var(--font-xs); font-weight: bold; }
+
         /* 道具区 */
         .items-section {
-            background: #0f0f1e;
-            border-bottom: 1px solid #333;
-            padding: 8px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: var(--spacing-lg);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: var(--spacing-lg);
         }
-        .items-label { 
-            width: 40px; 
-            font-size: 11px; 
-            color: #888; 
+        .items-label {
+            width: 40px;
+            font-size: var(--font-sm);
+            color: var(--text-secondary);
         }
         .items-slots {
             display: flex;
-            gap: 8px;
+            gap: var(--spacing-lg);
         }
         .item-slot {
             width: 36px;
             height: 36px;
             background: rgba(255,255,255,0.05);
-            border: 1px solid #444;
-            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--spacing-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: var(--font-lg);
         }
         .items-desc {
             flex: 1;
             text-align: center;
-            color: #666;
-            font-size: 11px;
+            color: var(--text-muted);
+            font-size: var(--font-sm);
         }
-        
+
         /* 嘲讽区 */
         .chat-section {
-            background: #0a0a15;
-            border-bottom: 1px solid #333;
-            padding: 8px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: var(--spacing-lg);
             display: flex;
-            gap: 8px;
+            gap: var(--spacing-lg);
         }
         .chat-input {
             flex: 1;
-            padding: 8px 12px;
+            padding: var(--spacing-lg) var(--spacing-xl);
             background: rgba(255,255,255,0.05);
-            border: 1px solid #444;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 12px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--spacing-md);
+            color: var(--text-primary);
+            font-size: var(--font-md);
         }
         .chat-btn {
-            padding: 8px 15px;
-            background: #444;
+            padding: var(--spacing-lg) 15px;
+            background: var(--border-light);
             border: none;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 12px;
+            border-radius: var(--spacing-md);
+            color: var(--text-primary);
+            font-size: var(--font-md);
         }
-        
+
         /* 牌局记录 */
         .history-section {
-            background: #0f0f1e;
+            background: var(--bg-secondary);
             flex: 1;
             overflow-y: auto;
         }
         .history-title {
             text-align: center;
-            padding: 6px;
-            background: #1a1a2e;
-            border-bottom: 1px solid #444;
-            font-size: 12px;
-            color: #888;
+            padding: var(--spacing-md);
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-light);
+            font-size: var(--font-md);
+            color: var(--text-secondary);
         }
         .history-row {
             display: flex;
-            padding: 6px 8px;
+            padding: var(--spacing-md) var(--spacing-lg);
             border-bottom: 1px solid #222;
-            font-size: 11px;
+            font-size: var(--font-sm);
             align-items: center;
         }
-        .history-round { 
-            width: 50px; 
-            color: #FFD700; 
+        .history-round {
+            width: 50px;
+            color: var(--gold);
         }
-        .history-players { 
-            flex: 1; 
-            display: flex; 
-            gap: 6px;
+        .history-players {
+            flex: 1;
+            display: flex;
+            gap: var(--spacing-md);
             flex-wrap: wrap;
         }
-        .history-result { 
-            width: 60px; 
+        .history-result {
+            width: 60px;
             text-align: right;
-            color: #2ed573;
+            color: var(--green);
         }
-        .player-play { 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 2px;
+        .player-play {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
         }
-        .play-check { color: #2ed573; }
-        .play-cross { color: #ff4757; }
-        
+        .play-check { color: var(--green); }
+        .play-cross { color: var(--red); }
+
         /* ========== 右侧广告位 ========== */
-        .right-ads { 
-            width: 90px; 
-            background: #0f0f1e; 
-            border-left: 1px solid #333;
+        .right-ads {
+            width: var(--right-panel-width);
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border-left: 2px solid var(--gold);
             display: flex;
             flex-direction: column;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.5);
         }
         .right-ad-header {
-            padding: 8px;
+            padding: var(--spacing-lg) var(--spacing-md);
             text-align: center;
-            background: rgba(255,0,0,0.1);
-            color: #ff6b6b;
-            font-size: 11px;
-            border-bottom: 1px solid #333;
+            background: linear-gradient(90deg, rgba(255,0,0,0.2), rgba(255,0,0,0.05), rgba(255,0,0,0.2));
+            color: var(--red-light);
+            font-size: var(--font-lg);
+            font-weight: bold;
+            border-bottom: 2px solid var(--red-light);
+            text-shadow: 0 0 10px rgba(255,0,0,0.3);
         }
         .guard-section, .provoke-section {
             flex: 1;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid var(--border-color);
+            overflow-y: auto;
         }
+        .guard-section::-webkit-scrollbar, .provoke-section::-webkit-scrollbar { width: 4px; }
+        .guard-section::-webkit-scrollbar-thumb, .provoke-section::-webkit-scrollbar-thumb { background: var(--border-light); }
+
         .section-header {
-            padding: 6px;
+            padding: var(--spacing-lg) var(--spacing-md);
             text-align: center;
-            font-size: 10px;
-            color: #888;
-            background: rgba(255,255,255,0.03);
-            border-bottom: 1px solid #333;
+            font-size: var(--font-lg);
+            color: var(--gold);
+            font-weight: bold;
+            background: linear-gradient(90deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+            border-bottom: 1px solid var(--gold);
+            text-shadow: 0 0 10px rgba(255,215,0,0.3);
         }
-        .guard-cell, .provoke-cell {
-            height: 32px;
+        .guard-cell {
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 11px;
+            font-size: var(--font-lg);
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .guard-cell.current {
+            background: linear-gradient(90deg, rgba(255,215,0,0.3), rgba(255,215,0,0.1));
+            color: var(--gold);
+            box-shadow: inset 0 0 10px rgba(255,215,0,0.2);
+        }
+        .guard-cell.defeated {
+            color: var(--green);
+            text-shadow: 0 0 5px rgba(46,213,115,0.5);
         }
         .provoke-cell {
-            color: #ff6b6b;
-            font-size: 10px;
-            flex-wrap: wrap;
-            padding: 2px;
-            line-height: 1.2;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: var(--font-sm);
+            color: var(--red-light);
+            font-weight: bold;
+            letter-spacing: 1px;
         }
-        
+        .provoke-cell.current {
+            background: linear-gradient(90deg, rgba(255,0,0,0.2), rgba(255,0,0,0.05));
+            color: var(--red);
+            box-shadow: inset 0 0 10px rgba(255,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
         /* 底部广告 */
         .bottom-ad {
-            padding: 10px;
+            padding: var(--spacing-xl);
             background: rgba(255,255,255,0.02);
             text-align: center;
             color: #555;
-            font-size: 11px;
+            font-size: var(--font-sm);
         }
     </style>
 </head>
 <body>
     <div class="header">🏰 命运塔·首登者</div>
-    
+
     <div class="main">
         <!-- 左侧菜单 -->
         <div class="left-ads">
@@ -447,7 +566,7 @@
                 <div class="vs-divider">VS</div>
                 <div class="team-section team-panda">🐼 熊猫战队</div>
             </div>
-            
+
             <!-- 玩家标题 -->
             <div class="players-header">
                 <div class="level-header">层数</div>
@@ -537,17 +656,17 @@
         <!-- 右侧广告位 -->
         <div class="right-ads">
             <div class="right-ad-header">📢 滚动广告位</div>
-            
+
             <div class="guard-section">
                 <div class="section-header">守卫牌区</div>
                 <div id="guard-list"></div>
             </div>
-            
+
             <div class="provoke-section">
                 <div class="section-header">激怒牌</div>
                 <div id="provoke-list"></div>
             </div>
-            
+
             <div class="bottom-ad">广告位</div>
         </div>
     </div>
@@ -560,7 +679,7 @@
             players: [],
             hand: [],
             guards: [],
-            
+
             init() {
                 this.generatePlayers();
                 this.generateHand();
@@ -569,7 +688,7 @@
                 this.renderHand();
                 this.renderRightPanel();
             },
-            
+
             generatePlayers() {
                 const avatars = ['👦','⚙️','🤖','🎲','🐶','🐍','🐱','🎩','🦕','🌹'];
                 this.players = [];
@@ -584,7 +703,7 @@
                 // 设置我在第2层
                 this.players[0].level = 1;
             },
-            
+
             generateHand() {
                 const suits = ['♥','♦','♣','♠'];
                 const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
@@ -597,12 +716,12 @@
                     });
                 }
             },
-            
+
             generateGuards() {
                 const suits = ['♥','♦','♣','♠'];
                 const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
                 this.guards = [];
-                
+
                 for(let i=0; i<13; i++) {
                     const guardCards = [];
                     for(let j=0; j<13; j++) {
@@ -615,29 +734,29 @@
                     this.guards.push({level: i, guardCards, provocationCards, isDefeated: false});
                 }
             },
-            
+
             renderBattlefield() {
                 const bf = document.getElementById('battlefield');
                 bf.innerHTML = '';
-                
+
                 const levels = ['A','K','Q','J','10','9','8','7','6','5','4','3','2'];
                 const levelClasses = ['level-A','level-K','level-Q','level-J','level-10','level-9','level-8','level-7','level-6','level-5','level-4','level-3','level-2'];
-                
+
                 levels.forEach((l, i) => {
                     const actualLevel = 12 - i;
                     const isCurrent = actualLevel === this.currentLevel;
-                    
+
                     const row = document.createElement('div');
                     row.className = 'battle-row';
-                    
+
                     let html = `<div class="level-cell ${levelClasses[i]} ${isCurrent?'current':''}">${l}</div>`;
-                    
+
                     // 10个玩家
                     for(let p=0; p<10; p++) {
                         const player = this.players[p];
                         const hasPlayer = player.level === actualLevel;
                         const isMe = hasPlayer && p === 0;
-                        
+
                         html += `<div class="player-cell ${hasPlayer?'has-player':''} ${isMe?'current-player':''}">
                             ${hasPlayer ? `
                                 <span class="player-avatar">${player.avatar}</span>
@@ -646,16 +765,16 @@
                             ` : ''}
                         </div>`;
                     }
-                    
+
                     row.innerHTML = html;
                     bf.appendChild(row);
                 });
             },
-            
+
             renderHand() {
                 const container = document.getElementById('hand-cards');
                 container.innerHTML = '';
-                
+
                 this.hand.slice(0,8).forEach((card, i) => {
                     const div = document.createElement('div');
                     div.className = `card ${card.isRed?'red':'black'}`;
@@ -663,7 +782,7 @@
                     container.appendChild(div);
                 });
             },
-            
+
             renderRightPanel() {
                 // 守卫牌
                 const guardList = document.getElementById('guard-list');
@@ -672,26 +791,24 @@
                     const guard = this.guards[i];
                     const isCurrent = i === this.currentLevel;
                     const div = document.createElement('div');
-                    div.className = 'guard-cell';
-                    div.style.background = isCurrent ? 'rgba(255,215,0,0.2)' : '';
-                    div.innerHTML = isCurrent ? '🎴' : (guard.isDefeated ? '✓' : '·');
+                    div.className = `guard-cell ${isCurrent?'current':''} ${guard.isDefeated?'defeated':''}`;
+                    div.innerHTML = isCurrent ? '🛡️ 当前' : (guard.isDefeated ? '✓ 失守' : `· ${13-i}张`);
                     guardList.appendChild(div);
                 }
-                
+
                 // 激怒牌
                 const provokeList = document.getElementById('provoke-list');
                 provokeList.innerHTML = '';
                 const provokes = ['♥9♣6♠3','♥Q♠8♦2','♥K♠5♦4','♥10♠9♦2','♥8♣5♦7','♥A♣5♦A','♥8♣5♦4','♥8♣5♥4','♥8♣3♦K','♥8♣4♦9','♥8♣9♦8','♥10♣3♦4','♥8♣5♦4'];
                 provokes.forEach((p, i) => {
                     const div = document.createElement('div');
-                    div.className = 'provoke-cell';
-                    div.style.background = i === this.currentLevel ? 'rgba(255,0,0,0.1)' : '';
+                    div.className = `provoke-cell ${i === this.currentLevel?'current':''}`;
                     div.textContent = p;
                     provokeList.appendChild(div);
                 });
             }
         };
-        
+
         Game.init();
     </script>
 </body>
