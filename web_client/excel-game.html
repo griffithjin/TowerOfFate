@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>命运塔·首登者 - Excel版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        html, body { 
+            width: 100%; height: 100%; overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e; color: #fff; font-size: 11px;
+        }
+        
+        /* 顶部三栏 */
+        .top-bar {
+            display: grid;
+            grid-template-columns: 100px 1fr 100px;
+            height: 36px;
+            background: linear-gradient(90deg, #6b2c91, #4a148c);
+        }
+        .top-ad-left, .top-ad-right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ff6b6b;
+            color: #fff;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        .top-teams {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+        .team-display { text-align: center; }
+        .team-name-big { color: #FFD700; font-weight: bold; font-size: 14px; }
+        .team-players { color: #aaa; font-size: 10px; }
+        .vs-divider { color: #ff4757; font-size: 16px; font-weight: bold; }
+        
+        /* 主体 */
+        .main-container {
+            display: flex;
+            height: calc(100% - 36px);
+        }
+        
+        /* 左侧菜单 */
+        .left-sidebar {
+            width: 70px;
+            background: #0f0f1e;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+        }
+        .menu-section {
+            padding: 8px 4px;
+            border-bottom: 1px solid #222;
+        }
+        .menu-label {
+            font-size: 9px;
+            color: #666;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+        .menu-btn {
+            display: block;
+            width: 100%;
+            padding: 6px 2px;
+            margin-bottom: 3px;
+            background: #1a1a3e;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 10px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .menu-btn:hover { background: #2d2d5a; }
+        .menu-btn.primary { background: #2ed573; color: #000; }
+        .menu-btn.warning { background: #feca57; color: #000; }
+        .menu-btn.danger { background: #ff6b6b; }
+        
+        /* 中间游戏区 - Excel表格风格 */
+        .game-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* 主战场表格 */
+        .battle-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 35px repeat(10, 1fr) 45px 70px;
+            grid-template-rows: 24px repeat(13, 1fr);
+            overflow: auto;
+        }
+        
+        /* 表头 */
+        .grid-header {
+            background: #2d2d44;
+            border: 1px solid #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 10px;
+        }
+        .header-level { background: #4a148c; color: #FFD700; }
+        .header-player { background: #1e3a5f; color: #fff; }
+        .header-guard { background: #ff4757; color: #fff; }
+        .header-provoke { background: #ff6b6b; color: #fff; }
+        
+        /* 层数列 */
+        .level-cell {
+            border: 1px solid #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .level-A { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
+        .level-K { background: #C0C0C0; color: #000; }
+        .level-Q { background: #CD7F32; color: #fff; }
+        .level-J { background: #8B7355; color: #fff; }
+        .level-10 { background: #4169E1; color: #fff; }
+        .level-9 { background: #2F4F4F; color: #fff; }
+        .level-8 { background: #8B4513; color: #fff; }
+        .level-7 { background: #D2691E; color: #fff; }
+        .level-6 { background: #CD853F; color: #fff; }
+        .level-5 { background: #A0522D; color: #fff; }
+        .level-4 { background: #8B7355; color: #fff; }
+        .level-3 { background: #D2691E; color: #fff; }
+        .level-2 { background: #8B4513; color: #fff; }
+        .level-current { box-shadow: inset 0 0 0 3px #00ff00; }
+        
+        /* 玩家格子 */
+        .player-cell {
+            border: 1px solid #444;
+            background: rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: 35px;
+        }
+        .player-cell:nth-child(odd) { background: rgba(255,255,255,0.03); }
+        
+        /* 塔背景层 */
+        .tower-bg-A { background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,165,0,0.2)); }
+        .tower-bg-K { background: linear-gradient(135deg, rgba(192,192,192,0.3), rgba(255,215,0,0.2)); }
+        .tower-bg-Q { background: linear-gradient(135deg, rgba(205,127,50,0.3), rgba(192,192,192,0.2)); }
+        .tower-bg-J { background: linear-gradient(135deg, rgba(139,115,85,0.3), rgba(205,127,50,0.2)); }
+        .tower-bg-10 { background: linear-gradient(135deg, rgba(65,105,225,0.2), rgba(30,144,255,0.1)); }
+        .tower-bg-9 { background: linear-gradient(135deg, rgba(47,79,79,0.3), rgba(112,128,144,0.2)); }
+        .tower-bg-8 { background: linear-gradient(135deg, rgba(139,69,19,0.4), rgba(160,82,45,0.3)); }
+        .tower-bg-7 { background: linear-gradient(135deg, rgba(210,105,30,0.3), rgba(139,69,19,0.2)); }
+        .tower-bg-6 { background: linear-gradient(135deg, rgba(205,133,63,0.3), rgba(210,105,30,0.2)); }
+        .tower-bg-5 { background: linear-gradient(135deg, rgba(160,82,45,0.3), rgba(205,133,63,0.2)); }
+        .tower-bg-4 { background: linear-gradient(135deg, rgba(139,115,85,0.3), rgba(160,82,45,0.2)); }
+        .tower-bg-3 { background: linear-gradient(135deg, rgba(210,105,30,0.3), rgba(139,115,85,0.2)); }
+        .tower-bg-2 { background: linear-gradient(135deg, rgba(139,69,19,0.4), rgba(210,105,30,0.3)); }
+        
+        /* 玩家头像 */
+        .player-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+        .player-avatar.self {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-color: #ff4757;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        /* 守卫牌区 */
+        .guard-cell {
+            border: 1px solid #444;
+            background: #ffeb3b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .guard-cell.current { background: #ffc107; box-shadow: inset 0 0 0 2px #ff0000; }
+        .guard-icon {
+            width: 32px;
+            height: 40px;
+            background: linear-gradient(135deg, #1a5490, #0d2847);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #fff;
+        }
+        
+        /* 激怒牌区 */
+        .provoke-cell {
+            border: 1px solid #444;
+            background: #ffeb3b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 2px;
+        }
+        .provoke-cell.current { background: #ffc107; box-shadow: inset 0 0 0 2px #ff0000; }
+        .provoke-mini {
+            width: 18px;
+            height: 26px;
+            background: #ff4757;
+            border-radius: 2px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: #fff;
+        }
+        .provoke-mini.black { background: #2c3e50; }
+        
+        /* 底部区域 */
+        .bottom-area {
+            background: #0f0f1e;
+            border-top: 2px solid #333;
+            padding: 6px;
+        }
+        
+        .start-layer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px;
+            background: rgba(255,215,0,0.1);
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+        .start-label { color: #FFD700; font-weight: bold; }
+        .start-avatars { display: flex; gap: 5px; }
+        
+        .hand-section {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .hand-label-area {
+            width: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #888;
+            font-size: 10px;
+        }
+        .hand-cards-scroll {
+            flex: 1;
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            padding: 4px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+        }
+        .hand-cards-scroll::-webkit-scrollbar { height: 4px; }
+        
+        .hand-card {
+            min-width: 36px;
+            height: 50px;
+            background: #fff;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .hand-card.red { color: #d00; }
+        .hand-card.black { color: #000; }
+        .hand-card.selected {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(255,215,0,0.6);
+            border: 2px solid #FFD700;
+        }
+        .hand-card .suit { font-size: 16px; }
+        .hand-card .rank { font-size: 10px; font-weight: bold; }
+        
+        .play-action-btn {
+            width: 60px;
+            background: #444;
+            color: #666;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .play-action-btn.active {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+        }
+        
+        /* 道具区 */
+        .items-section {
+            display: flex;
+            gap: 8px;
+            padding: 6px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 10px;
+            color: #888;
+        }
+        .item-tag {
+            background: rgba(255,215,0,0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+            color: #FFD700;
+        }
+        
+        /* 嘲讽区 */
+        .chat-section {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 8px;
+            background: #1a1a3e;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 12px;
+        }
+        .chat-btn {
+            padding: 8px 15px;
+            background: #ff6b6b;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 12px;
+        }
+        
+        /* 记录区 */
+        .log-section {
+            max-height: 60px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            padding: 6px;
+            font-size: 10px;
+        }
+        .log-row {
+            display: flex;
+            gap: 8px;
+            padding: 3px 0;
+            border-bottom: 1px solid #222;
+        }
+        .log-round { color: #FFD700; min-width: 40px; }
+        .log-players { flex: 1; display: flex; gap: 4px; flex-wrap: wrap; }
+        .player-result { display: flex; align-items: center; gap: 2px; }
+        .result-icon { font-size: 12px; }
+        .result-success { color: #2ed573; }
+        .result-fail { color: #ff4757; }
+        .log-guard { color: #888; min-width: 60px; }
+        .log-status { color: #aaa; }
+        
+        /* 塔选择器 */
+        .tower-selector {
+            position: absolute;
+            top: 40px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
+            border-radius: 8px;
+            z-index: 100;
+        }
+        .tower-option {
+            padding: 6px 10px;
+            margin-bottom: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .tower-option:hover { background: rgba(255,215,0,0.3); }
+        .tower-option.active { background: #FFD700; color: #000; }
+        
+        /* 弹窗 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
+            border: 2px solid #FFD700;
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 300px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部 -->
+    <div class="top-bar">
+        <div class="top-ad-left" onclick="showPromo()">📢 广告</div>
+        
+        <div class="top-teams">
+            <div class="team-display">
+                <div class="team-name-big">🐲 龙神战队</div>
+                <div class="team-players">5人在线</div>
+            </div>
+            <div class="vs-divider">VS</div>
+            <div class="team-display">
+                <div class="team-name-big">🐼 熊猫战队</div>
+                <div class="team-players">5人在线</div>
+            </div>
+        </div>
+        
+        <div class="top-ad-right" onclick="switchTower()">🏗️ 换塔</div>
+    </div>
+
+    <div class="main-container">
+        <!-- 左侧菜单 -->
+        <div class="left-sidebar">
+            <div class="menu-section">
+                <div class="menu-label">⏱️ 倒计时</div>
+                <div class="menu-btn primary">30s</div>
+            </div>
+            
+            <div class="menu-section">
+                <div class="menu-label">游戏模式</div>
+                <button class="menu-btn">📋 当前牌局</button>
+                <button class="menu-btn warning">👑 VIP中心</button>
+                <button class="menu-btn" onclick="location.href='shop.html'">🛒 商城</button>
+                <button class="menu-btn">🏅 荣誉展示</button>
+                <button class="menu-btn" onclick="location.href='tournament.html'">🏆 锦标赛</button>
+                <button class="menu-btn danger">🔥 连胜模式</button>
+            </div>
+            
+            <div class="menu-section">
+                <div class="menu-label">社交</div>
+                <button class="menu-btn">📨 邀请好友</button>
+                <button class="menu-btn" onclick="location.href='index.html'">⬅️ 返回</button>
+            </div>
+        </div>
+
+        <!-- 游戏区 -->
+        <div class="game-area">
+            <!-- Excel风格战场 -->
+            <div class="battle-grid" id="battleGrid"></div>
+            
+            <!-- 底部 -->
+            <div class="bottom-area">
+                <!-- 出发层 -->
+                <div class="start-layer">
+                    <span class="start-label">🏁 出发层:</span>
+                    <div class="start-avatars" id="startAvatars"></div>
+                </div>
+                
+                <!-- 手牌 -->
+                <div class="hand-section">
+                    <div class="hand-label-area">
+                        <div>🎴 手牌</div>
+                        <div id="handCount">52张</div>
+                    </div>
+                    <div class="hand-cards-scroll" id="handCards"></div>
+                    <button class="play-action-btn" id="playBtn">出牌</button>
+                </div>
+                
+                <!-- 道具 -->
+                <div class="items-section">
+                    <span>🎒 道具:</span>
+                    <span class="item-tag">VIP双倍</span>
+                    <span class="item-tag">团队护盾</span>
+                    <span class="item-tag">免费复活</span>
+                </div>
+                
+                <!-- 嘲讽区 -->
+                <div class="chat-section">
+                    <input type="text" class="chat-input" placeholder="输入嘲讽语...">
+                    <button class="chat-btn">😂 表情</button>
+                    <button class="chat-btn" style="background:#ff4757">举报</button>
+                    <button class="chat-btn" style="background:#666">托管</button>
+                </div>
+                
+                <!-- 记录 -->
+                <div class="log-section" id="logSection">
+                    <div class="log-row">
+                        <span class="log-round">第3局</span>
+                        <span class="log-players">😺✅ 🐶❌ 🐰❌ 🦊✅ 🐼❌</span>
+                        <span class="log-guard">守卫♠6</span>
+                        <span class="log-status">未激怒</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 塔选择器 -->
+    <div class="modal-overlay" id="towerModal">
+        <div class="modal-box">
+            <div style="color:#FFD700;font-size:16px;font-weight:bold;margin-bottom:15px">🏗️ 选择世界名塔</div>
+            <div id="towerList"></div>
+        </div>
+    </div>
+
+    <script>
+        // 世界名塔列表
+        const TOWERS = [
+            { id: 'pisa', name: '🏗️ 比萨斜塔', location: '意大利', color: '#8B4513' },
+            { id: 'eiffel', name: '🗼 埃菲尔铁塔', location: '法国', color: '#8B7355' },
+            { id: 'burj', name: '👑 哈利法塔', location: '迪拜', color: '#FFD700' },
+            { id: 'tokyo', name: '🗼 东京晴空塔', location: '日本', color: '#4169E1' },
+            { id: 'shanghai', name: '🏙️ 上海中心', location: '上海', color: '#C0C0C0' },
+            { id: 'taipei', name: '🌃 台北101', location: '台北', color: '#20B2AA' },
+            { id: 'empire', name: '🏢 帝国大厦', location: '纽约', color: '#708090' },
+            { id: 'petronas', name: '🏗️ 双子塔', location: '吉隆坡', color: '#9932CC' },
+        ];
+        
+        const LEVELS = ['A','K','Q','J','10','9','8','7','6','5','4','3','2'];
+        const PLAYERS = ['😺','🐶','🐰','🦊','🐼','🐨','🐯','🦁','🐸','🐙'];
+        
+        let currentTower = TOWERS[0];
+        let myLevel = 7;
+        let hand = [];
+        let selectedCard = null;
+        
+        function init() {
+            generateHand();
+            renderGrid();
+            renderHand();
+            renderStartLayer();
+            renderTowerSelector();
+        }
+        
+        function generateHand() {
+            const suits = ['♥','♦','♣','♠'];
+            const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+            hand = [];
+            for(let s of suits) {
+                for(let r of ranks) {
+                    hand.push({suit: s, rank: r, isRed: s==='♥'||s==='♦'});
+                }
+            }
+            hand.sort(()=>Math.random()-0.5);
+        }
+        
+        function renderGrid() {
+            const grid = document.getElementById('battleGrid');
+            grid.innerHTML = '';
+            
+            // 表头
+            grid.appendChild(createHeader('层', 'header-level'));
+            for(let i=1; i<=10; i++) {
+                grid.appendChild(createHeader(`玩家${i}`, 'header-player'));
+            }
+            grid.appendChild(createHeader('守卫', 'header-guard'));
+            grid.appendChild(createHeader('激怒牌', 'header-provoke'));
+            
+            // 13层
+            LEVELS.forEach((lv, idx) => {
+                // 层数
+                const levelCell = document.createElement('div');
+                levelCell.className = `level-cell level-${lv} ${idx===myLevel?'level-current':''}`;
+                levelCell.textContent = lv;
+                grid.appendChild(levelCell);
+                
+                // 10个玩家格子
+                for(let i=0; i<10; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = `player-cell tower-bg-${lv}`;
+                    
+                    // 随机放置玩家
+                    if(Math.random() > 0.7 || (idx===myLevel && i===0)) {
+                        const isSelf = idx===myLevel && i===0;
+                        cell.innerHTML = `<div class="player-avatar ${isSelf?'self':''}">${isSelf?'😺':PLAYERS[i]}</div>`;
+                    }
+                    
+                    grid.appendChild(cell);
+                }
+                
+                // 守卫牌
+                const guardCell = document.createElement('div');
+                guardCell.className = `guard-cell ${idx===myLevel?'current':''}`;
+                guardCell.innerHTML = `<div class="guard-icon">🎴</div>`;
+                grid.appendChild(guardCell);
+                
+                // 激怒牌
+                const provokeCell = document.createElement('div');
+                provokeCell.className = `provoke-cell ${idx===myLevel?'current':''}`;
+                const suits = ['♥','♣','♠'];
+                let pcHtml = '<div class="provoke-cards-small">';
+                suits.forEach(s => {
+                    const isRed = s==='♥';
+                    pcHtml += `<div class="provoke-mini ${isRed?'':'black'}">${s}</div>`;
+                });
+                pcHtml += '</div>';
+                provokeCell.innerHTML = pcHtml;
+                grid.appendChild(provokeCell);
+            });
+        }
+        
+        function createHeader(text, className) {
+            const div = document.createElement('div');
+            div.className = `grid-header ${className}`;
+            div.textContent = text;
+            return div;
+        }
+        
+        function renderHand() {
+            const container = document.getElementById('handCards');
+            container.innerHTML = '';
+            
+            hand.forEach((c, i) => {
+                const div = document.createElement('div');
+                div.className = `hand-card ${c.isRed?'red':'black'} ${selectedCard===i?'selected':''}`;
+                div.innerHTML = `<div class="suit">${c.suit}</div><div class="rank">${c.rank}</div>`;
+                div.onclick = () => {
+                    selectedCard = selectedCard===i?null:i;
+                    renderHand();
+                    updateBtn();
+                };
+                container.appendChild(div);
+            });
+            
+            document.getElementById('handCount').textContent = hand.length + '张';
+        }
+        
+        function renderStartLayer() {
+            const container = document.getElementById('startAvatars');
+            container.innerHTML = '';
+            PLAYERS.slice(0,5).forEach(av => {
+                const div = document.createElement('div');
+                div.className = 'player-avatar';
+                div.textContent = av;
+                container.appendChild(div);
+            });
+        }
+        
+        function renderTowerSelector() {
+            const list = document.getElementById('towerList');
+            list.innerHTML = '';
+            
+            TOWERS.forEach(tower => {
+                const div = document.createElement('div');
+                div.className = `tower-option ${tower.id===currentTower.id?'active':''}`;
+                div.innerHTML = `${tower.name} <span style="color:#888">${tower.location}</span>`;
+                div.onclick = () => {
+                    currentTower = tower;
+                    renderTowerSelector();
+                    closeTowerModal();
+                    addLog(`切换到${tower.name}`);
+                };
+                list.appendChild(div);
+            });
+        }
+        
+        function updateBtn() {
+            const btn = document.getElementById('playBtn');
+            btn.className = selectedCard!==null?'play-action-btn active':'play-action-btn';
+        }
+        
+        function addLog(msg) {
+            const section = document.getElementById('logSection');
+            const div = document.createElement('div');
+            div.className = 'log-row';
+            div.innerHTML = `
+                <span class="log-round">记录</span>
+                <span style="color:#ccc">${msg}</span>
+            `;
+            section.insertBefore(div, section.firstChild);
+        }
+        
+        function switchTower() {
+            document.getElementById('towerModal').classList.add('active');
+        }
+        
+        function closeTowerModal() {
+            document.getElementById('towerModal').classList.remove('active');
+        }
+        
+        function showPromo() {
+            alert('🎁 VIP限时特惠活动！');
+        }
+        
+        // 出牌
+        document.getElementById('playBtn').onclick = () => {
+            if(selectedCard === null) return;
+            hand.splice(selectedCard, 1);
+            selectedCard = null;
+            renderHand();
+            updateBtn();
+            addLog('出牌成功，剩余' + hand.length + '张');
+        };
+        
+        init();
+    </script>
+</body>
+</html>
