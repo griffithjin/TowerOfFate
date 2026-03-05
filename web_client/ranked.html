@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排位赛 - 命运塔·首登者</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
+            min-height: 100vh;
+            color: #fff;
+        }
+        .header {
+            background: linear-gradient(90deg, #6b2c91, #4a148c);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .back-btn { color: #fff; text-decoration: none; font-size: 16px; }
+        .header-title { color: #FFD700; font-size: 18px; font-weight: bold; }
+        
+        /* 段位展示 */
+        .rank-display {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,165,0,0.1));
+            border: 2px solid #FFD700;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px;
+            text-align: center;
+        }
+        .rank-icon { font-size: 64px; margin-bottom: 10px; }
+        .rank-name { font-size: 24px; font-weight: bold; color: #FFD700; margin-bottom: 5px; }
+        .rank-points { font-size: 14px; color: #888; }
+        .rank-progress {
+            margin-top: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+        }
+        .rank-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+        .rank-progress-text {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 5px;
+            color: #888;
+        }
+        
+        /* 段位列表 */
+        .ranks-list {
+            padding: 20px;
+        }
+        .ranks-title {
+            font-size: 16px;
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+        .rank-tier {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+        .rank-tier.unlocked { opacity: 1; border: 2px solid #FFD700; }
+        .rank-tier.current { opacity: 1; border: 2px solid #2ed573; }
+        .tier-icon { font-size: 36px; }
+        .tier-info { flex: 1; }
+        .tier-name { font-weight: bold; margin-bottom: 3px; }
+        .tier-desc { font-size: 12px; color: #888; }
+        .tier-reward { color: #FFD700; font-size: 12px; }
+        
+        /* 赛季信息 */
+        .season-info {
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            margin: 0 20px 20px;
+            border-radius: 10px;
+        }
+        .season-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .season-name { color: #FFD700; font-weight: bold; }
+        .season-time { font-size: 12px; color: #888; }
+        .season-rewards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .season-reward-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,215,0,0.1);
+            border-radius: 8px;
+        }
+        .season-reward-icon { font-size: 24px; margin-bottom: 5px; }
+        .season-reward-name { font-size: 10px; color: #888; }
+        
+        /* 开始按钮 */
+        .start-section {
+            padding: 20px;
+            text-align: center;
+        }
+        .start-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 15px;
+            color: #000;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .match-finding {
+            display: none;
+            padding: 20px;
+            text-align: center;
+        }
+        .match-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,215,0,0.3);
+            border-top-color: #FFD700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html" class="back-btn">← 返回</a>
+        <div class="header-title">⚔️ 排位赛</div>
+        <div style="width:40px"></div>
+    </div>
+
+    <!-- 当前段位 -->
+    <div class="rank-display">
+        <div class="rank-icon">💎</div>
+        <div class="rank-name">钻石 III</div>
+        <div class="rank-points">当前积分: 2,580</div>
+        
+        <div class="rank-progress">
+            <div class="rank-progress-bar" style="width: 65%"></div>
+        </div>
+        <div class="rank-progress-text">2,580 / 3,000 晋升钻石 II</div>
+    </div>
+
+    <!-- 段位列表 -->
+    <div class="ranks-list">
+        <div class="ranks-title">🏆 排位段位</div>
+        
+        <div class="rank-tier unlocked">
+            <div class="tier-icon">🥉</div>
+            <div class="tier-info">
+                <div class="tier-name">青铜</div>
+                <div class="tier-desc">初入命运塔</div>
+            </div>
+            <div class="tier-reward">赛季奖励: 头像框</div>
+        </div>
+        
+        <div class="rank-tier unlocked">
+            <div class="tier-icon">🥈</div>
+            <div class="tier-info">
+                <div class="tier-name">白银</div>
+                <div class="tier-desc">稳步提升</div>
+            </div>
+            <div class="tier-reward">赛季奖励: 卡背</div>
+        </div>
+        
+        <div class="rank-tier unlocked">
+            <div class="tier-icon">🥇</div>
+            <div class="tier-info">
+                <div class="tier-name">黄金</div>
+                <div class="tier-desc">实力选手</div>
+            </div>
+            <div class="tier-reward">赛季奖励: 皮肤</div>
+        </div>
+        
+        <div class="rank-tier unlocked">
+            <div class="tier-icon">💎</div>
+            <div class="tier-info">
+                <div class="tier-name">钻石</div>
+                <div class="tier-desc">精英玩家 (当前)</div>
+            </div>
+            <div class="tier-reward">赛季奖励: 头像框 + 皮肤</div>
+        </div>
+        
+        <div class="rank-tier">
+            <div class="tier-icon">👑</div>
+            <div class="tier-info">
+                <div class="tier-name">王者</div>
+                <div class="tier-desc">顶级高手</div>
+            </div>
+            <div class="tier-reward">赛季奖励: 限定称号</div>
+        </div>
+        
+        <div class="rank-tier">
+            <div class="tier-icon">🏆</div>
+            <div class="tier-info">
+                <div class="tier-name">传说</div>
+                <div class="tier-desc">命运塔之巅</div>
+            </div>
+            <div class="tier-reward">赛季奖励: 传说限定</div>
+        </div>
+    </div>
+
+    <!-- 赛季信息 -->
+    <div class="season-info">
+        <div class="season-title">
+            <span class="season-name">📅 S1 首赛季</span>
+            <span class="season-time">剩余 15 天</span>
+        </div>
+        
+        <div class="season-rewards">
+            <div class="season-reward-item">
+                <div class="season-reward-icon">🥉</div>
+                <div class="season-reward-name">青铜奖励</div>
+            </div>
+            <div class="season-reward-item">
+                <div class="season-reward-icon">🥇</div>
+                <div class="season-reward-name">黄金奖励</div>
+            </div>
+            <div class="season-reward-item">
+                <div class="season-reward-icon">👑</div>
+                <div class="season-reward-name">王者奖励</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 匹配按钮 -->
+    <div class="start-section">
+        <button class="start-btn" id="matchBtn" onclick="startMatch()">⚔️ 开始排位匹配</button>
+    </div>
+
+    <!-- 匹配中 -->
+    <div class="match-finding" id="matchFinding">
+        <div class="match-spinner"></div>
+        <div>正在寻找对手... (<span id="matchTime">0</s>秒)</div>
+        <button onclick="cancelMatch()" style="margin-top:20px;padding:10px 30px;background:#ff4757;border:none;border-radius:20px;color:#fff;cursor:pointer">取消匹配</button>
+    </div>
+
+    <script>
+        let matchTimer = null;
+        let matchSeconds = 0;
+        
+        function startMatch() {
+            document.getElementById('matchBtn').style.display = 'none';
+            document.getElementById('matchFinding').style.display = 'block';
+            
+            matchSeconds = 0;
+            document.getElementById('matchTime').textContent = matchSeconds;
+            
+            matchTimer = setInterval(() => {
+                matchSeconds++;
+                document.getElementById('matchTime').textContent = matchSeconds;
+                
+                // 模拟匹配成功
+                if(matchSeconds >= 3) {
+                    clearInterval(matchTimer);
+                    alert('✅ 匹配成功！即将进入游戏...');
+                    location.href = 'playable.html?mode=ranked';
+                }
+            }, 1000);
+        }
+        
+        function cancelMatch() {
+            clearInterval(matchTimer);
+            document.getElementById('matchBtn').style.display = 'block';
+            document.getElementById('matchFinding').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

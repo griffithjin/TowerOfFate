@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>连胜模式 - 命运塔·首登者</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
+            min-height: 100vh;
+            color: #fff;
+        }
+        .header {
+            background: linear-gradient(90deg, #6b2c91, #4a148c);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .back-btn { color: #fff; text-decoration: none; font-size: 16px; }
+        .header-title { color: #FFD700; font-size: 18px; font-weight: bold; }
+        
+        /* 连胜展示 */
+        .streak-showcase {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,165,0,0.1));
+            border: 2px solid #FFD700;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px;
+            text-align: center;
+        }
+        .streak-number {
+            font-size: 72px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255,215,0,0.5);
+        }
+        .streak-label { font-size: 16px; color: #888; margin-top: 10px; }
+        .streak-reward {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+        }
+        .reward-title { font-size: 14px; color: #FFD700; margin-bottom: 10px; }
+        .reward-value { font-size: 24px; font-weight: bold; }
+        
+        /* 连胜奖励阶梯 */
+        .streak-ladder {
+            padding: 20px;
+        }
+        .ladder-title {
+            font-size: 16px;
+            color: #FFD700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .ladder-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .ladder-item.completed {
+            border: 2px solid #2ed573;
+        }
+        .ladder-item.current {
+            border: 2px solid #FFD700;
+        }
+        .ladder-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,215,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        .ladder-item.completed .ladder-number {
+            background: #2ed573;
+            color: #fff;
+        }
+        .ladder-info { flex: 1; }
+        .ladder-name { font-weight: bold; margin-bottom: 3px; }
+        .ladder-desc { font-size: 12px; color: #888; }
+        .ladder-reward { color: #FFD700; font-weight: bold; }
+        .ladder-status {
+            position: absolute;
+            right: 15px;
+            font-size: 20px;
+        }
+        
+        /* 排行榜 */
+        .ranking-section {
+            padding: 20px;
+        }
+        .ranking-title {
+            font-size: 16px;
+            color: #FFD700;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .rank-num {
+            width: 30px;
+            text-align: center;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        .rank-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+        }
+        .rank-info { flex: 1; }
+        .rank-name { font-weight: bold; }
+        .rank-streak { font-size: 12px; color: #FFD700; }
+        .rank-reward { color: #2ed573; font-weight: bold; }
+        
+        /* 开始按钮 */
+        .start-section {
+            padding: 20px;
+            text-align: center;
+        }
+        .start-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff4757, #c0392b);
+            border: none;
+            border-radius: 15px;
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255,71,87,0.4);
+        }
+        .start-btn:disabled {
+            background: #444;
+            box-shadow: none;
+        }
+        .start-desc {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html" class="back-btn">← 返回</a>
+        <div class="header-title">🔥 连胜模式</div>
+        <div style="width:40px"></div>
+    </div>
+
+    <!-- 连胜展示 -->
+    <div class="streak-showcase">
+        <div class="streak-number" id="currentStreak">5</div>
+        <div class="streak-label">当前连胜场次</div>
+        
+        <div class="streak-reward">
+            <div class="reward-title">🎁 下一场胜利奖励</div>
+            <div class="reward-value">💰 <span id="nextReward">500</span> 金币</div>
+        </div>
+    </div>
+
+    <!-- 连胜阶梯 -->
+    <div class="streak-ladder">
+        <div class="ladder-title">🏆 连胜奖励阶梯</div>
+        
+        <div class="ladder-item completed">
+            <div class="ladder-number">✓</div>
+            <div class="ladder-info">
+                <div class="ladder-name">3连胜</div>
+                <div class="ladder-desc">小试牛刀</div>
+            </div>
+            <div class="ladder-reward">100金币</div>
+            <div class="ladder-status">✅</div>
+        </div>
+        
+        <div class="ladder-item completed">
+            <div class="ladder-number">✓</div>
+            <div class="ladder-info">
+                <div class="ladder-name">5连胜</div>
+                <div class="ladder-desc">渐入佳境</div>
+            </div>
+            <div class="ladder-reward">300金币</div>
+            <div class="ladder-status">✅</div>
+        </div>
+        
+        <div class="ladder-item current">
+            <div class="ladder-number">10</div>
+            <div class="ladder-info">
+                <div class="ladder-name">10连胜</div>
+                <div class="ladder-desc">连胜达人</div>
+            </div>
+            <div class="ladder-reward">1000金币</div>
+            <div class="ladder-status">🔥</div>
+        </div>
+        
+        <div class="ladder-item">
+            <div class="ladder-number">20</div>
+            <div class="ladder-info">
+                <div class="ladder-name">20连胜</div>
+                <div class="ladder-desc">传奇王者</div>
+            </div>
+            <div class="ladder-reward">5000金币</div>
+            <div class="ladder-status">⏳</div>
+        </div>
+        
+        <div class="ladder-item">
+            <div class="ladder-number">50</div>
+            <div class="ladder-info">
+                <div class="ladder-name">50连胜</div>
+                <div class="ladder-desc">神话传说</div>
+            </div>
+            <div class="ladder-reward">20000金币 + 🏆 称号</div>
+            <div class="ladder-status">⏳</div>
+        </div>
+    </div>
+
+    <!-- 连胜排行榜 -->
+    <div class="ranking-section">
+        <div class="ranking-title">
+            <span>🏅 本周连胜榜</span>
+            <span style="font-size:12px;color:#888">每日重置</span>
+        </div>
+        
+        <div class="ranking-item">
+            <div class="rank-num">🥇</div>
+            <div class="rank-avatar">😺</div>
+            <div class="rank-info">
+                <div class="rank-name">传奇玩家</div>
+                <div class="rank-streak">42连胜</div>
+            </div>
+            <div class="rank-reward">20000金币</div>
+        </div>
+        
+        <div class="ranking-item">
+            <div class="rank-num">🥈</div>
+            <div class="rank-avatar">🐶</div>
+            <div class="rank-info">
+                <div class="rank-name">连胜达人</div>
+                <div class="rank-streak">35连胜</div>
+            </div>
+            <div class="rank-reward">15000金币</div>
+        </div>
+        
+        <div class="ranking-item">
+            <div class="rank-num">🥉</div>
+            <div class="rank-avatar">🐰</div>
+            <div class="rank-info">
+                <div class="rank-name">挑战者</div>
+                <div class="rank-streak">28连胜</div>
+            </div>
+            <div class="rank-reward">10000金币</div>
+        </div>
+    </div>
+
+    <!-- 开始按钮 -->
+    <div class="start-section">
+        <button class="start-btn" onclick="startStreakGame()">🔥 开始连胜挑战</button>
+        <div class="start-desc">⚠️ 连胜模式：失败则连胜清零，请谨慎挑战！</div>
+    </div>
+
+    <script>
+        let currentStreak = 5;
+        
+        // 计算下一场奖励
+        function calculateReward(streak) {
+            if(streak < 3) return 100;
+            if(streak < 5) return 200;
+            if(streak < 10) return 300;
+            if(streak < 20) return 500;
+            if(streak < 50) return 1000;
+            return 2000;
+        }
+        
+        function updateDisplay() {
+            document.getElementById('currentStreak').textContent = currentStreak;
+            document.getElementById('nextReward').textContent = calculateReward(currentStreak);
+        }
+        
+        function startStreakGame() {
+            if(confirm(`🔥 开始连胜挑战！\n\n当前连胜: ${currentStreak}场\n下一场胜利奖励: ${calculateReward(currentStreak)}金币\n\n⚠️ 注意: 如果失败，连胜将清零！`)) {
+                location.href = 'playable.html?mode=streak';
+            }
+        }
+        
+        // 模拟连胜变化
+        setInterval(() => {
+            // 这里实际应该根据游戏结果更新
+        }, 1000);
+        
+        updateDisplay();
+    </script>
+</body>
+</html>
