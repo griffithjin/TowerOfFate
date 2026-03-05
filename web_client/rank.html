@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>排位赛 - 命运塔</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 100%);
+      color: #fff; 
+      font-family: -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+    .header { 
+      background: linear-gradient(90deg, #ff6b6b, #ff8e53); 
+      padding: 15px; 
+      text-align: center;
+      position: relative;
+    }
+    .back-btn { 
+      position: absolute; 
+      left: 15px; 
+      top: 50%; 
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: #fff;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .title { font-size: 20px; font-weight: bold; }
+    .rank-display {
+      padding: 30px;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(255,215,0,0.2), transparent);
+    }
+    .rank-icon { font-size: 80px; margin-bottom: 10px; }
+    .rank-name { font-size: 28px; color: #FFD700; font-weight: bold; }
+    .rank-stars { font-size: 24px; margin: 10px 0; }
+    .rank-progress {
+      width: 80%;
+      height: 10px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 5px;
+      margin: 15px auto;
+      overflow: hidden;
+    }
+    .rank-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #FFD700, #FFA500);
+      width: 65%;
+      border-radius: 5px;
+    }
+    .rank-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      padding: 20px;
+    }
+    .stat-box {
+      background: rgba(255,255,255,0.1);
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .stat-value { font-size: 24px; color: #FFD700; font-weight: bold; }
+    .stat-label { font-size: 12px; color: #888; margin-top: 5px; }
+    .section-title {
+      padding: 20px;
+      font-size: 18px;
+      color: #FFD700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .leaderboard {
+      padding: 0 20px;
+    }
+    .leader-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .leader-rank {
+      width: 40px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .leader-rank.top3 { color: #FFD700; }
+    .leader-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin: 0 12px;
+    }
+    .leader-info { flex: 1; }
+    .leader-name { font-weight: bold; }
+    .leader-rank-name { font-size: 12px; color: #888; }
+    .leader-score { color: #FFD700; font-weight: bold; }
+    .play-btn {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 18px 60px;
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      border: none;
+      border-radius: 30px;
+      color: #000;
+      font-weight: bold;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(255,215,0,0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <button class="back-btn" onclick="history.back()">← 返回</button>
+    <div class="title">🏆 排位赛</div>
+  </div>
+
+  <div class="rank-display">
+    <div class="rank-icon">🥈</div>
+    <div class="rank-name">黄金 II</div>
+    <div class="rank-stars">⭐⭐⭐⭐☆</div>
+    <div class="rank-progress">
+      <div class="rank-progress-bar"></div>
+    </div>
+    <div style="color: #888; font-size: 14px;">65/100 胜点</div>
+  </div>
+
+  <div class="rank-stats">
+    <div class="stat-box">
+      <div class="stat-value">128</div>
+      <div class="stat-label">当前排名</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">68%</div>
+      <div class="stat-label">胜率</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">52</div>
+      <div class="stat-label">排位场次</div>
+    </div>
+  </div>
+
+  <div class="section-title">
+    <span>🏅 天梯排行榜</span>
+    <span style="font-size: 14px; color: #888;">全区前100</span>
+  </div>
+
+  <div class="leaderboard">
+    <div class="leader-item">
+      <div class="leader-rank top3">🥇</div>
+      <div class="leader-avatar">👑</div>
+      <div class="leader-info">
+        <div class="leader-name">塔顶之王</div>
+        <div class="leader-rank-name">王者 V</div>
+      </div>
+      <div class="leader-score">2568</div>
+    </div>
+    <div class="leader-item">
+      <div class="leader-rank top3">🥈</div>
+      <div class="leader-avatar">🥈</div>
+      <div class="leader-info">
+        <div class="leader-name">命运之子</div>
+        <div class="leader-rank-name">王者 IV</div>
+      </div>
+      <div class="leader-score">2435</div>
+    </div>
+    <div class="leader-item">
+      <div class="leader-rank top3">🥉</div>
+      <div class="leader-avatar">🥉</div>
+      <div class="leader-info">
+        <div class="leader-name">登顶者</div>
+        <div class="leader-rank-name">王者 III</div>
+      </div>
+      <div class="leader-score">2389</div>
+    </div>
+    <div class="leader-item">
+      <div class="leader-rank">4</div>
+      <div class="leader-avatar">🎮</div>
+      <div class="leader-info">
+        <div class="leader-name">卡牌大师</div>
+        <div class="leader-rank-name">钻石 I</div>
+      </div>
+      <div class="leader-score">2156</div>
+    </div>
+    <div class="leader-item">
+      <div class="leader-rank">5</div>
+      <div class="leader-avatar">🎯</div>
+      <div class="leader-info">
+        <div class="leader-name">命运猎手</div>
+        <div class="leader-rank-name">钻石 II</div>
+      </div>
+      <div class="leader-score">2098</div>
+    </div>
+  </div>
+
+  <button class="play-btn" onclick="startRanked()">开始排位</button>
+
+  <script>
+    function startRanked() {
+      window.location.href = 'index.html?mode=ranked';
+    }
+    
+    // 加载用户数据
+    const userData = JSON.parse(localStorage.getItem('towerUser') || '{}');
+    console.log('排位赛页面加载完成');
+  </script>
+</body>
+</html>

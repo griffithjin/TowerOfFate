@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>好友 - 命运塔</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 100%);
+      color: #fff; 
+      font-family: -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+    .header { 
+      background: linear-gradient(90deg, #4CAF50, #8BC34A); 
+      padding: 15px; 
+      text-align: center;
+      position: relative;
+    }
+    .back-btn { 
+      position: absolute; 
+      left: 15px; 
+      top: 50%; 
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: #fff;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .title { font-size: 20px; font-weight: bold; }
+    .search-bar {
+      padding: 20px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 15px 20px;
+      border-radius: 25px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+    }
+    .search-input::placeholder {
+      color: #888;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      padding: 0 20px;
+      margin-bottom: 20px;
+    }
+    .tab {
+      flex: 1;
+      padding: 12px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 20px;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .tab.active {
+      background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    }
+    .friend-list {
+      padding: 0 20px;
+    }
+    .friend-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+    .friend-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-right: 15px;
+      position: relative;
+    }
+    .online-status {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 14px;
+      height: 14px;
+      background: #4CAF50;
+      border-radius: 50%;
+      border: 2px solid #1a1a3e;
+    }
+    .online-status.offline {
+      background: #888;
+    }
+    .friend-info {
+      flex: 1;
+    }
+    .friend-name {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .friend-status {
+      font-size: 12px;
+      color: #4CAF50;
+    }
+    .friend-status.offline {
+      color: #888;
+    }
+    .friend-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .action-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 15px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-invite {
+      background: linear-gradient(135deg, #4CAF50, #8BC34A);
+      color: #fff;
+    }
+    .btn-gift {
+      background: rgba(255,215,0,0.2);
+      border: 1px solid #FFD700;
+      color: #FFD700;
+    }
+    .section-title {
+      padding: 20px;
+      font-size: 16px;
+      color: #888;
+    }
+    .add-friend-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4CAF50, #8BC34A);
+      border: none;
+      color: #fff;
+      font-size: 30px;
+      cursor: pointer;
+      box-shadow: 0 5px 20px rgba(76,175,80,0.4);
+    }
+    .invite-reward {
+      background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,107,107,0.1));
+      border: 2px solid #FFD700;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px;
+      text-align: center;
+    }
+    .invite-reward-title {
+      font-size: 18px;
+      color: #FFD700;
+      margin-bottom: 10px;
+    }
+    .invite-reward-desc {
+      font-size: 14px;
+      color: #ccc;
+      margin-bottom: 15px;
+    }
+    .invite-btn {
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      border: none;
+      border-radius: 20px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <button class="back-btn" onclick="history.back()">← 返回</button>
+    <div class="title">👥 好友</div>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" class="search-input" placeholder="搜索好友昵称...">
+  </div>
+
+  <div class="tabs">
+    <button class="tab active">好友 12</button>
+    <button class="tab">在线 5</button>
+    <button class="tab">请求 2</button>
+  </div>
+
+  <div class="invite-reward">
+    <div class="invite-reward-title">🎁 邀请好友得奖励</div>
+    <div class="invite-reward-desc">每邀请1位好友获得💎100钻石</div>
+    <button class="invite-btn" onclick="inviteFriend()">立即邀请</button>
+  </div>
+
+  <div class="section-title">我的好友</div>
+
+  <div class="friend-list">
+    <div class="friend-item">
+      <div class="friend-avatar">
+        🎮
+        <div class="online-status"></div>
+      </div>
+      <div class="friend-info">
+        <div class="friend-name">卡牌大师</div>
+        <div class="friend-status">游戏中 - 排位赛</div>
+      </div>
+      <div class="friend-actions">
+        <button class="action-btn btn-invite">邀请</button>
+        <button class="action-btn btn-gift">送礼</button>
+      </div>
+    </div>
+
+    <div class="friend-item">
+      <div class="friend-avatar">
+        🏆
+        <div class="online-status"></div>
+      </div>
+      <div class="friend-info">
+        <div class="friend-name">命运之子</div>
+        <div class="friend-status">大厅中</div>
+      </div>
+      <div class="friend-actions">
+        <button class="action-btn btn-invite">邀请</button>
+        <button class="action-btn btn-gift">送礼</button>
+      </div>
+    </div>
+
+    <div class="friend-item">
+      <div class="friend-avatar">
+        🎯
+        <div class="online-status"></div>
+      </div>
+      <div class="friend-info">
+        <div class="friend-name">登顶者</div>
+        <div class="friend-status">组队中(2/4)</div>
+      </div>
+      <div class="friend-actions">
+        <button class="action-btn btn-invite">邀请</button>
+        <button class="action-btn btn-gift">送礼</button>
+      </div>
+    </div>
+
+    <div class="friend-item">
+      <div class="friend-avatar">
+        😴
+        <div class="online-status offline"></div>
+      </div>
+      <div class="friend-info">
+        <div class="friend-name">休眠玩家</div>
+        <div class="friend-status offline">离线 2小时</div>
+      </div>
+      <div class="friend-actions">
+        <button class="action-btn btn-gift">送礼</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="add-friend-btn" onclick="addFriend()">+</button>
+
+  <script>
+    function inviteFriend() {
+      const text = '快来玩《命运塔》！超好玩的卡牌游戏！邀请码：TOWER123';
+      if (navigator.share) {
+        navigator.share({
+          title: '命运塔',
+          text: text,
+          url: window.location.origin
+        });
+      } else {
+        navigator.clipboard.writeText(text);
+        alert('📋 邀请文案已复制！分享给好友吧！');
+      }
+    }
+    
+    function addFriend() {
+      const id = prompt('请输入好友ID:');
+      if (id) {
+        alert('✅ 好友请求已发送！');
+      }
+    }
+    
+    // 加载用户数据
+    const userData = JSON.parse(localStorage.getItem('towerUser') || '{}');
+    console.log('好友页面加载完成');
+  </script>
+</body>
+</html>

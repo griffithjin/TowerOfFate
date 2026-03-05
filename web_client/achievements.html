@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>荣誉成就 - 命运塔</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 100%);
+      color: #fff; 
+      font-family: -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+    .header { 
+      background: linear-gradient(90deg, #FFD700, #FFA500); 
+      padding: 15px; 
+      text-align: center;
+      position: relative;
+    }
+    .back-btn { 
+      position: absolute; 
+      left: 15px; 
+      top: 50%; 
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.3);
+      border: none;
+      color: #fff;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .title { font-size: 20px; font-weight: bold; color: #000; }
+    .achievements-stats {
+      padding: 30px;
+      text-align: center;
+    }
+    .achievements-count {
+      font-size: 48px;
+      color: #FFD700;
+      font-weight: bold;
+    }
+    .achievements-label {
+      color: #888;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    .progress-ring {
+      width: 150px;
+      height: 150px;
+      margin: 20px auto;
+      position: relative;
+    }
+    .progress-ring svg {
+      transform: rotate(-90deg);
+    }
+    .progress-ring-bg {
+      fill: none;
+      stroke: rgba(255,255,255,0.1);
+      stroke-width: 10;
+    }
+    .progress-ring-fill {
+      fill: none;
+      stroke: #FFD700;
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 377;
+      stroke-dashoffset: 94;
+      transition: stroke-dashoffset 1s ease;
+    }
+    .progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      font-weight: bold;
+      color: #FFD700;
+    }
+    .section-title {
+      padding: 20px;
+      font-size: 18px;
+      color: #FFD700;
+    }
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      padding: 0 20px 100px;
+    }
+    .achievement-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+    }
+    .achievement-card.unlocked {
+      border-color: #FFD700;
+      background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+    }
+    .achievement-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+    .achievement-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .achievement-desc {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 10px;
+    }
+    .achievement-progress {
+      background: rgba(255,255,255,0.1);
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .achievement-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #FFD700, #FFA500);
+      border-radius: 3px;
+    }
+    .achievement-status {
+      font-size: 12px;
+      color: #FFD700;
+      margin-top: 8px;
+    }
+    .reward-tag {
+      display: inline-block;
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      color: #000;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <button class="back-btn" onclick="history.back()">← 返回</button>
+    <div class="title">🏅 荣誉成就</div>
+  </div>
+
+  <div class="achievements-stats">
+    <div class="achievements-count">8/15</div>
+    <div class="achievements-label">已解锁成就</div>
+    
+    <div class="progress-ring">
+      <svg width="150" height="150">
+        <circle class="progress-ring-bg" cx="75" cy="75" r="60"></circle>
+        <circle class="progress-ring-fill" cx="75" cy="75" r="60"></circle>
+      </svg>
+      <div class="progress-text">53%</div>
+    </div>
+  </div>
+
+  <div class="section-title">成就列表</div>
+
+  <div class="achievements-grid">
+    <div class="achievement-card unlocked">
+      <div class="achievement-icon">🎯</div>
+      <div class="achievement-name">初出茅庐</div>
+      <div class="achievement-desc">完成首次登顶</div>
+      <div class="achievement-status">✅ 已解锁</div>
+      <div class="reward-tag">💎 100</div>
+    </div>
+
+    <div class="achievement-card unlocked">
+      <div class="achievement-icon">🔥</div>
+      <div class="achievement-name">连胜将军</div>
+      <div class="achievement-desc">连胜5局</div>
+      <div class="achievement-status">✅ 已解锁</div>
+      <div class="reward-tag">💎 200</div>
+    </div>
+
+    <div class="achievement-card unlocked">
+      <div class="achievement-icon">⚡</div>
+      <div class="achievement-name">速战速决</div>
+      <div class="achievement-desc">5分钟内完成一局</div>
+      <div class="achievement-status">✅ 已解锁</div>
+      <div class="reward-tag">💎 150</div>
+    </div>
+
+    <div class="achievement-card">
+      <div class="achievement-icon">🏆</div>
+      <div class="achievement-name">十连胜王</div>
+      <div class="achievement-desc">连胜10局</div>
+      <div class="achievement-progress">
+        <div class="achievement-progress-bar" style="width: 50%"></div>
+      </div>
+      <div class="achievement-status">5/10</div>
+      <div class="reward-tag">💎 500</div>
+    </div>
+
+    <div class="achievement-card unlocked">
+      <div class="achievement-icon">💎</div>
+      <div class="achievement-name">富可敌国</div>
+      <div class="achievement-desc">累计获得10000钻石</div>
+      <div class="achievement-status">✅ 已解锁</div>
+      <div class="reward-tag">💎 300</div>
+    </div>
+
+    <div class="achievement-card">
+      <div class="achievement-icon">👑</div>
+      <div class="achievement-name">登顶王者</div>
+      <div class="achievement-desc">达到王者段位</div>
+      <div class="achievement-progress">
+        <div class="achievement-progress-bar" style="width: 80%"></div>
+      </div>
+      <div class="achievement-status">黄金 II → 王者</div>
+      <div class="reward-tag">💎 1000</div>
+    </div>
+
+    <div class="achievement-card unlocked">
+      <div class="achievement-icon">🤝</div>
+      <div class="achievement-name">呼朋唤友</div>
+      <div class="achievement-desc">邀请3位好友</div>
+      <div class="achievement-status">✅ 已解锁</div>
+      <div class="reward-tag">💎 200</div>
+    </div>
+
+    <div class="achievement-card">
+      <div class="achievement-icon">🎴</div>
+      <div class="achievement-name">卡牌收藏家</div>
+      <div class="achievement-desc">收集全部皮肤</div>
+      <div class="achievement-progress">
+        <div class="achievement-progress-bar" style="width: 30%"></div>
+      </div>
+      <div class="achievement-status">3/10</div>
+      <div class="reward-tag">💎 800</div>
+    </div>
+  </div>
+
+  <script>
+    // 加载用户数据
+    const userData = JSON.parse(localStorage.getItem('towerUser') || '{}');
+    console.log('成就页面加载完成');
+  </script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>充值 - 命运塔</title>
+  <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: linear-gradient(180deg, #1a1a2e 0%, #0a0a1a 100%);
+      color: #fff; 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+    }
+    .header { 
+      background: linear-gradient(90deg, #6b2c91, #4a148c); 
+      padding: 15px; 
+      text-align: center;
+      position: relative;
+    }
+    .back-btn { 
+      position: absolute; 
+      left: 15px; 
+      top: 50%; 
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: #fff;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .title { font-size: 18px; font-weight: bold; }
+    .balance { 
+      padding: 20px; 
+      text-align: center; 
+      background: rgba(255,215,0,0.1);
+    }
+    .balance-label { color: #888; font-size: 12px; }
+    .balance-amount { 
+      font-size: 32px; 
+      color: #FFD700; 
+      font-weight: bold;
+      margin-top: 5px;
+    }
+    .packages { 
+      padding: 20px; 
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    .pkg { 
+      background: linear-gradient(135deg, #2d2d44, #1a1a2e);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid #444;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .pkg:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+    }
+    .pkg.hot { border-color: #ff6b6b; }
+    .pkg.best { border-color: #FFD700; }
+    .pkg .tag {
+      position: absolute;
+      top: -10px;
+      right: 10px;
+      background: #ff6b6b;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    .pkg.best .tag { background: #FFD700; color: #000; }
+    .pkg:first-child .tag { background: #4CAF50; }
+    .diamond { font-size: 24px; margin-bottom: 5px; color: #FFD700; }
+    .diamond-amount { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+    .bonus { font-size: 12px; color: #4CAF50; margin-bottom: 5px; }
+    .price { 
+      font-size: 24px; 
+      color: #FFD700;
+      font-weight: bold;
+    }
+    .pkg button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      border: none;
+      border-radius: 20px;
+      color: #000;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .pkg button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 20px rgba(255,215,0,0.5);
+    }
+    .vip-section {
+      margin: 20px;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,107,107,0.1));
+      border: 2px solid #FFD700;
+      border-radius: 15px;
+    }
+    .vip-title {
+      font-size: 18px;
+      color: #FFD700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .vip-benefits {
+      font-size: 14px;
+      color: #ccc;
+      line-height: 1.8;
+    }
+    .vip-benefits li { margin-left: 20px; }
+    .vip-btn {
+      width: 100%;
+      margin-top: 15px;
+      padding: 15px;
+      background: linear-gradient(135deg, #FFD700, #FF6B6B);
+      border: none;
+      border-radius: 25px;
+      color: #000;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .tips {
+      padding: 20px;
+      color: #888;
+      font-size: 12px;
+      text-align: center;
+    }
+    .payment-methods {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px;
+    }
+    .payment-method {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 8px 15px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 20px;
+      font-size: 14px;
+    }
+    @media (max-width: 768px) {
+      .packages { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
+      .pkg { padding: 15px; }
+      .diamond { font-size: 20px; }
+      .price { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <button class="back-btn" onclick="goBack()">← 返回</button>
+    <div class="title">💎 充值钻石</div>
+  </div>
+  
+  <div class="balance">
+    <div class="balance-label">当前钻石</div>
+    <div class="balance-amount" id="currentDiamond">💎 688</div>
+  </div>
+
+  <div class="payment-methods">
+    <div class="payment-method">💳 微信支付</div>
+    <div class="payment-method">💳 支付宝</div>
+  </div>
+  
+  <div class="packages">
+    <div class="pkg" onclick="pay(6)">
+      <div class="diamond">💎</div>
+      <div class="diamond-amount">60</div>
+      <div class="bonus">首充送60</div>
+      <div class="price">¥6</div>
+      <div class="tag">首充双倍</div>
+      <button>立即充值</button>
+    </div>
+    <div class="pkg hot" onclick="pay(30)">
+      <div class="diamond">💎</div>
+      <div class="diamond-amount">300</div>
+      <div class="bonus">+30 赠送</div>
+      <div class="price">¥30</div>
+      <div class="tag">热销</div>
+      <button>立即充值</button>
+    </div>
+    <div class="pkg" onclick="pay(68)">
+      <div class="diamond">💎</div>
+      <div class="diamond-amount">680</div>
+      <div class="bonus">+68 赠送</div>
+      <div class="price">¥68</div>
+      <button>立即充值</button>
+    </div>
+    <div class="pkg best" onclick="pay(128)">
+      <div class="diamond">💎</div>
+      <div class="diamond-amount">1280</div>
+      <div class="bonus">+256 赠送</div>
+      <div class="price">¥128</div>
+      <div class="tag">超值</div>
+      <button>立即充值</button>
+    </div>
+    <div class="pkg" onclick="pay(328)">
+      <div class="diamond">💎</div>
+      <div class="diamond-amount">3280</div>
+      <div class="bonus">+820 赠送</div>
+      <div class="price">¥328</div>
+      <button>立即充值</button>
+    </div>
+    <div class="pkg" onclick="pay(648)">
+      <div class="diamond">💎</div>
+      <div class="diamond-amount">6480</div>
+      <div class="bonus">+1944 赠送</div>
+      <div class="price">¥648</div>
+      <div class="tag">贵族专属</div>
+      <button>立即充值</button>
+    </div>
+  </div>
+
+  <div class="vip-section">
+    <div class="vip-title">👑 VIP会员</div>
+    <ul class="vip-benefits">
+      <li>+1 天命牌位（可同时拥有2张天命牌）</li>
+      <li>开局从第3层开始（领先2层优势）</li>
+      <li>专属VIP标识和头像框</li>
+      <li>每日额外金币奖励</li>
+    </ul>
+    <button class="vip-btn" onclick="buyVIP()">💎 980钻石开通VIP</button>
+  </div>
+  
+  <div class="tips">
+    充值即代表同意《用户协议》| 遇到问题请联系客服<br>
+    support@toweroffate.com
+  </div>
+
+  <script>
+    // 获取当前钻石数
+    const userData = JSON.parse(localStorage.getItem('towerUser') || '{"diamond": 688, "vip": false}');
+    document.getElementById('currentDiamond').textContent = '💎 ' + (userData.diamond || 688);
+    
+    function goBack() {
+      window.location.href = 'index.html';
+    }
+    
+    function pay(amount) {
+      const diamondMap = {6: 60, 30: 300, 68: 680, 128: 1280, 328: 3280, 648: 6480};
+      const bonusMap = {6: 60, 30: 30, 68: 68, 128: 256, 328: 820, 648: 1944};
+      const baseDiamond = diamondMap[amount];
+      const bonus = bonusMap[amount];
+      const totalDiamond = baseDiamond + bonus;
+      
+      // 模拟支付流程
+      const btn = event.target;
+      btn.textContent = '支付中...';
+      btn.disabled = true;
+      
+      setTimeout(() => {
+        // 支付成功
+        userData.diamond = (userData.diamond || 688) + totalDiamond;
+        localStorage.setItem('towerUser', JSON.stringify(userData));
+        
+        // 记录首充
+        if (amount === 6 && !userData.firstRecharge) {
+          userData.firstRecharge = true;
+          localStorage.setItem('towerUser', JSON.stringify(userData));
+        }
+        
+        alert('✅ 充值成功！获得💎' + totalDiamond + '（含赠送' + bonus + '）');
+        document.getElementById('currentDiamond').textContent = '💎 ' + userData.diamond;
+        btn.textContent = '已充值';
+        
+        // 通知父页面刷新
+        if (window.opener) {
+          window.opener.postMessage({type: 'recharge_success', diamond: userData.diamond}, '*');
+        }
+      }, 1500);
+    }
+    
+    function buyVIP() {
+      if (userData.vip) {
+        alert('您已经是VIP会员了！');
+        return;
+      }
+      if ((userData.diamond || 0) < 980) {
+        alert('💎 钻石不足，请先充值！');
+        return;
+      }
+      
+      if (confirm('确定花费980钻石开通VIP会员吗？')) {
+        userData.diamond -= 980;
+        userData.vip = true;
+        localStorage.setItem('towerUser', JSON.stringify(userData));
+        alert('🎉 VIP开通成功！享受特权吧！');
+        document.getElementById('currentDiamond').textContent = '💎 ' + userData.diamond;
+      }
+    }
+    
+    // 监听来自其他页面的消息
+    window.addEventListener('message', (e) => {
+      if (e.data.type === 'get_diamond') {
+        window.opener.postMessage({type: 'diamond_update', diamond: userData.diamond}, '*');
+      }
+    });
+  </script>
+</body>
+</html>
