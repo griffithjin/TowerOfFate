@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命运塔·首登者 - 游戏结算</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; min-height: 100%; font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #1a1a3e 0%, #0d1b2a 100%); color: #fff; }
+        
+        .container { max-width: 430px; margin: 0 auto; padding: 20px; }
+        
+        /* 胜利/失败动画 */
+        .result-header {
+            text-align: center;
+            padding: 30px 20px;
+            margin-bottom: 20px;
+        }
+        .result-icon { font-size: 80px; margin-bottom: 15px; animation: bounce 1s ease infinite; }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .result-title { font-size: 32px; font-weight: bold; margin-bottom: 10px; }
+        .result-title.win { color: #FFD700; text-shadow: 0 0 20px rgba(255,215,0,0.5); }
+        .result-title.lose { color: #888; }
+        .result-subtitle { font-size: 14px; color: #aaa; }
+        
+        /* 数据统计卡片 */
+        .stats-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .stats-title { font-size: 16px; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        
+        /* 主要数据 */
+        .main-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-box { text-align: center; }
+        .stat-value { font-size: 28px; font-weight: bold; color: #FFD700; }
+        .stat-value.lose { color: #888; }
+        .stat-label { font-size: 12px; color: #888; margin-top: 4px; }
+        
+        /* 详细数据 */
+        .detail-stats { display: flex; flex-direction: column; gap: 12px; }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { font-size: 14px; color: #aaa; }
+        .detail-value { font-size: 14px; font-weight: bold; }
+        .detail-value.positive { color: #2ed573; }
+        .detail-value.negative { color: #ff4757; }
+        
+        /* 获得奖励 */
+        .rewards-card {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .rewards-title { font-size: 16px; font-weight: bold; color: #FFD700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .rewards-list { display: flex; gap: 15px; flex-wrap: wrap; }
+        .reward-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        .reward-icon { font-size: 24px; }
+        .reward-info {}
+        .reward-name { font-size: 13px; font-weight: bold; }
+        .reward-amount { font-size: 12px; color: #FFD700; }
+        
+        /* 排名信息 */
+        .rank-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .rank-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .rank-title { font-size: 16px; font-weight: bold; }
+        .rank-change { font-size: 14px; color: #2ed573; }
+        .rank-change.down { color: #ff4757; }
+        
+        .rank-list { display: flex; flex-direction: column; gap: 10px; }
+        .rank-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        .rank-item.self { background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); }
+        .rank-number { 
+            width: 28px; 
+            height: 28px; 
+            border-radius: 50%; 
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .rank-number.top { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
+        .rank-avatar { font-size: 28px; }
+        .rank-info { flex: 1; }
+        .rank-name { font-size: 14px; font-weight: bold; }
+        .rank-score { font-size: 12px; color: #888; }
+        
+        /* 操作按钮 */
+        .action-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .action-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .action-btn.primary { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
+        .action-btn.secondary { background: rgba(255,255,255,0.1); color: #fff; }
+        .action-btn.share { background: linear-gradient(135deg, #4ECDC4, #44A08D); color: #fff; }
+        
+        /* 再来一局 */
+        .play-again {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #2ed573, #26c281);
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        
+        /* 数据图表区域 */
+        .chart-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .chart-title { font-size: 16px; font-weight: bold; margin-bottom: 15px; }
+        .chart-bars { display: flex; align-items: flex-end; justify-content: space-around; height: 120px; padding-bottom: 30px; position: relative; }
+        .chart-bar {
+            width: 30px;
+            background: linear-gradient(180deg, #FFD700, rgba(255,215,0,0.3));
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .chart-bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #888;
+            white-space: nowrap;
+        }
+        .chart-bar-value {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 结果头部 -->
+        <div class="result-header">
+            <div class="result-icon">🏆</div>
+            <div class="result-title win">胜利！</div>
+            <div class="result-subtitle">恭喜你成为首登者！</div>
+        </div>
+
+        <!-- 主要数据 -->
+        <div class="stats-card">
+            <div class="main-stats">
+                <div class="stat-box">
+                    <div class="stat-value">1,250</div>
+                    <div class="stat-label">获得积分</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">A层</div>
+                    <div class="stat-label">最高层数</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">1st</div>
+                    <div class="stat-label">排名</div>
+                </div>
+            </div>
+
+            <div class="detail-stats">
+                <div class="detail-row">
+                    <span class="detail-label">基础分</span>
+                    <span class="detail-value">+200</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">楼层分</span>
+                    <span class="detail-value">+550</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">首登者奖励</span>
+                    <span class="detail-value positive">+500</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">出牌数</span>
+                    <span class="detail-value">28张</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">游戏时长</span>
+                    <span class="detail-value">8分32秒</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据图表 -->
+        <div class="chart-card">
+            <div class="chart-title">📊 每回合楼层变化</div>
+            <div class="chart-bars">
+                <div class="chart-bar" style="height:15%">
+                    <span class="chart-bar-value">2</span>
+                    <span class="chart-bar-label">第1回</span>
+                </div>
+                <div class="chart-bar" style="height:30%">
+                    <span class="chart-bar-value">4</span>
+                    <span class="chart-bar-label">第2回</span>
+                </div>
+                <div class="chart-bar" style="height:45%">
+                    <span class="chart-bar-value">6</span>
+                    <span class="chart-bar-label">第3回</span>
+                </div>
+                <div class="chart-bar" style="height:40%">
+                    <span class="chart-bar-value">5</span>
+                    <span class="chart-bar-label">第4回</span>
+                </div>
+                <div class="chart-bar" style="height:60%">
+                    <span class="chart-bar-value">8</span>
+                    <span class="chart-bar-label">第5回</span>
+                </div>
+                <div class="chart-bar" style="height:85%">
+                    <span class="chart-bar-value">11</span>
+                    <span class="chart-bar-label">第6回</span>
+                </div>
+                <div class="chart-bar" style="height:100%">
+                    <span class="chart-bar-value">A</span>
+                    <span class="chart-bar-label">第7回</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 获得奖励 -->
+        <div class="rewards-card">
+            <div class="rewards-title">🎁 获得奖励</div>
+            <div class="rewards-list">
+                <div class="reward-item">
+                    <span class="reward-icon">💎</span>
+                    <div class="reward-info">
+                        <div class="reward-name">钻石</div>
+                        <div class="reward-amount">+50</div>
+                    </div>
+                </div>
+                <div class="reward-item">
+                    <span class="reward-icon">🪙</span>
+                    <div class="reward-info">
+                        <div class="reward-name">金币</div>
+                        <div class="reward-amount">+300</div>
+                    </div>
+                </div>
+                <div class="reward-item">
+                    <span class="reward-icon">⭐</span>
+                    <div class="reward-info">
+                        <div class="reward-name">经验</div>
+                        <div class="reward-amount">+1250</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 排名 -->
+        <div class="rank-card">
+            <div class="rank-header">
+                <span class="rank-title">🏅 本局排名</span>
+                <span class="rank-change">↑ 上升 15 名</span>
+            </div>
+            
+            <div class="rank-list">
+                <div class="rank-item">
+                    <div class="rank-number top">1</div>
+                    <div class="rank-avatar">😺</div>
+                    <div class="rank-info">
+                        <div class="rank-name">我 (你)</div>
+                        <div class="rank-score">1,250分 · A层</div>
+                    </div>
+                </div>
+                
+                <div class="rank-item">
+                    <div class="rank-number top">2</div>
+                    <div class="rank-avatar">🐶</div>
+                    <div class="rank-info">
+                        <div class="rank-name">玩家A</div>
+                        <div class="rank-score">980分 · Q层</div>
+                    </div>
+                </div>
+                
+                <div class="rank-item">
+                    <div class="rank-number top">3</div>
+                    <div class="rank-avatar">🐰</div>
+                    <div class="rank-info">
+                        <div class="rank-name">玩家B</div>
+                        <div class="rank-score">850分 · J层</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 再来一局 -->
+        <button class="play-again" onclick="playAgain()">🎮 再来一局</button>
+
+        <!-- 操作按钮 -->
+        <div class="action-btns">
+            <button class="action-btn share" onclick="shareResult()">
+                <span>📤</span>
+                <span>分享战绩</span>
+            </button>
+            <button class="action-btn secondary" onclick="viewReplay()">
+                <span>▶️</span>
+                <span>回放</span>
+            </button>
+            <button class="action-btn secondary" onclick="location.href='matchmaking.html'">
+                <span>🏠</span>
+                <span>大厅</span>
+            </button>
+            <button class="action-btn secondary" onclick="location.href='profile.html'">
+                <span>📊</span>
+                <span>战绩</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 再来一局
+        function playAgain() {
+            location.href = 'matchmaking.html';
+        }
+
+        // 分享战绩
+        function shareResult() {
+            // 生成分享图片或链接
+            const shareText = `🏆 我在命运塔·首登者中获得胜利！\n📊 积分：1,250\n🏰 层数：A层\n🥇 排名：第1名\n\n快来挑战我吧！`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: '命运塔·首登者 - 战绩分享',
+                    text: shareText,
+                    url: 'https://griffithjin.github.io/toweroffate-v1/'
+                });
+            } else {
+                // 复制到剪贴板
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert('📋 战绩已复制到剪贴板，快去分享给好友吧！');
+                });
+            }
+        }
+
+        // 查看回放
+        function viewReplay() {
+            alert('🎥 回放功能开发中...\n\n将支持：\n• 完整对局回放\n• 自由切换视角\n• 关键回合标记');
+        }
+
+        // 保存数据到本地
+        function saveGameResult() {
+            const result = {
+                date: new Date().toISOString(),
+                result: 'win',
+                score: 1250,
+                level: 'A',
+                rank: 1,
+                rewards: { diamond: 50, gold: 300, exp: 1250 }
+            };
+            
+            let history = JSON.parse(localStorage.getItem('gameHistory') || '[]');
+            history.unshift(result);
+            localStorage.setItem('gameHistory', JSON.stringify(history));
+        }
+
+        // 页面加载时保存结果
+        saveGameResult();
+    </script>
+</body>
+</html>

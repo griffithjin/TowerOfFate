@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命运塔·首登者 - 帮助与反馈</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; min-height: 100%; font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #1a1a3e 0%, #0d1b2a 100%); color: #fff; }
+        
+        .container { max-width: 430px; margin: 0 auto; padding: 20px; }
+        
+        /* 头部 */
+        .header { display: flex; align-items: center; margin-bottom: 25px; }
+        .back-btn { 
+            width: 36px; 
+            height: 36px; 
+            border-radius: 50%; 
+            background: rgba(255,255,255,0.1); 
+            border: none; 
+            color: #fff; 
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .header-title { flex: 1; text-align: center; font-size: 18px; font-weight: bold; margin-right: 36px; }
+        
+        /* 常见问题 */
+        .faq-section { margin-bottom: 30px; }
+        .section-title { font-size: 16px; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .faq-list { display: flex; flex-direction: column; gap: 10px; }
+        .faq-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .faq-question {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .faq-text { font-size: 14px; }
+        .faq-arrow { color: #888; transition: transform 0.3s; }
+        .faq-item.active .faq-arrow { transform: rotate(180deg); }
+        .faq-answer {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s;
+            font-size: 13px;
+            color: #aaa;
+            line-height: 1.6;
+        }
+        .faq-item.active .faq-answer {
+            padding: 0 15px 15px;
+            max-height: 200px;
+        }
+        
+        /* 反馈表单 */
+        .feedback-section { margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { font-size: 14px; margin-bottom: 8px; display: block; }
+        .form-select, .form-textarea, .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .form-select { cursor: pointer; }
+        .form-textarea { min-height: 120px; resize: vertical; }
+        .form-input::placeholder, .form-textarea::placeholder { color: #666; }
+        
+        /* 问题类型选择 */
+        .type-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .type-item {
+            padding: 15px 10px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .type-item:hover { background: rgba(255,255,255,0.1); }
+        .type-item.selected { border-color: #FFD700; background: rgba(255,215,0,0.1); }
+        .type-icon { font-size: 28px; margin-bottom: 6px; }
+        .type-name { font-size: 12px; }
+        
+        /* 截图上传 */
+        .upload-area {
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover { border-color: #FFD700; background: rgba(255,215,0,0.05); }
+        .upload-icon { font-size: 40px; margin-bottom: 10px; }
+        .upload-text { font-size: 14px; color: #888; }
+        .upload-hint { font-size: 12px; color: #666; margin-top: 5px; }
+        
+        /* 联系方式 */
+        .contact-section { margin-bottom: 30px; }
+        .contact-options { display: flex; gap: 10px; }
+        .contact-option {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .contact-option.selected { border-color: #FFD700; }
+        .contact-option-icon { font-size: 20px; margin-bottom: 4px; }
+        .contact-option-text { font-size: 12px; }
+        
+        /* 提交按钮 */
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .submit-btn:hover { transform: scale(1.02); }
+        .submit-btn:disabled { background: #444; color: #666; cursor: not-allowed; }
+        
+        /* 联系方式卡片 */
+        .contact-cards { display: flex; flex-direction: column; gap: 10px; }
+        .contact-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+        }
+        .contact-icon { 
+            width: 45px; 
+            height: 45px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        .contact-info { flex: 1; }
+        .contact-name { font-size: 15px; font-weight: bold; margin-bottom: 2px; }
+        .contact-desc { font-size: 12px; color: #888; }
+        .contact-action {
+            padding: 8px 16px;
+            background: rgba(255,215,0,0.2);
+            border: 1px solid #FFD700;
+            border-radius: 15px;
+            color: #FFD700;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        /* 版本信息 */
+        .version-bar {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <button class="back-btn" onclick="history.back()">←</button>
+            <div class="header-title">帮助与反馈</div>
+        </div>
+
+        <!-- 常见问题 -->
+        <div class="faq-section">
+            <div class="section-title">❓ 常见问题</div>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span class="faq-text">如何获得更多钻石？</span>
+                        <span class="faq-arrow">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        您可以通过以下方式获得钻石：<br>
+                        1. 完成每日签到和任务<br>
+                        2. 参与游戏对局获得奖励<br>
+                        3. 参加活动赢取大奖<br>
+                        4. 充值购买钻石
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span class="faq-text">游戏卡顿怎么办？</span>
+                        <span class="faq-arrow">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        建议您尝试以下方法：<br>
+                        1. 在设置中降低画质<br>
+                        2. 关闭游戏特效<br>
+                        3. 清理手机内存<br>
+                        4. 确保网络连接稳定
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span class="faq-text">如何提升段位？</span>
+                        <span class="faq-arrow">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        提升段位的方法：<br>
+                        1. 参与排位赛获得积分<br>
+                        2. 获得胜利增加段位分<br>
+                        3. 达到指定积分自动晋升<br>
+                        4. 赛季结算时根据排名发放奖励
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span class="faq-text">道具如何使用？</span>
+                        <span class="faq-arrow">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        道具使用方法：<br>
+                        1. 在商城购买道具<br>
+                        2. 在背包中装备道具<br>
+                        3. 进入游戏自动生效<br>
+                        4. 皮肤和特效会自动显示
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 问题反馈 -->
+        <div class="feedback-section">
+            <div class="section-title">📝 问题反馈</div>
+            
+            <div class="form-group">
+                <label class="form-label">问题类型</label>
+                <div class="type-grid">
+                    <div class="type-item selected" onclick="selectType(this)">
+                        <div class="type-icon">🐛</div>
+                        <div class="type-name">游戏BUG</div>
+                    </div>
+                    <div class="type-item" onclick="selectType(this)">
+                        <div class="type-icon">💳</div>
+                        <div class="type-name">充值问题</div>
+                    </div>
+                    <div class="type-item" onclick="selectType(this)">
+                        <div class="type-icon">⚖️</div>
+                        <div class="type-name">举报作弊</div>
+                    </div>
+                    <div class="type-item" onclick="selectType(this)">
+                        <div class="type-icon">💡</div>
+                        <div class="type-name">建议反馈</div>
+                    </div>
+                    <div class="type-item" onclick="selectType(this)">
+                        <div class="type-icon">❓</div>
+                        <div class="type-name">其他问题</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">问题描述</label>
+                <textarea class="form-textarea" placeholder="请详细描述您遇到的问题..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <div class="upload-area" onclick="uploadImage()">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-text">点击上传截图</div>
+                    <div class="upload-hint">支持 JPG、PNG 格式，最大 5MB</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">联系方式（选填）</label>
+                <input type="text" class="form-input" placeholder="QQ / 微信 / 邮箱">
+            </div>
+            
+            <button class="submit-btn" onclick="submitFeedback()">提交反馈</button>
+        </div>
+
+        <!-- 联系客服 -->
+        <div class="contact-section">
+            <div class="section-title">📞 联系客服</div>
+            
+            <div class="contact-cards">
+                <div class="contact-card">
+                    <div class="contact-icon">💬</div>
+                    <div class="contact-info">
+                        <div class="contact-name">在线客服</div>
+                        <div class="contact-desc">工作时间：9:00-21:00</div>
+                    </div>
+                    <button class="contact-action" onclick="openChat()">咨询</button>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon" style="background:linear-gradient(135deg,#ff6b6b,#ee5a52)">📧</div>
+                    <div class="contact-info">
+                        <div class="contact-name">客服邮箱</div>
+                        <div class="contact-desc">support@toweroffate.com</div>
+                    </div>
+                    <button class="contact-action" onclick="sendEmail()">发送</button>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon" style="background:linear-gradient(135deg,#2ed573,#26c281)">👥</div>
+                    <div class="contact-info">
+                        <div class="contact-name">官方QQ群</div>
+                        <div class="contact-desc">群号：123456789</div>
+                    </div>
+                    <button class="contact-action" onclick="joinQQ()">加入</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 版本信息 -->
+        <div class="version-bar">
+            <div>命运塔·首登者 v1.0.0</div>
+            <div style="margin-top:5px">© 2025 Tower of Fate. All rights reserved.</div>
+        </div>
+    </div>
+
+    <script>
+        // 展开/收起FAQ
+        function toggleFaq(el) {
+            const item = el.parentElement;
+            item.classList.toggle('active');
+        }
+
+        // 选择问题类型
+        function selectType(el) {
+            document.querySelectorAll('.type-item').forEach(item => item.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        // 上传图片
+        function uploadImage() {
+            alert('📷 请选择要上传的截图\n\n(实际功能将打开文件选择器)');
+        }
+
+        // 提交反馈
+        function submitFeedback() {
+            const textarea = document.querySelector('.form-textarea');
+            if (!textarea.value.trim()) {
+                alert('⚠️ 请描述您遇到的问题');
+                return;
+            }
+            
+            alert('✅ 反馈提交成功！\n\n我们会尽快处理您的问题，感谢您的支持！');
+            textarea.value = '';
+        }
+
+        // 打开在线客服
+        function openChat() {
+            alert('💬 正在连接客服...\n\n当前排队人数：3人\n预计等待时间：2分钟');
+        }
+
+        // 发送邮件
+        function sendEmail() {
+            window.location.href = 'mailto:support@toweroffate.com';
+        }
+
+        // 加入QQ群
+        function joinQQ() {
+            alert('👥 官方QQ群：123456789\n\n点击确定复制群号');
+            navigator.clipboard.writeText('123456789');
+        }
+    </script>
+</body>
+</html>
