@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>命运塔·首登者 V1.0</title>
+    <link rel="stylesheet" href="item-effects.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, sans-serif; background: #0a0a1a; color: #fff; font-size: 12px; }
@@ -135,10 +136,9 @@
         .chat-row { display: flex; gap: 6px; margin-bottom: 6px; }
         .chat-input { flex: 1; padding: 8px; background: #1a1a3e; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 12px; }
         .chat-btn { padding: 8px 12px; border: none; border-radius: 6px; color: #fff; font-size: 11px; }
-        .chat-btn.emoji { background: #feca57; color: #000; cursor: pointer; }
-        .chat-btn.report { background: #ff4757; cursor: pointer; }
-        .chat-btn.auto { background: #666; cursor: pointer; }
-        .chat-btn:hover { opacity: 0.8; }
+        .chat-btn.emoji { background: #feca57; color: #000; }
+        .chat-btn.report { background: #ff4757; }
+        .chat-btn.auto { background: #666; }
         
         .log-section { max-height: 80px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 6px; padding: 6px; font-size: 10px; }
         .log-entry { display: flex; gap: 8px; padding: 4px 0; border-bottom: 1px solid #222; align-items: center; }
@@ -232,9 +232,9 @@
 
                     <div class="chat-row">
                         <input type="text" class="chat-input" placeholder="输入嘲讽语...">
-                        <button class="chat-btn emoji" onclick="showEmojis()">😂 表情</button>
-                        <button class="chat-btn report" onclick="showReport()">举报</button>
-                        <button class="chat-btn auto" onclick="toggleAuto()">托管</button>
+                        <button class="chat-btn emoji" onclick="alert('表情功能开发中')">😂 表情</button>
+                        <button class="chat-btn report" onclick="alert('举报功能开发中')">举报</button>
+                        <button class="chat-btn auto" onclick="alert('托管功能开发中')">托管</button>
                     </div>
 
                     <div class="log-section" id="logSection"></div>
@@ -645,58 +645,30 @@
             }
         }
         
-        // 表情按钮
-        function showEmojis() {
-            alert('😀 😂 🤣 😍 🥰 😎 🤔 😱 🔥 💯\n\n表情功能开发中，即将上线！');
-        }
+        // 修改渲染手牌函数，添加皮肤应用
+        const originalRenderHand = renderHand;
+        renderHand = function() {
+            originalRenderHand();
+            // 应用皮肤
+            document.querySelectorAll('.hand-card').forEach(card => {
+                applySkinToCard(card);
+            });
+        };
         
-        // 举报按钮
-        function showReport() {
-            const reason = prompt('请选择举报原因：\n1. 作弊\n2. 辱骂\n3. 挂机\n4. 其他');
-            if(reason) {
-                alert('✅ 举报已提交，我们会尽快处理！');
-            }
-        }
+        // 修改出牌函数，添加特效
+        const originalPlayBtnClick = document.getElementById('playBtn').onclick;
+        document.getElementById('playBtn').onclick = function() {
+            applyEffect(); // 应用特效
+            originalPlayBtnClick.call(this);
+        };
         
-        // 托管按钮
-        let autoPlay = false;
-        function toggleAuto() {
-            autoPlay = !autoPlay;
-            const btn = document.querySelector('.chat-btn.auto');
-            if(autoPlay) {
-                btn.textContent = '🤖 托管中';
-                btn.style.background = '#2ed573';
-                alert('🤖 已开启托管模式，AI将自动出牌');
-                // 立即执行一次出牌
-                setTimeout(() => {
-                    if(gameState.hand.length > 0) {
-                        gameState.selectedCard = Math.floor(Math.random() * gameState.hand.length);
-                        renderHand();
-                        updatePlayBtn();
-                        setTimeout(() => {
-                            document.getElementById('playBtn').click();
-                        }, 500);
-                    }
-                }, 1000);
-            } else {
-                btn.textContent = '托管';
-                btn.style.background = '';
-                alert('✅ 已取消托管');
-            }
-        }
-        
-        // 换塔功能
         function switchTower() {
-            const towers = ['比萨斜塔', '埃菲尔铁塔', '东京塔', '上海中心', '哈利法塔'];
-            const current = localStorage.getItem('currentTower') || '比萨斜塔';
-            const next = towers[(towers.indexOf(current) + 1) % towers.length];
-            localStorage.setItem('currentTower', next);
-            alert(`🏗️ 已切换到：${next}\n页面将刷新...`);
-            location.reload();
+            alert('🏗️ 切换世界名塔功能开发中...');
         }
         
         // 启动游戏
         initGame();
     </script>
+    <script src="item-fix.js"></script>
 </body>
 </html>
