@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>命运塔·首登者 - 完整版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, sans-serif; background: #0a0a1a; color: #fff; font-size: 11px; }
+        .app { display: flex; flex-direction: column; height: 100%; }
+        .top-bar { display: grid; grid-template-columns: 80px 1fr 80px; height: 40px; background: linear-gradient(90deg, #6b2c91, #4a148c); }
+        .top-ad { display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; }
+        .top-ad.left { background: #ff6b6b; }
+        .top-ad.right { background: #feca57; color: #000; }
+        .top-teams { display: flex; align-items: center; justify-content: center; gap: 20px; }
+        .team-name { color: #FFD700; font-weight: bold; font-size: 14px; }
+        .team-sub { color: #aaa; font-size: 10px; }
+        .vs { color: #ff4757; font-size: 18px; font-weight: bold; }
+        .main { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 70px; background: #0f0f1e; border-right: 1px solid #333; display: flex; flex-direction: column; padding: 5px; }
+        .menu-btn { padding: 8px 4px; margin-bottom: 4px; background: #1a1a3e; border: 1px solid #333; border-radius: 4px; color: #fff; font-size: 10px; cursor: pointer; text-align: center; }
+        .menu-btn:hover { background: #2d2d5a; }
+        .menu-btn.primary { background: #2ed573; color: #000; }
+        .menu-btn.warning { background: #feca57; color: #000; }
+        .menu-btn.danger { background: #ff6b6b; }
+        .game-zone { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .battle-grid { flex: 1; display: grid; grid-template-columns: 30px repeat(10, 1fr) 40px 65px; grid-template-rows: 22px repeat(13, 1fr); overflow: auto; background: linear-gradient(180deg, #1a1a3e 0%, #0d1b2a 100%); }
+        .grid-header { background: #2d2d44; border: 1px solid #444; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 9px; }
+        .header-level { background: #4a148c; color: #FFD700; }
+        .header-player { background: #1e3a5f; color: #fff; }
+        .header-guard { background: #ff4757; color: #fff; }
+        .header-provoke { background: #ff6b6b; color: #fff; }
+        .level-cell { border: 1px solid #444; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; margin: 0 auto; }
+        .level-A { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; width: 100%; }
+        .level-K { background: linear-gradient(135deg, #E0E0E0, #C0C0C0); color: #000; width: 95%; }
+        .level-Q { background: linear-gradient(135deg, #CD7F32, #B87333); color: #fff; width: 90%; }
+        .level-J { background: linear-gradient(135deg, #8B7355, #A0826D); color: #fff; width: 85%; }
+        .level-10 { background: linear-gradient(135deg, #4169E1, #1E90FF); color: #fff; width: 80%; }
+        .level-9 { background: linear-gradient(135deg, #2F4F4F, #708090); color: #fff; width: 78%; }
+        .level-8 { background: linear-gradient(135deg, #8B4513, #A0522D); color: #fff; width: 75%; }
+        .level-7 { background: linear-gradient(135deg, #D2691E, #CD853F); color: #fff; width: 73%; }
+        .level-6 { background: linear-gradient(135deg, #CD853F, #D2691E); color: #fff; width: 70%; }
+        .level-5 { background: linear-gradient(135deg, #A0522D, #8B4513); color: #fff; width: 68%; }
+        .level-4 { background: linear-gradient(135deg, #8B7355, #CD853F); color: #fff; width: 65%; }
+        .level-3 { background: linear-gradient(135deg, #D2691E, #8B4513); color: #fff; width: 63%; }
+        .level-2 { background: linear-gradient(135deg, #8B4513, #A0522D); color: #fff; width: 60%; }
+        .level-current { box-shadow: inset 0 0 0 3px #00ff00; }
+        .player-cell { border: 1px solid #333; display: flex; align-items: center; justify-content: center; min-height: 30px; }
+        .tower-bg-A { background: linear-gradient(135deg, rgba(255,215,0,0.4), rgba(255,165,0,0.3)); }
+        .tower-bg-K { background: linear-gradient(135deg, rgba(192,192,192,0.3), rgba(255,215,0,0.2)); }
+        .tower-bg-Q { background: linear-gradient(135deg, rgba(205,127,50,0.3), rgba(192,192,192,0.2)); }
+        .tower-bg-J { background: linear-gradient(135deg, rgba(139,115,85,0.3), rgba(205,127,50,0.2)); }
+        .tower-bg-10 { background: linear-gradient(135deg, rgba(65,105,225,0.2), rgba(30,144,255,0.1)); }
+        .tower-bg-9 { background: linear-gradient(135deg, rgba(47,79,79,0.3), rgba(112,128,144,0.2)); }
+        .tower-bg-8 { background: linear-gradient(135deg, rgba(139,69,19,0.4), rgba(160,82,45,0.3)); }
+        .tower-bg-7 { background: linear-gradient(135deg, rgba(210,105,30,0.3), rgba(139,69,19,0.2)); }
+        .tower-bg-6 { background: linear-gradient(135deg, rgba(205,133,63,0.3), rgba(210,105,30,0.2)); }
+        .tower-bg-5 { background: linear-gradient(135deg, rgba(160,82,45,0.3), rgba(205,133,63,0.2)); }
+        .tower-bg-4 { background: linear-gradient(135deg, rgba(139,115,85,0.3), rgba(160,82,45,0.2)); }
+        .tower-bg-3 { background: linear-gradient(135deg, rgba(210,105,30,0.3), rgba(139,115,85,0.2)); }
+        .tower-bg-2 { background: linear-gradient(135deg, rgba(139,69,19,0.4), rgba(210,105,30,0.3)); }
+        .player-avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; background: linear-gradient(135deg, #4ECDC4, #44A08D); border: 2px solid #fff; cursor: pointer; }
+        .player-avatar.self { background: linear-gradient(135deg, #FFD700, #FFA500); border-color: #ff4757; box-shadow: 0 0 10px rgba(255,215,0,0.5); }
+        .guard-cell { border: 1px solid #444; background: #ffeb3b; display: flex; align-items: center; justify-content: center; }
+        .guard-cell.current { background: #ffc107; box-shadow: inset 0 0 0 2px #ff0000; }
+        .guard-icon { width: 28px; height: 36px; background: linear-gradient(135deg, #1a5490, #0d2847); border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; }
+        .provoke-cell { border: 1px solid #444; background: #ffeb3b; display: flex; align-items: center; justify-content: center; gap: 2px; padding: 2px; }
+        .provoke-cell.current { background: #ffc107; box-shadow: inset 0 0 0 2px #ff0000; }
+        .provoke-mini { width: 16px; height: 24px; background: #ff4757; border-radius: 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; color: #fff; }
+        .provoke-mini.black { background: #2c3e50; }
+        .bottom-area { background: #0f0f1e; border-top: 2px solid #333; padding: 6px; }
+        .start-layer { display: flex; gap: 20px; padding: 8px; background: rgba(255,215,0,0.1); border-radius: 6px; margin-bottom: 6px; }
+        .start-team { display: flex; align-items: center; gap: 8px; flex: 1; }
+        .start-team.right { justify-content: flex-end; }
+        .start-label { color: #FFD700; font-weight: bold; font-size: 11px; }
+        .start-avatars { display: flex; gap: 4px; }
+        .start-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; background: #444; border: 2px solid #666; }
+        .hand-section { display: flex; gap: 8px; margin-bottom: 6px; }
+        .hand-label { width: 50px; display: flex; flex-direction: column; justify-content: center; color: #888; font-size: 10px; }
+        .hand-cards { flex: 1; display: flex; gap: 4px; overflow-x: auto; padding: 4px; background: rgba(255,255,255,0.05); border-radius: 6px; }
+        .hand-card { min-width: 34px; height: 48px; background: #fff; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+        .hand-card.red { color: #d00; }
+        .hand-card.black { color: #000; }
+        .hand-card.selected { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(255,215,0,0.6); border: 2px solid #FFD700; }
+        .hand-card .suit { font-size: 16px; }
+        .hand-card .rank { font-size: 10px; font-weight: bold; }
+        .play-btn { width: 60px; background: #444; color: #666; border: none; border-radius: 6px; font-size: 12px; font-weight: bold; }
+        .play-btn.active { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
+        .items-row { display: flex; gap: 8px; padding: 6px; background: rgba(255,255,255,0.03); border-radius: 6px; margin-bottom: 6px; font-size: 10px; color: #888; }
+        .item-tag { background: rgba(255,215,0,0.2); padding: 2px 8px; border-radius: 10px; color: #FFD700; }
+        .chat-row { display: flex; gap: 6px; margin-bottom: 6px; }
+        .chat-input { flex: 1; padding: 8px; background: #1a1a3e; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 12px; }
+        .chat-btn { padding: 8px 12px; border: none; border-radius: 6px; color: #fff; font-size: 11px; }
+        .chat-btn.emoji { background: #feca57; color: #000; }
+        .chat-btn.report { background: #ff4757; }
+        .chat-btn.auto { background: #666; }
+        .log-section { max-height: 80px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 6px; padding: 6px; font-size: 10px; }
+        .log-entry { display: flex; gap: 8px; padding: 4px 0; border-bottom: 1px solid #222; align-items: center; }
+        .log-round { color: #FFD700; min-width: 35px; font-weight: bold; }
+        .log-players { flex: 1; display: flex; gap: 6px; flex-wrap: wrap; }
+        .player-result { display: flex; align-items: center; gap: 2px; }
+        .result-avatar { font-size: 14px; }
+        .result-icon { font-size: 12px; }
+        .result-success { color: #2ed573; }
+        .result-fail { color: #ff4757; }
+        .result-skill { color: #ff6b6b; }
+        .log-guard { color: #888; min-width: 50px; }
+        .log-status { color: #aaa; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: linear-gradient(135deg, #1a1a3e, #0d1b2a); border: 2px solid #FFD700; border-radius: 12px; padding: 20px; width: 100%; max-width: 300px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="top-bar">
+            <div class="top-ad left" onclick="alert('VIP特惠')">📢 广告</div>
+            <div class="top-teams">
+                <div class="team-display">
+                    <div class="team-name">🐲 龙神战队</div>
+                    <div class="team-sub">5人在线</div>
+                </div>
+                <div class="vs">VS</div>
+                <div class="team-display">
+                    <div class="team-name">🐼 熊猫战队</div>
+                    <div class="team-sub">5人在线</div>
+                </div>
+            </div>
+            <div class="top-ad right" onclick="switchTower()">🏗️ 换塔</div>
+        </div>
+
+        <div class="main">
+            <div class="sidebar">
+                <div style="color:#666;font-size:9px;margin-bottom:4px;text-align:center">⏱️ 倒计时</div>
+                <div class="menu-btn primary"><span id="timer">30</span>s</div>
+                <div style="color:#666;font-size:9px;margin:8px 0 4px;text-align:center">游戏模式</div>
+                <button class="menu-btn">📋 当前牌局</button>
+                <button class="menu-btn warning">👑 VIP中心</button>
+                <button class="menu-btn" onclick="location.href='shop.html'">🛒 商城</button>
+                <button class="menu-btn">🏅 荣誉展示</button>
+                <button class="menu-btn" onclick="location.href='tournament.html'">🏆 锦标赛</button>
+                <button class="menu-btn danger">🔥 连胜模式</button>
+                <div style="color:#666;font-size:9px;margin:8px 0 4px;text-align:center">社交</div>
+                <button class="menu-btn">📨 邀请好友</button>
+                <button class="menu-btn" onclick="location.href='index.html'">⬅️ 返回</button>
+            </div>
+
+            <div class="game-zone">
+                <div class="battle-grid" id="battleGrid"></div>
+
+                <div class="bottom-area">
+                    <div class="start-layer">
+                        <div class="start-team">
+                            <span class="start-label">🐲 我方:</span>
+                            <div class="start-avatars" id="team1Start"></div>
+                        </div>
+                        <div class="start-team right">
+                            <div class="start-avatars" id="team2Start"></div>
+                            <span class="start-label">🐼 敌方:</span>
+                        </div>
+                    </div>
+
+                    <div class="hand-section">
+                        <div class="hand-label">
+                            <div>🎴 手牌</div>
+                            <div id="handCount">52张</div>
+                        </div>
+                        <div class="hand-cards" id="handCards"></div>
+                        <button class="play-btn" id="playBtn">出牌</button>
+                    </div>
+
+                    <div class="items-row">
+                        <span>🎒 道具:</span>
+                        <span class="item-tag">VIP双倍</span>
+                        <span class="item-tag">团队护盾</span>
+                        <span class="item-tag">免费复活</span>
+                    </div>
+
+                    <div class="chat-row">
+                        <input type="text" class="chat-input" placeholder="输入嘲讽语...">
+                        <button class="chat-btn emoji">😂 表情</button>
+                        <button class="chat-btn report">举报</button>
+                        <button class="chat-btn auto">托管</button>
+                    </div>
+
+                    <div class="log-section" id="logSection"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LEVELS = ['A','K','Q','J','10','9','8','7','6','5','4','3','2'];
+        const SUITS = ['♥','♦','♣','♠'];
+        const RANKS = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+        
+        const TEAM1 = [
+            { id: 'p1', name: '玩家1', avatar: '😺', team: 1 },
+            { id: 'p2', name: '玩家2', avatar: '🐶', team: 1 },
+            { id: 'p3', name: '玩家3', avatar: '🐰', team: 1 },
+            { id: 'p4', name: '玩家4', avatar: '🦊', team: 1 },
+            { id: 'p5', name: '玩家5', avatar: '🐼', team: 1 },
+        ];
+        const TEAM2 = [
+            { id: 'p6', name: '玩家6', avatar: '🐨', team: 2 },
+            { id: 'p7', name: '玩家7', avatar: '🐯', team: 2 },
+            { id: 'p8', name: '玩家8', avatar: '🦁', team: 2 },
+            { id: 'p9', name: '玩家9', avatar: '🐸', team: 2 },
+            { id: 'p10', name: '玩家10', avatar: '🐙', team: 2 },
+        ];
+        const ALL_PLAYERS = [...TEAM1, ...TEAM2];
+        
+        let gameState = {
+            round: 1,
+            myPlayer: TEAM1[0],
+            players: {},
+            guards: [],
+            hand: [],
+            selectedCard: null,
+            timer: 30
+        };
+        
+        function initGame() {
+            ALL_PLAYERS.forEach(p => {
+                gameState.players[p.id] = { ...p, level: 1, isGuard: false, isDefeated: false };
+            });
+            
+            gameState.guards = [];
+            for(let i=0; i<13; i++) {
+                const guardCards = [], provokeCards = [];
+                for(let j=0; j<13; j++) guardCards.push({ suit: SUITS[Math.floor(Math.random()*4)], rank: RANKS[Math.floor(Math.random()*13)] });
+                for(let j=0; j<3; j++) provokeCards.push({ suit: SUITS[Math.floor(Math.random()*4)], rank: RANKS[Math.floor(Math.random()*13)] });
+                gameState.guards.push({ levelIndex: i, guardCards, provokeCards, isDefeated: false });
+            }
+            
+            gameState.hand = generateHand();
+            renderBattlefield();
+            renderStartLayer();
+            renderHand();
+            startTimer();
+            addLog('🎮 游戏开始！命运塔首登者挑战！', '');
+        }
+        
+        function generateHand() {
+            const hand = [];
+            for(let s of SUITS) for(let r of RANKS) hand.push({ suit: s, rank: r, isRed: s==='♥'||s==='♦' });
+            return hand.sort(()=>Math.random()-0.5);
+        }
+        
+        function renderBattlefield() {
+            const grid = document.getElementById('battleGrid');
+            grid.innerHTML = '';
+            
+            grid.appendChild(createCell('层', 'grid-header header-level'));
+            for(let i=1; i<=10; i++) grid.appendChild(createCell(`玩家${i}`, 'grid-header header-player'));
+            grid.appendChild(createCell('守卫', 'grid-header header-guard'));
+            grid.appendChild(createCell('激怒', 'grid-header header-provoke'));
+            
+            LEVELS.forEach((lv, idx) => {
+                const myLevel = gameState.players[gameState.myPlayer.id].level;
+                const levelCell = document.createElement('div');
+                levelCell.className = `level-cell level-${lv} ${idx===myLevel?'level-current':''}`;
+                levelCell.textContent = lv;
+                levelCell.style.width = `${100 - idx * 3}%`;
+                grid.appendChild(levelCell);
+                
+                for(let i=0; i<10; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = `player-cell tower-bg-${lv}`;
+                    const player = Object.values(gameState.players).find(p => p.level === idx);
+                    if(player) {
+                        const isSelf = player.id === gameState.myPlayer.id;
+                        cell.innerHTML = `<div class="player-avatar ${isSelf?'self':''}">${player.avatar}</div>`;
+                    }
+                    grid.appendChild(cell);
+                }
+                
+                const guard = gameState.guards[idx];
+                const guardCell = document.createElement('div');
+                guardCell.className = `guard-cell ${idx===myLevel?'current':''}`;
+                guardCell.innerHTML = `<div class="guard-icon">${guard.isDefeated?'✓':'🎴'}</div>`;
+                grid.appendChild(guardCell);
+                
+                const provokeCell = document.createElement('div');
+                provokeCell.className = `provoke-cell ${idx===myLevel?'current':''}`;
+                let pcHtml = '<div class="provoke-cards-small">';
+                guard.provocationCards.forEach(c => {
+                    const isRed = c.suit==='♥'||c.suit==='♦';
+                    pcHtml += `<div class="provoke-mini ${isRed?'':'black'}">${c.suit}</div>`;
+                });
+                pcHtml += '</div>';
+                provokeCell.innerHTML = pcHtml;
+                grid.appendChild(provokeCell);
+            });
+        }
+        
+        function createCell(text, className) {
+            const div = document.createElement('div');
+            div.className = className;
+            div.textContent = text;
+            return div;
+        }
+        
+        function renderStartLayer() {
+            const team1Div = document.getElementById('team1Start');
+            const team2Div = document.getElementById('team2Start');
+            team1Div.innerHTML = '';
+            team2Div.innerHTML = '';
+            TEAM1.forEach(p => { const div = document.createElement('div'); div.className = 'start-avatar'; div.textContent = p.avatar; team1Div.appendChild(div); });
+            TEAM2.forEach(p => { const div = document.createElement('div'); div.className = 'start-avatar'; div.textContent = p.avatar; team2Div.appendChild(div); });
+        }
+        
+        function renderHand() {
+            const container = document.getElementById('handCards');
+            container.innerHTML = '';
+            gameState.hand.forEach((card, i) => {
+                const div = document.createElement('div');
+                div.className = `hand-card ${card.isRed?'red':'black'} ${gameState.selectedCard===i?'selected':''}`;
+                div.innerHTML = `<div class="suit">${card.suit}</div><div class="rank">${card.rank}</div>`;
+                div.onclick = () => { gameState.selectedCard = gameState.selectedCard===i?null:i; renderHand(); updatePlayBtn(); };
+                container.appendChild(div);
+            });
+            document.getElementById('handCount').textContent = gameState.hand.length + '张';
+        }
+        
+        function updatePlayBtn() {
+            const btn = document.getElementById('playBtn');
+            btn.className = gameState.selectedCard!==null?'play-btn active':'play-btn';
+        }
+        
+        function addLog(round, msg) {
+            const section = document.getElementById('logSection');
+            const div = document.createElement('div');
+            div.className = 'log-entry';
+            div.innerHTML = `<span class="log-round">${round}</span><span>${msg}</span>`;
+            section.insertBefore(div, section.firstChild);
+        }
+        
+        function startTimer() {
+            setInterval(() => {
+                gameState.timer--;
+                document.getElementById('timer').textContent = gameState.timer;
+                if(gameState.timer <= 0) gameState.timer = 30;
+            }, 1000);
+        }
+        
+        function switchTower() {
+            alert('塔切换功能开发中...');
+        }
+        
+        document.getElementById('playBtn').onclick = () => {
+            if(gameState.selectedCard === null) return;
+            const playerCard = gameState.hand[gameState.selectedCard];
+            const myPlayer = gameState.players[gameState.myPlayer.id];
+            const guard = gameState.guards[myPlayer.level];
+            
+            if(guard.guardCards.length === 0) {
+                guard.isDefeated = true;
+                myPlayer.level = Math.min(myPlayer.level + 1, 12);
+                addLog(`第${gameState.round}轮`, '😺 击败守卫，自动上升！');
+            } else {
+                const guardCard = guard.guardCards.pop();
+                const isMatch = playerCard.suit === guardCard.suit || playerCard.rank === guardCard.rank;
+                let provocation = false;
+                if([2,5,8].includes(myPlayer.level)) {
+                    for(let prov of guard.provocationCards) {
+                        if(playerCard.suit === prov.suit || playerCard.rank === prov.rank) {
+                            provocation = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if(provocation) {
+                    myPlayer.level = Math.max(myPlayer.level - 1, 0);
+                    addLog(`第${gameState.round}轮`, `💢 激怒牌触发！😺退一层！`);
+                } else if(isMatch) {
+                    myPlayer.level = Math.min(myPlayer.level + 1, 12);
+                    addLog(`第${gameState.round}轮`, `✅ 匹配成功！😺前进一层！`);
+                } else {
+                    addLog(`第${gameState.round}轮`, `❌ 不匹配，😺停留本层`);
+                }
+            }
+            
+            gameState.hand.splice(gameState.selectedCard, 1);
+            gameState.selectedCard = null;
+            gameState.round++;
+            renderBattlefield();
+            renderHand();
+            updatePlayBtn();
+        };
+        
+        initGame();
+    </script>
+</body>
+</html>
