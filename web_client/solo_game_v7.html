@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>命运塔·首登者 - 新核心版</title>
+    <script src="game_core_v2.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Microsoft YaHei', -apple-system, sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 10px; }
+        
+        /* 头部 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+        
+        .game-title {
+            font-size: 20px;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .game-info {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+        }
+        
+        .info-item {
+            background: rgba(255,215,0,0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+        
+        /* 主游戏区 */
+        .game-board {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        /* 守卫区 */
+        .guard-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(255,0,0,0.3);
+        }
+        
+        .section-title {
+            font-size: 14px;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .provoke-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .provoke-card {
+            background: linear-gradient(135deg, #ff6b6b, #ff4444);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid #ff0000;
+            box-shadow: 0 0 15px rgba(255,0,0,0.3);
+        }
+        
+        .provoke-card .label {
+            font-size: 12px;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        
+        .provoke-card .card-content {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .guard-card-area {
+            background: linear-gradient(135deg, #1a1a3e, #0f3460);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .guard-card-area.hidden {
+            background: linear-gradient(135deg, #1a1a3e, #2a2a4a);
+        }
+        
+        .guard-shield {
+            font-size: 40px;
+            margin-bottom: 5px;
+        }
+        
+        .guard-text {
+            font-size: 16px;
+            color: #888;
+        }
+        
+        /* 塔区 */
+        .tower-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+        
+        .tower {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 5px;
+        }
+        
+        .tower-level {
+            background: rgba(255,255,255,0.1);
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 13px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+        }
+        
+        .tower-level.current {
+            background: linear-gradient(90deg, rgba(255,215,0,0.3), rgba(255,107,107,0.3));
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255,215,0,0.3);
+        }
+        
+        .tower-level.defeated {
+            background: rgba(0,255,0,0.1);
+            border-color: #4CAF50;
+        }
+        
+        /* 玩家区 */
+        .player-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(0,255,0,0.3);
+        }
+        
+        .player-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: 0 auto 10px;
+            border: 3px solid #4CAF50;
+        }
+        
+        .player-name {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .player-status {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        /* 手牌区 */
+        .hand-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+        
+        .hand-title {
+            font-size: 14px;
+            color: #ffd700;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .hand-grid {
+            display: grid;
+            grid-template-columns: repeat(13, 1fr);
+            gap: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .hand-card {
+            aspect-ratio: 3/4;
+            background: linear-gradient(135deg, #fff, #f8f8f8);
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 10px;
+            border: 1px solid transparent;
+        }
+        
+        .hand-card:hover {
+            transform: translateY(-3px);
+            border-color: #ffd700;
+            box-shadow: 0 5px 10px rgba(255,215,0,0.3);
+        }
+        
+        .hand-card.selected {
+            border-color: #4CAF50;
+            box-shadow: 0 0 10px rgba(76,175,80,0.5);
+            transform: translateY(-5px);
+        }
+        
+        .hand-card.used {
+            opacity: 0.3;
+            background: #333;
+            pointer-events: none;
+        }
+        
+        .hand-card .suit {
+            font-size: 14px;
+        }
+        
+        .hand-card .rank {
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        /* 操作区 */
+        .action-section {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(76,175,80,0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: #fff;
+        }
+        
+        /* 日志区 */
+        .log-section {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 13px;
+        }
+        
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .log-entry.success { color: #4CAF50; }
+        .log-entry.fail { color: #f44336; }
+        .log-entry.warning { color: #ff9800; }
+        .log-entry.info { color: #2196F3; }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .game-board {
+                grid-template-columns: 1fr;
+            }
+            
+            .hand-grid {
+                grid-template-columns: repeat(7, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="game-title">🏰 命运塔·首登者</div>
+            <div class="game-info">
+                <div class="info-item">层数: <span id="currentLevel">1</span>/13</div>
+                <div class="info-item">轮次: <span id="currentRound">1</span></div>
+                <div class="info-item">剩余牌: <span id="remainingCards">52</span></div>
+            </div>
+        </div>
+
+        <!-- 主游戏区 -->
+        <div class="game-board">
+            <!-- 守卫区 -->
+            <div class="guard-section">
+                <div class="section-title">🛡️ 第<span id="guardLevel">1</span>层守卫</div>
+                
+                <!-- 激怒牌（明牌） -->
+                <div class="provoke-cards" id="provokeCards">
+                    <!-- 动态生成 -->
+                </div>
+                
+                <!-- 守卫牌（隐藏） -->
+                <div class="guard-card-area hidden" id="guardCard">
+                    <div class="guard-shield">🛡️</div>
+                    <div class="guard-text">守卫牌已隐藏</div>
+                </div>
+            </div>
+
+            <!-- 塔区 -->
+            <div class="tower-section">
+                <div class="section-title">🏰 命运塔</div>
+                <div class="tower" id="tower">
+                    <!-- 动态生成13层 -->
+                </div>
+            </div>
+
+            <!-- 玩家区 -->
+            <div class="player-section">
+                <div class="section-title">👤 玩家</div>
+                <div class="player-avatar">😀</div>
+                <div class="player-name" id="playerName">金先生</div>
+                <div class="player-status" id="playerStatus">准备中...</div>
+            </div>
+        </div>
+
+        <!-- 手牌区 -->
+        <div class="hand-section">
+            <div class="hand-title">
+                <span>🎴 手牌区 (52张完整牌组)</span>
+                <span style="color: #888;">点击选择一张出牌</span>
+            </div>
+            
+            <div class="hand-grid" id="handCards">
+                <!-- 动态生成52张牌 -->
+            </div>
+        </div>
+
+        <!-- 操作区 -->
+        <div class="action-section">
+            <button class="btn btn-primary" id="playBtn" onclick="playCard()">确认出牌</button>
+            <button class="btn btn-danger" onclick="resetGame()">重新开始</button>
+        </div>
+
+        <!-- 日志区 -->
+        <div class="log-section" id="gameLog">
+            <div class="log-entry info">欢迎来到命运塔·首登者！</div>
+            <div class="log-entry info">游戏规则：匹配守卫牌的花色或数字晋级，注意激怒牌！</div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态
+        let gameState = null;
+        let selectedCard = -1;
+        
+        // 初始化游戏
+        function initGame() {
+            // 使用新核心逻辑
+            GameState.init(['金先生'], false);
+            gameState = GameState;
+            
+            renderTower();
+            renderHand();
+            renderProvokeCards();
+            updateUI();
+            
+            addLog('🎮 游戏开始！目标：登顶第13层成为首登者！', 'info');
+            addLog('💡 提示：观察激怒牌，避免匹配到它们！', 'info');
+        }
+        
+        // 渲染塔
+        function renderTower() {
+            const tower = document.getElementById('tower');
+            const levels = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+            
+            tower.innerHTML = levels.map((level, i) => {
+                const isCurrent = (i + 1) === gameState.players[0].currentLevel;
+                return `
+                    <div class="tower-level ${isCurrent ? 'current' : ''}" data-level="${i + 1}">
+                        ${level}层
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 渲染手牌
+        function renderHand() {
+            const handCards = document.getElementById('handCards');
+            const player = gameState.players[0];
+            
+            handCards.innerHTML = player.hand.map((card, i) => {
+                const isRed = card.suit === '♥' || card.suit === '♦';
+                const color = isRed ? '#d00' : '#000';
+                const usedClass = card.used ? 'used' : '';
+                const selectedClass = (i === selectedCard) ? 'selected' : '';
+                
+                return `
+                    <div class="hand-card ${usedClass} ${selectedClass}" 
+                         onclick="selectCard(${i})"
+                         style="color: ${color}">
+                        <div class="suit">${card.suit}</div>
+                        <div class="rank">${card.rank}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 渲染激怒牌
+        function renderProvokeCards() {
+            const provokeContainer = document.getElementById('provokeCards');
+            const currentLevel = gameState.players[0].currentLevel;
+            const guard = gameState.guards[currentLevel - 1];
+            
+            if (!guard) return;
+            
+            provokeContainer.innerHTML = guard.provokeCards.map((card, i) => {
+                const isRed = card.suit === '♥' || card.suit === '♦';
+                const color = isRed ? '#fff' : '#fff';
+                
+                return `
+                    <div class="provoke-card">
+                        <div class="label">激怒牌 ${i + 1}</div>
+                        <div class="card-content" style="color: ${color}">
+                            ${card.suit}${card.rank}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 选择卡牌
+        function selectCard(index) {
+            const player = gameState.players[0];
+            if (player.hand[index].used) return;
+            
+            selectedCard = index;
+            renderHand();
+            
+            const card = player.hand[index];
+            addLog(`🎴 选择了 ${card.suit}${card.rank}`, 'info');
+        }
+        
+        // 出牌
+        function playCard() {
+            if (selectedCard === -1) {
+                addLog('⚠️ 请先选择一张手牌！', 'warning');
+                return;
+            }
+            
+            const result = gameState.playCard(0, selectedCard);
+            
+            if (result.error) {
+                addLog(result.error, 'warning');
+                return;
+            }
+            
+            // 显示守卫牌
+            revealGuardCard(result.guard.guardCard);
+            
+            // 处理激怒牌
+            if (result.provoke && result.provoke.triggered) {
+                addLog(`😡 ${result.provoke.message}`, 'fail');
+                addLog(`😡 激怒牌是 ${result.provoke.provokeCard.suit}${result.provoke.provokeCard.rank}`, 'fail');
+            }
+            
+            // 处理结果
+            if (result.success) {
+                addLog(result.message, 'success');
+                
+                if (result.firstClimber) {
+                    addLog('👑 你成为了首登者！现在你可以控制守卫！', 'success');
+                }
+            } else {
+                if (!result.provoke?.triggered) {
+                    addLog(result.message, 'fail');
+                }
+            }
+            
+            // 更新UI
+            selectedCard = -1;
+            renderTower();
+            renderHand();
+            updateUI();
+            
+            // 检查是否需要更新激怒牌显示
+            const newLevel = gameState.players[0].currentLevel;
+            if (newLevel !== parseInt(document.getElementById('guardLevel').textContent)) {
+                renderProvokeCards();
+            }
+            
+            // 下一轮
+            gameState.nextRound();
+        }
+        
+        // 显示守卫牌
+        function revealGuardCard(card) {
+            const guardCardEl = document.getElementById('guardCard');
+            const isRed = card.suit === '♥' || card.suit === '♦';
+            const color = isRed ? '#d00' : '#000';
+            
+            guardCardEl.classList.remove('hidden');
+            guardCardEl.innerHTML = `
+                <div style="font-size: 30px; color: ${color}; margin-bottom: 5px;">${card.suit}</div>
+                <div style="font-size: 24px; color: ${color}; font-weight: bold;">${card.rank}</div>
+            `;
+            
+            // 2秒后重置
+            setTimeout(() => {
+                guardCardEl.classList.add('hidden');
+                guardCardEl.innerHTML = `
+                    <div class="guard-shield">🛡️</div>
+                    <div class="guard-text">守卫牌已隐藏</div>
+                `;
+            }, 2000);
+        }
+        
+        // 更新UI
+        function updateUI() {
+            const player = gameState.players[0];
+            const remaining = player.hand.filter(c => !c.used).length;
+            
+            document.getElementById('currentLevel').textContent = player.currentLevel;
+            document.getElementById('currentRound').textContent = gameState.currentRound;
+            document.getElementById('remainingCards').textContent = remaining;
+            document.getElementById('guardLevel').textContent = player.currentLevel;
+            
+            document.getElementById('playerStatus').textContent = 
+                player.isFirstClimber ? '👑 首登者（控制守卫）' : '正在攀登...';
+        }
+        
+        // 添加日志
+        function addLog(message, type = 'info') {
+            const log = document.getElementById('gameLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        // 重置游戏
+        function resetGame() {
+            if (confirm('确定要重新开始游戏吗？')) {
+                initGame();
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.onload = initGame;
+    </script>
+</body>
+</html>
