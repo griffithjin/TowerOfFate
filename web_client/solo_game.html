@@ -1222,13 +1222,11 @@
                     };
                 }
                 
-                // 显示守卫牌
-                const guardDisplay = document.getElementById('guardCard');
-                guardDisplay.classList.add('revealed');
-                guardDisplay.innerHTML = `
-                    <div style="font-size: var(--hand-suit); color: ${(guardCard.suit === '♥' || guardCard.suit === '♦') ? '#d00' : '#000'};">${guardCard.suit}</div>
-                    <div style="font-size: var(--font-md); font-weight: bold; color: ${(guardCard.suit === '♥' || guardCard.suit === '♦') ? '#d00' : '#000'};">${guardCard.rank}</div>
-                `;
+                // 【修复】守卫牌默认隐藏，保存到状态
+                gameState.currentGuardCard = guardCard;
+                
+                // 只有在玩家出牌后才揭晓守卫牌
+                revealGuardCard(guardCard);
                 
                 // 判定结果
                 const isMatch = (myCard.suit === guardCard.suit) || (myCard.rank === guardCard.rank);
@@ -1420,8 +1418,49 @@
             document.body.appendChild(modal);
         }
         
+        // 【核心修复】守卫牌揭晓函数 - 确保守卫牌默认隐藏，只有玩家出牌后才显示
+        function revealGuardCard(guardCard) {
+            const guardDisplay = document.getElementById('guardCard');
+            if (!guardDisplay) return;
+            
+            // 显示守卫牌
+            guardDisplay.classList.add('revealed');
+            const isRed = (guardCard.suit === '♥' || guardCard.suit === '♦');
+            const color = isRed ? '#d00' : '#000';
+            
+            guardDisplay.innerHTML = `
+                <div style="font-size: var(--hand-suit); color: ${color};">${guardCard.suit}</div>
+                <div style="font-size: var(--font-md); font-weight: bold; color: ${color};">${guardCard.rank}</div>
+            `;
+            
+            // 2秒后恢复隐藏状态
+            setTimeout(() => {
+                guardDisplay.classList.remove('revealed');
+                guardDisplay.innerHTML = `
+                    <div class="guard-shield">🛡️</div>
+                    <div class="guard-text">?</div>
+                `;
+            }, 2000);
+        }
+        
+        // 【核心修复】重置守卫牌显示 - 每轮开始时调用
+        function resetGuardCard() {
+            const guardDisplay = document.getElementById('guardCard');
+            if (!guardDisplay) return;
+            
+            guardDisplay.classList.remove('revealed');
+            guardDisplay.innerHTML = `
+                <div class="guard-shield">🛡️</div>
+                <div class="guard-text">?</div>
+            `;
+            gameState.currentGuardCard = null;
+        }
+        
         // 下一轮
         function nextRound() {
+            // 【核心修复】每轮开始时重置守卫牌为隐藏状态
+            resetGuardCard();
+            
             gameState.selectedCard = null;
             gameState.peekUsed = false;
             
