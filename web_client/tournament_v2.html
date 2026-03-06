@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>命运之塔 - 锦标赛系统</title>
+    <link rel="stylesheet" href="mobile_expert_framework.css">
+    <link rel="stylesheet" href="app_styles_v6.css">
+    <link rel="stylesheet" href="device_adaptive.css">
+    <link rel="stylesheet" href="global_responsive.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --gold-primary: #FFD700;
+            --gold-dark: #B8860B;
+            --gold-light: #FFE55C;
+            --bg-dark: #0a0a1a;
+            --bg-card: rgba(255,215,0,0.05);
+            --border-gold: rgba(255,215,0,0.3);
+            --text-muted: #888;
+            --success: #2ED573;
+            --danger: #FF4757;
+            --warning: #FFA502;
+            --info: #3498DB;
+            
+            /* Tournament type colors */
+            --daily-color: #4CAF50;
+            --weekly-color: #2196F3;
+            --monthly-color: #9C27B0;
+            --special-color: #FF5722;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, rgba(255,215,0,0.15), transparent);
+            border-bottom: 2px solid var(--border-gold);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 20px rgba(255,215,0,0.3);
+        }
+        
+        .logo-text h1 {
+            font-size: 1.25rem;
+            background: linear-gradient(45deg, var(--gold-primary), #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+        
+        .logo-text span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .user-currency {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .currency-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0,0,0,0.3);
+            padding: 0.5rem 0.75rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-gold);
+        }
+        
+        .currency-icon {
+            font-size: 1rem;
+        }
+        
+        .currency-value {
+            font-weight: bold;
+            color: var(--gold-primary);
+        }
+        
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.2);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .nav-tabs::-webkit-scrollbar { display: none; }
+        
+        .nav-tab {
+            flex-shrink: 0;
+            padding: 0.75rem 1.25rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-gold);
+            border-radius: 25px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+        
+        .nav-tab:hover, .nav-tab.active {
+            background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,215,0,0.1));
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 15px rgba(255,215,0,0.2);
+        }
+        
+        .nav-tab .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 18px;
+            height: 18px;
+            background: var(--danger);
+            border-radius: 9px;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+            padding: 0 5px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 1rem;
+        }
+        
+        /* Section Title */
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title h2 {
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-title h2::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, var(--gold-primary), var(--gold-dark));
+            border-radius: 2px;
+        }
+        
+        .view-all {
+            font-size: 0.8rem;
+            color: var(--gold-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        /* Tournament Type Filter */
+        .type-filter {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .type-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        
+        .type-btn.daily { border-color: var(--daily-color); }
+        .type-btn.weekly { border-color: var(--weekly-color); }
+        .type-btn.monthly { border-color: var(--monthly-color); }
+        .type-btn.special { border-color: var(--special-color); }
+        
+        .type-btn.active.daily { background: var(--daily-color); }
+        .type-btn.active.weekly { background: var(--weekly-color); }
+        .type-btn.active.monthly { background: var(--monthly-color); }
+        .type-btn.active.special { background: var(--special-color); }
+        
+        .type-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .type-btn.daily .type-dot { background: var(--daily-color); }
+        .type-btn.weekly .type-dot { background: var(--weekly-color); }
+        .type-btn.monthly .type-dot { background: var(--monthly-color); }
+        .type-btn.special .type-dot { background: var(--special-color); }
+        
+        /* Tournament Cards Grid */
+        .tournament-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tournament-card {
+            background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,215,0,0.02));
+            border: 1px solid var(--border-gold);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .tournament-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.2);
+            border-color: var(--gold-primary);
+        }
+        
+        .tournament-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold-primary), var(--gold-dark));
+        }
+        
+        .tournament-card.daily::before { background: linear-gradient(90deg, var(--daily-color), #81C784); }
+        .tournament-card.weekly::before { background: linear-gradient(90deg, var(--weekly-color), #64B5F6); }
+        .tournament-card.monthly::before { background: linear-gradient(90deg, var(--monthly-color), #BA68C8); }
+        .tournament-card.special::before { background: linear-gradient(90deg, var(--special-color), #FF8A65); }
+        
+        .card-header {
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .tournament-type-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .daily .tournament-type-badge { background: rgba(76,175,80,0.2); color: var(--daily-color); }
+        .weekly .tournament-type-badge { background: rgba(33,150,243,0.2); color: var(--weekly-color); }
+        .monthly .tournament-type-badge { background: rgba(156,39,176,0.2); color: var(--monthly-color); }
+        .special .tournament-type-badge { background: rgba(255,87,34,0.2); color: var(--special-color); }
+        
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .status-badge.registering { background: rgba(46,213,115,0.2); color: var(--success); }
+        .status-badge.ongoing { background: rgba(255,165,2,0.2); color: var(--warning); }
+        .status-badge.upcoming { background: rgba(52,152,219,0.2); color: var(--info); }
+        .status-badge.ended { background: rgba(136,136,136,0.2); color: var(--text-muted); }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-badge.registering .status-dot { background: var(--success); }
+        .status-badge.ongoing .status-dot { background: var(--warning); }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .card-body {
+            padding: 0 1rem 1rem;
+        }
+        
+        .tournament-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+        
+        .tournament-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        
+        .tournament-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 0.5rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--gold-primary);
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        .prize-pool {
+            background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05));
+            border: 1px solid var(--border-gold);
+            border-radius: 10px;
+            padding: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .prize-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .prize-amount {
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .prize-growth {
+            font-size: 0.7rem;
+            color: var(--success);
+        }
+        
+        .countdown-section {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .countdown-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .countdown-timer {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        
+        .time-unit {
+            text-align: center;
+        }
+        
+        .time-value {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.05));
+            border: 1px solid var(--border-gold);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .time-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 0 20px rgba(255,215,0,0.4);
+            transform: scale(1.02);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Tournament Detail Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+        
+        .modal-overlay.active { display: flex; }
+        
+        .modal-content {
+            background: linear-gradient(180deg, #1a1a3e, #0d1b2a);
+            border: 2px solid var(--border-gold);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(255,215,0,0.1), transparent);
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255,71,87,0.3);
+            border-color: var(--danger);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        /* Tournament Info Section */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .info-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--gold-primary);
+        }
+        
+        .info-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        /* Bracket Section */
+        .bracket-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+        
+        .bracket-title {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .bracket {
+            display: flex;
+            gap: 2rem;
+            min-width: 600px;
+            padding-bottom: 1rem;
+        }
+        
+        .bracket-round {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            gap: 1rem;
+        }
+        
+        .bracket-round-title {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        
+        .bracket-match {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            position: relative;
+        }
+        
+        .bracket-match::after {
+            content: '';
+            position: absolute;
+            right: -1rem;
+            top: 50%;
+            width: 1rem;
+            height: 2px;
+            background: var(--border-gold);
+        }
+        
+        .bracket-round:last-child .bracket-match::after { display: none; }
+        
+        .bracket-player {
+            width: 140px;
+            padding: 0.5rem 0.75rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        
+        .bracket-player:hover {
+            background: rgba(255,215,0,0.1);
+            border-color: var(--border-gold);
+        }
+        
+        .bracket-player.winner {
+            background: rgba(46,213,115,0.15);
+            border-color: var(--success);
+        }
+        
+        .bracket-player.current-user {
+            background: rgba(255,215,0,0.2);
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 10px rgba(255,215,0,0.3);
+        }
+        
+        .player-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .player-name {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .player-score {
+            font-weight: bold;
+            color: var(--gold-primary);
+        }
+        
+        /* Match Schedule */
+        .schedule-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .schedule-item {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .match-time {
+            text-align: center;
+        }
+        
+        .match-time .time {
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .match-time .date {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        
+        .match-players {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .match-player {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .match-vs {
+            font-size: 0.8rem;
+            color: var(--gold-primary);
+            font-weight: bold;
+        }
+        
+        .match-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+        
+        .match-status.pending { background: rgba(136,136,136,0.2); color: var(--text-muted); }
+        .match-status.live { background: rgba(255,71,87,0.2); color: var(--danger); animation: pulse 2s infinite; }
+        .match-status.completed { background: rgba(46,213,115,0.2); color: var(--success); }
+        
+        /* Leaderboard */
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .leaderboard-table th {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: normal;
+        }
+        
+        .rank-cell {
+            width: 40px;
+            text-align: center;
+        }
+        
+        .rank-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .rank-1 { background: linear-gradient(135deg, #FFD700, #FFA000); color: #000; }
+        .rank-2 { background: linear-gradient(135deg, #C0C0C0, #9E9E9E); color: #000; }
+        .rank-3 { background: linear-gradient(135deg, #CD7F32, #A1887F); color: #fff; }
+        .rank-other { background: rgba(255,255,255,0.1); color: #fff; }
+        
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .player-avatar-large {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        
+        .player-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .player-name-text {
+            font-weight: bold;
+        }
+        
+        .player-level {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        
+        .score-cell {
+            color: var(--gold-primary);
+            font-weight: bold;
+        }
+        
+        .prize-cell {
+            color: var(--success);
+        }
+        
+        /* Prize Distribution */
+        .prize-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .prize-item {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.02));
+            border: 1px solid var(--border-gold);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .prize-rank {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 0.25rem;
+            background: rgba(255,215,0,0.2);
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .prize-amount-large {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 1.5rem 0 0.5rem;
+        }
+        
+        .prize-percentage {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        /* Tabs within Modal */
+        .detail-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 0.5rem;
+        }
+        
+        .detail-tab {
+            padding: 0.75rem 1.25rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -0.5rem;
+        }
+        
+        .detail-tab:hover, .detail-tab.active {
+            color: var(--gold-primary);
+            border-bottom-color: var(--gold-primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active { display: block; }
+        
+        /* Registration Confirmation */
+        .confirm-dialog {
+            background: rgba(0,0,0,0.95);
+            border: 2px solid var(--gold-primary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            max-width: 400px;
+        }
+        
+        .confirm-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .confirm-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .confirm-message {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        .confirm-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 1rem;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .toast {
+            background: linear-gradient(135deg, rgba(30,30,50,0.95), rgba(20,20,40,0.95));
+            border: 1px solid var(--border-gold);
+            border-radius: 12px;
+            padding: 1rem;
+            min-width: 280px;
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+        .toast.warning { border-color: var(--warning); }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            background: rgba(10,10,26,0.95);
+            border-top: 1px solid var(--border-gold);
+            padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+            display: flex;
+            justify-content: space-around;
+            position: sticky;
+            bottom: 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            color: var(--gold-primary);
+        }
+        
+        .nav-item.active {
+            background: rgba(255,215,0,0.1);
+        }
+        
+        .nav-icon {
+            font-size: 1.25rem;
+        }
+        
+        .nav-label {
+            font-size: 0.7rem;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Loading Animation */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,215,0,0.2);
+            border-top-color: var(--gold-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tournament-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .bracket {
+                transform: scale(0.85);
+                transform-origin: left center;
+            }
+            
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .prize-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .schedule-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 0.5rem;
+            }
+        }
+        
+        /* Live indicator */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--danger);
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+            animation: livePulse 1s infinite;
+        }
+        
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        
+        /* Progress bar for player count */
+        .progress-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold-primary), var(--gold-light));
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        /* Animated bracket connector lines */
+        .bracket-connector {
+            position: absolute;
+            background: var(--border-gold);
+            opacity: 0.5;
+        }
+        
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+        
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.5rem 0.75rem;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid var(--border-gold);
+            border-radius: 8px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 100;
+        }
+        
+        /* Floating action button for mobile */
+        .fab {
+            position: fixed;
+            bottom: calc(80px + env(safe-area-inset-bottom));
+            right: 1rem;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #000;
+            box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+            cursor: pointer;
+            z-index: 100;
+        }
+        
+        @media (max-width: 768px) {
+            .fab { display: flex; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">🏆</div>
+                    <div class="logo-text">
+                        <h1>锦标赛中心</h1>
+                        <span>Tournament Center</span>
+                    </div>
+                </div>
+                <div class="user-currency">
+                    <div class="currency-item">
+                        <span class="currency-icon">💎</span>
+                        <span class="currency-value" id="diamondCount">12,580</span>
+                    </div>
+                    <div class="currency-item">
+                        <span class="currency-icon">🪙</span>
+                        <span class="currency-value" id="goldCount">89,450</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="active">
+                进行中
+                <span class="badge">3</span>
+            </button>
+            <button class="nav-tab" data-tab="upcoming">
+                即将开始
+                <span class="badge">5</span>
+            </button>
+            <button class="nav-tab" data-tab="registered">
+                已报名
+            </button>
+            <button class="nav-tab" data-tab="history">
+                历史记录
+            </button>
+            <button class="nav-tab" data-tab="my-matches">
+                我的比赛
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Tournament Type Filter -->
+            <div class="type-filter">
+                <button class="type-btn daily active" data-type="daily">
+                    <span class="type-dot"></span>
+                    每日赛
+                </button>
+                <button class="type-btn weekly active" data-type="weekly">
+                    <span class="type-dot"></span>
+                    周冠军赛
+                </button>
+                <button class="type-btn monthly active" data-type="monthly">
+                    <span class="type-dot"></span>
+                    月大奖赛
+                </button>
+                <button class="type-btn special active" data-type="special">
+                    <span class="type-dot"></span>
+                    特别活动
+                </button>
+            </div>
+
+            <!-- Active Tournaments Section -->
+            <div class="tab-panel active" id="panel-active">
+                <div class="section-title">
+                    <h2>🔥 热门锦标赛</h2>
+                    <span class="view-all">查看全部 →</span>
+                </div>
+                
+                <div class="tournament-grid" id="activeTournaments">
+                    <!-- Tournament cards will be injected here -->
+                </div>
+
+                <div class="section-title">
+                    <h2>⏰ 即将开始</h2>
+                    <span class="view-all">查看全部 →</span>
+                </div>
+                
+                <div class="tournament-grid" id="upcomingTournaments">
+                    <!-- Upcoming tournament cards -->
+                </div>
+            </div>
+
+            <!-- Other tab panels -->
+            <div class="tab-panel" id="panel-upcoming" style="display: none;">
+                <div class="tournament-grid" id="upcomingFullList"></div>
+            </div>
+            
+            <div class="tab-panel" id="panel-registered" style="display: none;">
+                <div class="tournament-grid" id="registeredTournaments"></div>
+            </div>
+            
+            <div class="tab-panel" id="panel-history" style="display: none;">
+                <div id="historyList"></div>
+            </div>
+            
+            <div class="tab-panel" id="panel-my-matches" style="display: none;">
+                <div id="myMatchesList"></div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-item active">
+                <span class="nav-icon">🏆</span>
+                <span class="nav-label">锦标赛</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">⚔️</span>
+                <span class="nav-label">对战</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">🗼</span>
+                <span class="nav-label">命运塔</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span class="nav-label">我的</span>
+            </div>
+        </nav>
+
+        <!-- Floating Action Button -->
+        <div class="fab" onclick="scrollToTop()">↑</div>
+    </div>
+
+    <!-- Tournament Detail Modal -->
+    <div class="modal-overlay" id="tournamentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <span id="modalTournamentIcon">🏆</span>
+                    <span id="modalTournamentName">锦标赛详情</span>
+                </h2>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- Tournament Info -->
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-icon">💰</div>
+                        <div class="info-value" id="modalPrizePool">¥100,000</div>
+                        <div class="info-label">奖池总额</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">🎫</div>
+                        <div class="info-value" id="modalEntryFee">免费</div>
+                        <div class="info-label">报名费用</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">👥</div>
+                        <div class="info-value" id="modalPlayerCount">64/128</div>
+                        <div class="info-label">参赛人数</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">⏱️</div>
+                        <div class="info-value" id="modalStartTime">2小时后</div>
+                        <div class="info-label">开始时间</div>
+                    </div>
+                </div>
+
+                <!-- Detail Tabs -->
+                <div class="detail-tabs">
+                    <button class="detail-tab active" data-detail-tab="bracket">对阵表</button>
+                    <button class="detail-tab" data-detail-tab="schedule">赛程</button>
+                    <button class="detail-tab" data-detail-tab="leaderboard">排行榜</button>
+                    <button class="detail-tab" data-detail-tab="prizes">奖励</button>
+                </div>
+
+                <!-- Bracket Tab -->
+                <div class="tab-content active" id="tab-bracket">
+                    <div class="bracket-container">
+                        <h3 class="bracket-title">🏆 淘汰赛对阵表</h3>
+                        <div class="bracket" id="tournamentBracket">
+                            <!-- Bracket will be generated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Tab -->
+                <div class="tab-content" id="tab-schedule">
+                    <div class="schedule-list" id="matchSchedule">
+                        <!-- Schedule items will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Leaderboard Tab -->
+                <div class="tab-content" id="tab-leaderboard">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>排名</th>
+                                <th>玩家</th>
+                                <th>胜场</th>
+                                <th>积分</th>
+                                <th>预计奖励</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                            <!-- Leaderboard rows will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Prizes Tab -->
+                <div class="tab-content" id="tab-prizes">
+                    <div class="prize-list" id="prizeDistribution">
+                        <!-- Prize items will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="card-actions" style="margin-top: 1.5rem;">
+                    <button class="btn btn-primary" id="registerBtn" onclick="showRegisterConfirm()">
+                        <span>✓</span>
+                        立即报名
+                    </button>
+                    <button class="btn btn-secondary" onclick="shareTournament()">
+                        <span>📤</span>
+                        分享
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Confirmation Dialog -->
+    <div class="modal-overlay" id="confirmDialog">
+        <div class="confirm-dialog">
+            <div class="confirm-icon">🎮</div>
+            <h3 class="confirm-title">确认报名?</h3>
+            <p class="confirm-message" id="confirmMessage">
+                您即将报名参加「每日免费锦标赛」<br>
+                报名费用: 免费<br>
+                开始时间: 今天 20:00
+            </p>
+            <div class="confirm-actions">
+                <button class="btn btn-secondary" onclick="closeConfirmDialog()">取消</button>
+                <button class="btn btn-primary" onclick="confirmRegistration()">确认报名</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Tournament Data
+        const tournamentTypes = {
+            daily: { name: '每日赛', color: '#4CAF50', entryFee: 0, icon: '🌅' },
+            weekly: { name: '周冠军赛', color: '#2196F3', entryFee: 1000, icon: '🏆' },
+            monthly: { name: '月大奖赛', color: '#9C27B0', entryFee: 5000, icon: '👑' },
+            special: { name: '特别活动', color: '#FF5722', entryFee: 2000, icon: '🎉' }
+        };
+
+        const tournaments = [
+            {
+                id: 1,
+                name: '每日免费锦标赛',
+                type: 'daily',
+                status: 'registering',
+                prizePool: 50000,
+                entryFee: 0,
+                currentPlayers: 89,
+                maxPlayers: 128,
+                startTime: new Date(Date.now() + 2 * 60 * 60 * 1000),
+                description: '每日免费参与的锦标赛，适合所有玩家',
+                format: 'single',
+                registered: false
+            },
+            {
+                id: 2,
+                name: '周冠军争霸赛',
+                type: 'weekly',
+                status: 'registering',
+                prizePool: 200000,
+                entryFee: 1000,
+                currentPlayers: 156,
+                maxPlayers: 256,
+                startTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
+                description: '每周一次的荣耀之战，高额奖金等你来拿',
+                format: 'double',
+                registered: false
+            },
+            {
+                id: 3,
+                name: '月大奖赛 - 春季杯',
+                type: 'monthly',
+                status: 'upcoming',
+                prizePool: 1000000,
+                entryFee: 5000,
+                currentPlayers: 312,
+                maxPlayers: 512,
+                startTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+                description: '本月最高级别赛事，百万奖池等你来战',
+                format: 'double',
+                registered: false
+            },
+            {
+                id: 4,
+                name: '新春特别锦标赛',
+                type: 'special',
+                status: 'registering',
+                prizePool: 500000,
+                entryFee: 2000,
+                currentPlayers: 234,
+                maxPlayers: 512,
+                startTime: new Date(Date.now() + 12 * 60 * 60 * 1000),
+                description: '新春限时活动，独特奖励等你来拿',
+                format: 'single',
+                registered: false
+            },
+            {
+                id: 5,
+                name: '新手友好赛',
+                type: 'daily',
+                status: 'ongoing',
+                prizePool: 20000,
+                entryFee: 0,
+                currentPlayers: 64,
+                maxPlayers: 64,
+                startTime: new Date(Date.now() - 30 * 60 * 1000),
+                description: '专为新手设计的练习赛',
+                format: 'single',
+                registered: true
+            },
+            {
+                id: 6,
+                name: '大师邀请赛',
+                type: 'weekly',
+                status: 'ongoing',
+                prizePool: 500000,
+                entryFee: 5000,
+                currentPlayers: 32,
+                maxPlayers: 32,
+                startTime: new Date(Date.now() - 2 * 60 * 60 * 1000),
+                description: '高手云集，巅峰对决',
+                format: 'double',
+                registered: true
+            }
+        ];
+
+        const registeredTournaments = tournaments.filter(t => t.registered);
+        
+        let currentTournament = null;
+        let selectedTypes = ['daily', 'weekly', 'monthly', 'special'];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTournaments();
+            setupEventListeners();
+            startCountdowns();
+        });
+
+        // Render Tournaments
+        function renderTournaments() {
+            const activeContainer = document.getElementById('activeTournaments');
+            const upcomingContainer = document.getElementById('upcomingTournaments');
+            
+            const filtered = tournaments.filter(t => selectedTypes.includes(t.type));
+            const active = filtered.filter(t => t.status === 'registering' || t.status === 'ongoing');
+            const upcoming = filtered.filter(t => t.status === 'upcoming');
+            
+            activeContainer.innerHTML = active.map(t => createTournamentCard(t)).join('');
+            upcomingContainer.innerHTML = upcoming.slice(0, 2).map(t => createTournamentCard(t)).join('');
+        }
+
+        function createTournamentCard(tournament) {
+            const typeInfo = tournamentTypes[tournament.type];
+            const statusLabels = {
+                registering: { text: '报名中', class: 'registering' },
+                ongoing: { text: '进行中', class: 'ongoing' },
+                upcoming: { text: '即将开始', class: 'upcoming' },
+                ended: { text: '已结束', class: 'ended' }
+            };
+            const status = statusLabels[tournament.status];
+            const progress = (tournament.currentPlayers / tournament.maxPlayers) * 100;
+            const timeUntil = getTimeUntil(tournament.startTime);
+            
+            return `
+                <div class="tournament-card ${tournament.type}" onclick="openTournamentDetail(${tournament.id})">
+                    <div class="card-header">
+                        <span class="tournament-type-badge">${typeInfo.icon} ${typeInfo.name}</span>
+                        <span class="status-badge ${status.class}">
+                            ${tournament.status === 'ongoing' ? '<span class="status-dot"></span>' : ''}
+                            ${status.text}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="tournament-name">${tournament.name}</h3>
+                        <p class="tournament-desc">${tournament.description}</p>
+                        
+                        <div class="tournament-stats">
+                            <div class="stat-box">
+                                <div class="stat-value">${tournament.currentPlayers}</div>
+                                <div class="stat-label">已报名</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${progress}%"></div>
+                                </div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">${tournament.maxPlayers}</div>
+                                <div class="stat-label">名额上限</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">${tournament.entryFee === 0 ? '免费' : tournament.entryFee}</div>
+                                <div class="stat-label">报名费用</div>
+                            </div>
+                        </div>
+                        
+                        <div class="prize-pool">
+                            <span class="prize-label">
+                                <span>🏆</span>
+                                奖池
+                            </span>
+                            <span class="prize-amount">¥${tournament.prizePool.toLocaleString()}</span>
+                        </div>
+                        
+                        ${tournament.status !== 'ongoing' ? `
+                        <div class="countdown-section">
+                            <div class="countdown-label">
+                                <span>⏰</span>
+                                ${tournament.status === 'registering' ? '报名截止' : '距离开始'}
+                            </div>
+                            <div class="countdown-timer" data-time="${tournament.startTime.getTime()}">
+                                <div class="time-unit">
+                                    <div class="time-value">${timeUntil.hours}</div>
+                                    <div class="time-label">时</div>
+                                </div>
+                                <div class="time-unit">
+                                    <div class="time-value">${timeUntil.minutes}</div>
+                                    <div class="time-label">分</div>
+                                </div>
+                                <div class="time-unit">
+                                    <div class="time-value">${timeUntil.seconds}</div>
+                                    <div class="time-label">秒</div>
+                                </div>
+                            </div>
+                        </div>
+                        ` : `
+                        <div class="countdown-section">
+                            <div class="live-indicator">
+                                <span class="live-dot"></span>
+                                比赛进行中
+                            </div>
+                        </div>
+                        `}
+                        
+                        <div class="card-actions">
+                            <button class="btn btn-primary" ${tournament.registered ? 'disabled' : ''} onclick="event.stopPropagation(); showRegisterConfirm(${tournament.id})">
+                                ${tournament.registered ? '已报名' : '立即报名'}
+                            </button>
+                            <button class="btn btn-secondary" onclick="event.stopPropagation(); openTournamentDetail(${tournament.id})">
+                                详情
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getTimeUntil(targetTime) {
+            const diff = targetTime - Date.now();
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            return {
+                hours: String(Math.max(0, hours)).padStart(2, '0'),
+                minutes: String(Math.max(0, minutes)).padStart(2, '0'),
+                seconds: String(Math.max(0, seconds)).padStart(2, '0')
+            };
+        }
+
+        // Countdown Timer
+        function startCountdowns() {
+            setInterval(() => {
+                document.querySelectorAll('.countdown-timer').forEach(timer => {
+                    const targetTime = parseInt(timer.dataset.time);
+                    const time = getTimeUntil(targetTime);
+                    
+                    const units = timer.querySelectorAll('.time-value');
+                    units[0].textContent = time.hours;
+                    units[1].textContent = time.minutes;
+                    units[2].textContent = time.seconds;
+                });
+            }, 1000);
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Navigation tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    const tabName = tab.dataset.tab;
+                    document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+                    document.getElementById(`panel-${tabName}`).style.display = 'block';
+                    
+                    if (tabName === 'registered') {
+                        renderRegisteredTournaments();
+                    }
+                });
+            });
+
+            // Type filter buttons
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    btn.classList.toggle('active');
+                    const type = btn.dataset.type;
+                    
+                    if (btn.classList.contains('active')) {
+                        if (!selectedTypes.includes(type)) selectedTypes.push(type);
+                    } else {
+                        selectedTypes = selectedTypes.filter(t => t !== type);
+                    }
+                    
+                    renderTournaments();
+                });
+            });
+
+            // Detail tabs
+            document.querySelectorAll('.detail-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById(`tab-${tab.dataset.detailTab}`).classList.add('active');
+                });
+            });
+        }
+
+        // Modal Functions
+        function openTournamentDetail(id) {
+            currentTournament = tournaments.find(t => t.id === id);
+            if (!currentTournament) return;
+
+            const typeInfo = tournamentTypes[currentTournament.type];
+            
+            document.getElementById('modalTournamentIcon').textContent = typeInfo.icon;
+            document.getElementById('modalTournamentName').textContent = currentTournament.name;
+            document.getElementById('modalPrizePool').textContent = `¥${currentTournament.prizePool.toLocaleString()}`;
+            document.getElementById('modalEntryFee').textContent = currentTournament.entryFee === 0 ? '免费' : `${currentTournament.entryFee} 💎`;
+            document.getElementById('modalPlayerCount').textContent = `${currentTournament.currentPlayers}/${currentTournament.maxPlayers}`;
+            document.getElementById('modalStartTime').textContent = formatTime(currentTournament.startTime);
+            
+            const registerBtn = document.getElementById('registerBtn');
+            if (currentTournament.registered) {
+                registerBtn.innerHTML = '<span>✓</span> 已报名';
+                registerBtn.disabled = true;
+            } else {
+                registerBtn.innerHTML = '<span>🎮</span> 立即报名';
+                registerBtn.disabled = false;
+            }
+
+            generateBracket();
+            generateSchedule();
+            generateLeaderboard();
+            generatePrizes();
+
+            document.getElementById('tournamentModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('tournamentModal').classList.remove('active');
+        }
+
+        function formatTime(date) {
+            const now = new Date();
+            const diff = date - now;
+            
+            if (diff < 0) return '进行中';
+            if (diff < 60 * 60 * 1000) return `${Math.floor(diff / (60 * 1000))}分钟后`;
+            if (diff < 24 * 60 * 60 * 1000) return `${Math.floor(diff / (60 * 60 * 1000))}小时后`;
+            return `${Math.floor(diff / (24 * 60 * 60 * 1000))}天后`;
+        }
+
+        // Generate Bracket
+        function generateBracket() {
+            const bracket = document.getElementById('tournamentBracket');
+            const rounds = ['16强', '8强', '半决赛', '决赛'];
+            
+            let html = '';
+            rounds.forEach((round, index) => {
+                const matches = Math.pow(2, 3 - index);
+                html += `
+                    <div class="bracket-round">
+                        <div class="bracket-round-title">${round}</div>
+                        ${Array(matches).fill(0).map((_, i) => `
+                            <div class="bracket-match">
+                                <div class="bracket-player ${index === 0 && i === 0 ? 'current-user' : ''} ${index < 2 && i === 0 ? 'winner' : ''}">
+                                    <div class="player-avatar">${index < 2 && i === 0 ? '你' : 'P'}</div>
+                                    <span class="player-name">${index < 2 && i === 0 ? '玩家' + (i + 1) : '待定'}</span>
+                                    <span class="player-score">${index < 2 && i === 0 ? '2' : '-'}</span>
+                                </div>
+                                <div class="bracket-player">
+                                    <div class="player-avatar">P</div>
+                                    <span class="player-name">待定</span>
+                                    <span class="player-score">-</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            });
+            
+            bracket.innerHTML = html;
+        }
+
+        // Generate Schedule
+        function generateSchedule() {
+            const schedule = document.getElementById('matchSchedule');
+            const matches = [
+                { time: '20:00', date: '今天', player1: '玩家1', player2: '玩家2', status: 'completed' },
+                { time: '20:30', date: '今天', player1: '玩家3', player2: '玩家4', status: 'completed' },
+                { time: '21:00', date: '今天', player1: '胜者A', player2: '胜者B', status: 'live' },
+                { time: '21:30', date: '今天', player1: '待定', player2: '待定', status: 'pending' }
+            ];
+            
+            const statusLabels = {
+                completed: { text: '已结束', class: 'completed' },
+                live: { text: '进行中', class: 'live' },
+                pending: { text: '待定', class: 'pending' }
+            };
+            
+            schedule.innerHTML = matches.map(match => {
+                const status = statusLabels[match.status];
+                return `
+                    <div class="schedule-item">
+                        <div class="match-time">
+                            <div class="time">${match.time}</div>
+                            <div class="date">${match.date}</div>
+                        </div>
+                        <div class="match-players">
+                            <div class="match-player">
+                                <div class="player-avatar-large">${match.player1[0]}</div>
+                                <span>${match.player1}</span>
+                            </div>
+                            <span class="match-vs">VS</span>
+                            <div class="match-player">
+                                <div class="player-avatar-large">${match.player2[0]}</div>
+                                <span>${match.player2}</span>
+                            </div>
+                        </div>
+                        <span class="match-status ${status.class}">${status.text}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Generate Leaderboard
+        function generateLeaderboard() {
+            const tbody = document.getElementById('leaderboardBody');
+            const players = [
+                { rank: 1, name: '塔顶之王', level: 99, wins: 12, score: 3600, prize: '¥50,000' },
+                { rank: 2, name: '命运掌控者', level: 95, wins: 11, score: 3300, prize: '¥30,000' },
+                { rank: 3, name: '卡牌大师', level: 92, wins: 10, score: 3000, prize: '¥20,000' },
+                { rank: 4, name: '你', level: 45, wins: 8, score: 2400, prize: '¥10,000' },
+                { rank: 5, name: '挑战者', level: 78, wins: 7, score: 2100, prize: '¥5,000' }
+            ];
+            
+            tbody.innerHTML = players.map(player => `
+                <tr ${player.name === '你' ? 'style="background: rgba(255,215,0,0.1)"' : ''}>
+                    <td class="rank-cell">
+                        <span class="rank-badge rank-${player.rank <= 3 ? player.rank : 'other'}">${player.rank}</span>
+                    </td>
+                    <td>
+                        <div class="player-info">
+                            <div class="player-avatar-large">${player.name[0]}</div>
+                            <div class="player-details">
+                                <span class="player-name-text">${player.name}</span>
+                                <span class="player-level">Lv.${player.level}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${player.wins}</td>
+                    <td class="score-cell">${player.score}</td>
+                    <td class="prize-cell">${player.prize}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Generate Prizes
+        function generatePrizes() {
+            const container = document.getElementById('prizeDistribution');
+            const prizes = [
+                { rank: '冠军', amount: currentTournament.prizePool * 0.4, percent: '40%' },
+                { rank: '亚军', amount: currentTournament.prizePool * 0.25, percent: '25%' },
+                { rank: '季军', amount: currentTournament.prizePool * 0.15, percent: '15%' },
+                { rank: '第4名', amount: currentTournament.prizePool * 0.08, percent: '8%' },
+                { rank: '第5-8名', amount: currentTournament.prizePool * 0.03, percent: '3%/人' }
+            ];
+            
+            container.innerHTML = prizes.map(prize => `
+                <div class="prize-item">
+                    <div class="prize-rank">${prize.rank}</div>
+                    <div class="prize-amount-large">¥${Math.floor(prize.amount).toLocaleString()}</div>
+                    <div class="prize-percentage">奖池 ${prize.percent}</div>
+                </div>
+            `).join('');
+        }
+
+        // Registration
+        function showRegisterConfirm(id) {
+            if (id) {
+                currentTournament = tournaments.find(t => t.id === id);
+            }
+            if (!currentTournament) return;
+
+            document.getElementById('confirmMessage').innerHTML = `
+                您即将报名参加「${currentTournament.name}」<br>
+                报名费用: ${currentTournament.entryFee === 0 ? '免费' : currentTournament.entryFee + ' 💎'}<br>
+                开始时间: ${currentTournament.startTime.toLocaleString()}
+            `;
+            
+            document.getElementById('confirmDialog').classList.add('active');
+        }
+
+        function closeConfirmDialog() {
+            document.getElementById('confirmDialog').classList.remove('active');
+        }
+
+        function confirmRegistration() {
+            if (!currentTournament) return;
+            
+            // Simulate registration
+            currentTournament.registered = true;
+            currentTournament.currentPlayers++;
+            
+            showToast('success', `报名成功！您已成功参加「${currentTournament.name}」`);
+            closeConfirmDialog();
+            closeModal();
+            renderTournaments();
+        }
+
+        function renderRegisteredTournaments() {
+            const container = document.getElementById('registeredTournaments');
+            const registered = tournaments.filter(t => t.registered);
+            
+            if (registered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <p>您还没有报名任何锦标赛</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = registered.map(t => createTournamentCard(t)).join('');
+            }
+        }
+
+        // Toast Notifications
+        function showToast(type, message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span>${type === 'success' ? '✓' : type === 'error' ? '✕' : '!'}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Share
+        function shareTournament() {
+            showToast('success', '分享链接已复制到剪贴板！');
+        }
+
+        // Scroll to top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Close modal on overlay click
+        document.getElementById('tournamentModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeModal();
+        });
+
+        document.getElementById('confirmDialog').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeConfirmDialog();
+        });
+    </script>
+</body>
+</html>
