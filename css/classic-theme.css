@@ -1,0 +1,615 @@
+/**
+ * 🐦 经典风主题 - Classic Theme (默认)
+ * 命运塔游戏UI风格 - 愤怒小鸟风格
+ * 特点：绿色+黄色配色、经典卡通风格
+ */
+
+/* ==================== 颜色变量 ==================== */
+:root {
+  /* 主色：绿色系 */
+  --classic-primary: #7CB342;
+  --classic-primary-light: #9CCC65;
+  --classic-primary-dark: #558B2F;
+  --classic-green-bright: #8BC34A;
+  --classic-green-deep: #33691E;
+  
+  /* 辅色：黄色系 */
+  --classic-secondary: #FFC107;
+  --classic-secondary-light: #FFD54F;
+  --classic-secondary-dark: #FFA000;
+  --classic-yellow-bright: #FFEB3B;
+  --classic-yellow-pale: #FFF9C4;
+  
+  /* 辅助色 */
+  --classic-red: #E53935;
+  --classic-red-dark: #C62828;
+  --classic-blue: #1E88E5;
+  --classic-blue-dark: #1565C0;
+  --classic-orange: #FB8C00;
+  --classic-brown: #6D4C41;
+  
+  /* 中性色 */
+  --classic-white: #FFFFFF;
+  --classic-gray-light: #F5F5F5;
+  --classic-gray: #9E9E9E;
+  --classic-gray-dark: #616161;
+  --classic-black: #212121;
+  
+  /* 天空色 */
+  --classic-sky-top: #87CEEB;
+  --classic-sky-bottom: #E0F7FA;
+  --classic-cloud: #FFFFFF;
+  
+  /* 阴影 */
+  --classic-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  --classic-shadow-soft: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --classic-shadow-3d: 0 6px 0 rgba(0, 0, 0, 0.2), 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* ==================== 基础样式 ==================== */
+.classic-theme {
+  font-family: 'Fredoka One', 'Changa One', 'Arial Rounded MT Bold', '幼圆', '圆体', sans-serif;
+  background: linear-gradient(180deg, var(--classic-sky-top) 0%, var(--classic-sky-bottom) 100%);
+  min-height: 100vh;
+  color: var(--classic-black);
+}
+
+/* ==================== 按钮样式 ==================== */
+.classic-btn {
+  background: linear-gradient(180deg, var(--classic-primary-light) 0%, var(--classic-primary) 100%);
+  border: none;
+  border-radius: 25px;
+  padding: 15px 35px;
+  color: var(--classic-white);
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: var(--classic-shadow-3d);
+  transition: all 0.1s ease;
+  position: relative;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.classic-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.2), 0 8px 12px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(180deg, var(--classic-green-bright) 0%, var(--classic-primary-light) 100%);
+}
+
+.classic-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* 黄色按钮 */
+.classic-btn-yellow {
+  background: linear-gradient(180deg, var(--classic-secondary-light) 0%, var(--classic-secondary) 100%);
+  color: var(--classic-black);
+  text-shadow: none;
+}
+
+.classic-btn-yellow:hover {
+  background: linear-gradient(180deg, var(--classic-yellow-bright) 0%, var(--classic-secondary-light) 100%);
+}
+
+/* 红色按钮 */
+.classic-btn-red {
+  background: linear-gradient(180deg, #EF5350 0%, var(--classic-red) 100%);
+}
+
+.classic-btn-red:hover {
+  background: linear-gradient(180deg, #E57373 0%, #EF5350 100%);
+}
+
+/* 蓝色按钮 */
+.classic-btn-blue {
+  background: linear-gradient(180deg, #42A5F5 0%, var(--classic-blue) 100%);
+}
+
+.classic-btn-blue:hover {
+  background: linear-gradient(180deg, #64B5F6 0%, #42A5F5 100%);
+}
+
+/* 小按钮 */
+.classic-btn-small {
+  padding: 10px 24px;
+  font-size: 14px;
+  border-radius: 20px;
+}
+
+/* 大按钮 */
+.classic-btn-large {
+  padding: 20px 45px;
+  font-size: 22px;
+  border-radius: 30px;
+}
+
+/* 圆球按钮（小鸟风格） */
+.classic-btn-round {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+/* ==================== 卡片样式 ==================== */
+.classic-card {
+  background: var(--classic-white);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--classic-shadow);
+  border: 4px solid var(--classic-primary);
+  position: relative;
+}
+
+.classic-card::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 24px;
+  border: 2px dashed var(--classic-secondary);
+  pointer-events: none;
+}
+
+.classic-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* 卡片变体 */
+.classic-card-wood {
+  background: linear-gradient(135deg, #8D6E63 0%, #6D4C41 100%);
+  border-color: #5D4037;
+  color: var(--classic-white);
+}
+
+.classic-card-stone {
+  background: linear-gradient(135deg, #BDBDBD 0%, #9E9E9E 100%);
+  border-color: #757575;
+}
+
+.classic-card-ice {
+  background: linear-gradient(135deg, #B3E5FC 0%, #81D4FA 100%);
+  border-color: #4FC3F7;
+}
+
+/* 卡片标题 */
+.classic-card-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--classic-primary-dark);
+  margin-bottom: 16px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ==================== 背景样式 ==================== */
+.classic-bg-sky {
+  background: linear-gradient(180deg, var(--classic-sky-top) 0%, var(--classic-sky-bottom) 100%);
+  min-height: 100vh;
+  position: relative;
+}
+
+/* 云朵装饰 */
+.classic-cloud {
+  position: absolute;
+  background: var(--classic-white);
+  border-radius: 100px;
+  opacity: 0.9;
+}
+
+.classic-cloud::before,
+.classic-cloud::after {
+  content: '';
+  position: absolute;
+  background: var(--classic-white);
+  border-radius: 100px;
+}
+
+.classic-cloud1 {
+  width: 100px;
+  height: 40px;
+  top: 10%;
+  left: 10%;
+}
+
+.classic-cloud1::before {
+  width: 50px;
+  height: 50px;
+  top: -25px;
+  left: 10px;
+}
+
+.classic-cloud1::after {
+  width: 60px;
+  height: 40px;
+  top: -15px;
+  right: 10px;
+}
+
+/* 草地 */
+.classic-bg-grass {
+  background: linear-gradient(180deg, var(--classic-sky-top) 0%, var(--classic-sky-bottom) 60%, var(--classic-primary) 60%, var(--classic-primary-dark) 100%);
+  min-height: 100vh;
+}
+
+/* ==================== 动画效果 ==================== */
+
+/* 弹跳 */
+@keyframes classic-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+.classic-bounce {
+  animation: classic-bounce 0.6s ease-in-out infinite;
+}
+
+/* 摇摆 */
+@keyframes classic-wobble {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+.classic-wobble {
+  animation: classic-wobble 0.5s ease-in-out infinite;
+}
+
+/* 弹出 */
+@keyframes classic-pop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.classic-pop {
+  animation: classic-pop 0.4s ease-out;
+}
+
+/* 震动 */
+@keyframes classic-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px) rotate(-5deg); }
+  75% { transform: translateX(5px) rotate(5deg); }
+}
+
+.classic-shake {
+  animation: classic-shake 0.3s ease-in-out;
+}
+
+/* 飞翔 */
+@keyframes classic-fly {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(50px, -30px) rotate(10deg); }
+  50% { transform: translate(100px, -20px) rotate(-5deg); }
+  75% { transform: translate(150px, -40px) rotate(5deg); }
+  100% { transform: translate(200px, 0) rotate(0deg); }
+}
+
+.classic-fly {
+  animation: classic-fly 1s ease-in-out;
+}
+
+/* 爆炸效果 */
+@keyframes classic-explode {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.8; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+.classic-explode {
+  animation: classic-explode 0.5s ease-out forwards;
+}
+
+/* 摇摆尾巴 */
+@keyframes classic-wiggle {
+  0%, 100% { transform: rotate(-10deg); }
+  50% { transform: rotate(10deg); }
+}
+
+.classic-wiggle {
+  animation: classic-wiggle 0.3s ease-in-out infinite;
+}
+
+/* 云朵飘动 */
+@keyframes classic-cloud-float {
+  0% { transform: translateX(-100px); }
+  100% { transform: translateX(calc(100vw + 100px)); }
+}
+
+.classic-cloud-float {
+  animation: classic-cloud-float 20s linear infinite;
+}
+
+/* ==================== 输入框样式 ==================== */
+.classic-input {
+  border: 3px solid var(--classic-primary);
+  border-radius: 15px;
+  padding: 12px 18px;
+  font-size: 16px;
+  background: var(--classic-white);
+  color: var(--classic-black);
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.classic-input:focus {
+  border-color: var(--classic-secondary);
+  box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.3);
+}
+
+/* ==================== 进度条 ==================== */
+.classic-progress {
+  width: 100%;
+  height: 20px;
+  background: var(--classic-gray-light);
+  border-radius: 10px;
+  border: 3px solid var(--classic-gray);
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.classic-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--classic-primary) 0%, var(--classic-secondary) 100%);
+  border-radius: 7px;
+  transition: width 0.5s ease;
+  position: relative;
+}
+
+.classic-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  height: 6px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, transparent 100%);
+  border-radius: 4px;
+}
+
+/* ==================== 菜单样式 ==================== */
+.classic-menu {
+  background: var(--classic-white);
+  border-radius: 20px;
+  padding: 15px;
+  box-shadow: var(--classic-shadow);
+  border: 3px solid var(--classic-primary);
+}
+
+.classic-menu-item {
+  padding: 14px 24px;
+  margin: 6px 0;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: bold;
+  background: var(--classic-gray-light);
+}
+
+.classic-menu-item:hover {
+  background: linear-gradient(135deg, var(--classic-primary-light) 0%, var(--classic-primary) 100%);
+  color: var(--classic-white);
+  transform: translateX(5px);
+}
+
+.classic-menu-item.active {
+  background: var(--classic-secondary);
+  color: var(--classic-black);
+}
+
+/* ==================== 游戏特定元素 ==================== */
+.classic-tower {
+  background: linear-gradient(180deg, var(--classic-primary-light) 0%, var(--classic-primary) 100%);
+  border-radius: 20px;
+  padding: 20px;
+  border: 5px solid var(--classic-primary-dark);
+  box-shadow: var(--classic-shadow-3d);
+}
+
+.classic-tower-floor {
+  background: var(--classic-white);
+  border: 3px solid var(--classic-primary-dark);
+  border-radius: 15px;
+  padding: 12px;
+  margin: 8px 0;
+  box-shadow: var(--classic-shadow-soft);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.classic-tower-floor-number {
+  width: 36px;
+  height: 36px;
+  background: var(--classic-secondary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--classic-black);
+  border: 2px solid var(--classic-secondary-dark);
+}
+
+/* 小鸟头像 */
+.classic-bird {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  box-shadow: var(--classic-shadow-3d);
+  position: relative;
+}
+
+.classic-bird-red {
+  background: var(--classic-red);
+  border: 3px solid var(--classic-red-dark);
+}
+
+.classic-bird-yellow {
+  background: var(--classic-secondary);
+  border: 3px solid var(--classic-secondary-dark);
+}
+
+.classic-bird-blue {
+  background: var(--classic-blue);
+  border: 3px solid var(--classic-blue-dark);
+}
+
+.classic-bird-black {
+  background: var(--classic-black);
+  border: 3px solid var(--classic-black);
+}
+
+.classic-bird-white {
+  background: var(--classic-white);
+  border: 3px solid var(--classic-gray);
+}
+
+/* 猪头敌人 */
+.classic-pig {
+  width: 55px;
+  height: 55px;
+  background: var(--classic-green-bright);
+  border-radius: 50%;
+  border: 3px solid var(--classic-primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  box-shadow: var(--classic-shadow);
+}
+
+/* 分数显示 */
+.classic-score {
+  background: linear-gradient(180deg, var(--classic-secondary-light) 0%, var(--classic-secondary) 100%);
+  border: 3px solid var(--classic-secondary-dark);
+  border-radius: 15px;
+  padding: 10px 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--classic-black);
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+  box-shadow: var(--classic-shadow-3d);
+}
+
+/* 星星评分 */
+.classic-stars {
+  display: flex;
+  gap: 8px;
+}
+
+.classic-star {
+  font-size: 32px;
+  color: var(--classic-gray);
+  transition: all 0.3s ease;
+}
+
+.classic-star.active {
+  color: var(--classic-secondary);
+  animation: classic-bounce 0.5s ease-in-out;
+}
+
+/* ==================== 装饰元素 ==================== */
+.classic-decoration {
+  position: absolute;
+  pointer-events: none;
+}
+
+.classic-leaf {
+  color: var(--classic-primary);
+  animation: classic-wobble 2s ease-in-out infinite;
+}
+
+.classic-egg {
+  width: 40px;
+  height: 50px;
+  background: linear-gradient(180deg, var(--classic-yellow-pale) 0%, var(--classic-yellow-bright) 100%);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  border: 2px solid var(--classic-secondary-dark);
+  box-shadow: var(--classic-shadow);
+}
+
+.classic-slingshot {
+  position: relative;
+  width: 10px;
+  height: 80px;
+  background: var(--classic-brown);
+  border-radius: 5px;
+}
+
+.classic-slingshot::before,
+.classic-slingshot::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 40px;
+  background: var(--classic-brown);
+  top: 0;
+}
+
+.classic-slingshot::before {
+  left: -15px;
+  transform: rotate(-20deg);
+}
+
+.classic-slingshot::after {
+  right: -15px;
+  transform: rotate(20deg);
+}
+
+/* 木块 */
+.classic-wood-block {
+  background: linear-gradient(135deg, #A1887F 0%, #8D6E63 100%);
+  border: 2px solid #6D4C41;
+  border-radius: 4px;
+  box-shadow: var(--classic-shadow);
+}
+
+/* 石块 */
+.classic-stone-block {
+  background: linear-gradient(135deg, #BDBDBD 0%, #9E9E9E 100%);
+  border: 2px solid #757575;
+  border-radius: 4px;
+  box-shadow: var(--classic-shadow);
+}
+
+/* 冰块 */
+.classic-ice-block {
+  background: linear-gradient(135deg, rgba(179, 229, 252, 0.8) 0%, rgba(129, 212, 250, 0.8) 100%);
+  border: 2px solid #4FC3F7;
+  border-radius: 4px;
+  box-shadow: var(--classic-shadow);
+}
+
+/* 分数弹出 */
+.classic-score-popup {
+  position: absolute;
+  font-size: 28px;
+  font-weight: bold;
+  color: var(--classic-secondary);
+  text-shadow: 2px 2px 0 var(--classic-black);
+  pointer-events: none;
+  animation: classic-float-up 1s ease-out forwards;
+}
+
+@keyframes classic-float-up {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
+}

@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower of Fate - 后台管理系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --accent-primary: #58a6ff;
+            --accent-secondary: #1f6feb;
+            --success: #238636;
+            --warning: #d29922;
+            --danger: #da3633;
+            --border: #30363d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 左侧导航 */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+        }
+
+        .logo {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .logo-subtext {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: rgba(88, 166, 255, 0.15);
+            color: var(--accent-primary);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 24px 32px;
+        }
+
+        /* 顶部栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .refresh-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .stat-title {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .stat-icon.blue { background: rgba(88, 166, 255, 0.15); }
+        .stat-icon.green { background: rgba(35, 134, 54, 0.15); }
+        .stat-icon.yellow { background: rgba(210, 153, 34, 0.15); }
+        .stat-icon.purple { background: rgba(139, 80, 255, 0.15); }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* 图表区域 */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .chart-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .chart-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chart-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .chart-btn:hover, .chart-btn.active {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+        }
+
+        .chart-container.small {
+            height: 240px;
+        }
+
+        /* 详细数据表 */
+        .data-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .data-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .data-list {
+            margin-top: 16px;
+        }
+
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-item:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .data-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .data-dot.blue { background: var(--accent-primary); }
+        .data-dot.green { background: var(--success); }
+        .data-dot.yellow { background: var(--warning); }
+        .data-dot.red { background: var(--danger); }
+
+        .data-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .data-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* 在线人数实时指示器 */
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--success);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        /* 底部版权 */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* 响应式 */
+        @media (max-width: 1400px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .data-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 模块内容占位 */
+        .module-content {
+            display: none;
+        }
+
+        .module-content.active {
+            display: block;
+        }
+
+        .placeholder-card {
+            background: var(--bg-secondary);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 60px 40px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .placeholder-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .placeholder-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .placeholder-text {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 左侧导航 -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🏰</div>
+                <div>
+                    <div class="logo-text">Tower of Fate</div>
+                    <div class="logo-subtext">后台管理系统</div>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-module="overview">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">数据总览</span>
+                </a>
+                <a href="#" class="nav-item" data-module="players">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-label">玩家管理</span>
+                </a>
+                <a href="#" class="nav-item" data-module="shop">
+                    <span class="nav-icon">🛒</span>
+                    <span class="nav-label">商城管理</span>
+                </a>
+                <a href="#" class="nav-item" data-module="ads">
+                    <span class="nav-icon">📢</span>
+                    <span class="nav-label">广告管理</span>
+                </a>
+                <a href="#" class="nav-item" data-module="tournament">
+                    <span class="nav-icon">🏆</span>
+                    <span class="nav-label">锦标赛管理</span>
+                </a>
+                <a href="#" class="nav-item" data-module="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">系统设置</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 数据总览模块 -->
+            <div id="overview" class="module-content active">
+                <div class="header">
+                    <div>
+                        <h1 class="page-title">数据总览</h1>
+                        <div class="live-indicator" style="margin-top: 8px;">
+                            <span class="live-dot"></span>
+                            <span>实时数据更新中</span>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="refresh-btn" onclick="refreshData()">
+                            <span>🔄</span>
+                            <span>刷新数据</span>
+                        </button>
+                        <div class="user-info">
+                            <div class="user-avatar">A</div>
+                            <span class="user-name">管理员</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 统计卡片 -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">实时在线人数</span>
+                            <div class="stat-icon blue">👥</div>
+                        </div>
+                        <div class="stat-value" id="onlineUsers">2,847</div>
+                        <div class="stat-change positive">
+                            <span>↑</span>
+                            <span>+12.5% 较昨日</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">今日新增用户</span>
+                            <div class="stat-icon green">🆕</div>
+                        </div>
+                        <div class="stat-value" id="newUsers">486</div>
+                        <div class="stat-change positive">
+                            <span>↑</span>
+                            <span>+8.3% 较昨日</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">今日收入 (USD)</span>
+                            <div class="stat-icon yellow">💰</div>
+                        </div>
+                        <div class="stat-value" id="revenue">$12,580</div>
+                        <div class="stat-change positive">
+                            <span>↑</span>
+                            <span>+23.7% 较昨日</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">7日留存率</span>
+                            <div class="stat-icon purple">📈</div>
+                        </div>
+                        <div class="stat-value" id="retention">42.8%</div>
+                        <div class="stat-change positive">
+                            <span>↑</span>
+                            <span>+2.1% 较上周</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表区域 -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <div class="chart-title">今日收入趋势</div>
+                                <div class="chart-subtitle">每小时收入统计</div>
+                            </div>
+                            <div class="chart-actions">
+                                <button class="chart-btn active">今日</button>
+                                <button class="chart-btn">昨日</button>
+                                <button class="chart-btn">7天</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <div class="chart-title">用户来源分布</div>
+                                <div class="chart-subtitle">按渠道统计</div>
+                            </div>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="sourceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 详细数据 -->
+                <div class="data-section">
+                    <div class="data-card">
+                        <div class="chart-title">留存率指标</div>
+                        <div class="chart-subtitle">各阶段用户留存情况</div>
+                        <div class="data-list">
+                            <div class="data-item">
+                                <div class="data-label">
+                                    <span class="data-dot blue"></span>
+                                    <span class="data-text">次日留存率</span>
+                                </div>
+                                <span class="data-value">58.2%</span>
+                            </div>
+                            <div class="data-item">
+                                <div class="data-label">
+                                    <span class="data-dot green"></span>
+                                    <span class="data-text">3日留存率</span>
+                                </div>
+                                <span class="data-value">48.7%</span>
+                            </div>
+                            <div class="data-item">
+                                <div class="data-label">
+                                    <span class="data-dot yellow"></span>
+                                    <span class="data-text">7日留存率</span>
+                                </div>
+                                <span class="data-value">42.8%</span>
+                            </div>
+                            <div class="data-item">
+                                <div class="data-label">
+                                    <span class="data-dot red"></span>
+                                    <span class="data-text">30日留存率</span>
+                                </div>
+                                <span class="data-value">28.3%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="data-card">
+                        <div class="chart-title">系统状态</div>
+                        <div class="chart-subtitle">服务器运行状态</div>
+                        <div class="data-list">
+                            <div class="data-item">
+                                <div class="data-label">
+                                    <span class="data-dot green"></span>
+                                    <span class="data-text">游戏服务器</span>
+                                </div>
+                                <span class="data-value" style="color: var(--success);">运行中</span>
+                            </div>
+                            <div class="data-item">
+                                <div class="data-label">
+                                    <span class="data-dot green"></span>
+                                    <span class="data-text">数据库</span>
+                                </div>
+                                <span class="data-value" style="color: var(--success);">运行中</span>
+                            </div>
+                            <div class="data-item">
+                                <div class="data-label">
+                                    <span class="data-dot green"></span>
+                                    <span class="data-text">支付系统</span>
+                                </div>
+                                <span class="data-value" style="color: var(--success);">运行中</span>
+                            </div>
+                            <div class="data-item">
+                                <div class="data-label">
+                                    <span class="data-dot blue"></span>
+                                    <span class="data-text">API响应时间</span>
+                                </div>
+                                <span class="data-value">45ms</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 玩家管理模块 -->
+            <div id="players" class="module-content">
+                <div class="header">
+                    <div>
+                        <h1 class="page-title">玩家管理</h1>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar">A</div>
+                        <span class="user-name">管理员</span>
+                    </div>
+                </div>
+                <div class="placeholder-card">
+                    <div class="placeholder-icon">👥</div>
+                    <div class="placeholder-title">玩家管理模块</div>
+                    <div class="placeholder-text">该模块正在开发中，敬请期待...</div>
+                </div>
+            </div>
+
+            <!-- 商城管理模块 -->
+            <div id="shop" class="module-content">
+                <div class="header">
+                    <div>
+                        <h1 class="page-title">商城管理</h1>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar">A</div>
+                        <span class="user-name">管理员</span>
+                    </div>
+                </div>
+                <div class="placeholder-card">
+                    <div class="placeholder-icon">🛒</div>
+                    <div class="placeholder-title">商城管理模块</div>
+                    <div class="placeholder-text">该模块正在开发中，敬请期待...</div>
+                </div>
+            </div>
+
+            <!-- 广告管理模块 -->
+            <div id="ads" class="module-content">
+                <div class="header">
+                    <div>
+                        <h1 class="page-title">广告管理</h1>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar">A</div>
+                        <span class="user-name">管理员</span>
+                    </div>
+                </div>
+                <div class="placeholder-card">
+                    <div class="placeholder-icon">📢</div>
+                    <div class="placeholder-title">广告管理模块</div>
+                    <div class="placeholder-text">该模块正在开发中，敬请期待...</div>
+                </div>
+            </div>
+
+            <!-- 锦标赛管理模块 -->
+            <div id="tournament" class="module-content">
+                <div class="header">
+                    <div>
+                        <h1 class="page-title">锦标赛管理</h1>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar">A</div>
+                        <span class="user-name">管理员</span>
+                    </div>
+                </div>
+                <div class="placeholder-card">
+                    <div class="placeholder-icon">🏆</div>
+                    <div class="placeholder-title">锦标赛管理模块</div>
+                    <div class="placeholder-text">该模块正在开发中，敬请期待...</div>
+                </div>
+            </div>
+
+            <!-- 系统设置模块 -->
+            <div id="settings" class="module-content">
+                <div class="header">
+                    <div>
+                        <h1 class="page-title">系统设置</h1>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar">A</div>
+                        <span class="user-name">管理员</span>
+                    </div>
+                </div>
+                <div class="placeholder-card">
+                    <div class="placeholder-icon">⚙️</div>
+                    <div class="placeholder-title">系统设置模块</div>
+                    <div class="placeholder-text">该模块正在开发中，敬请期待...</div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>© 2026 Tower of Fate - 后台管理系统 v1.0</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 图表配置
+        Chart.defaults.color = '#8b949e';
+        Chart.defaults.borderColor = '#30363d';
+        Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+
+        // 收入趋势图
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
+                datasets: [{
+                    label: '收入 (USD)',
+                    data: [320, 180, 95, 120, 450, 680, 920, 1150, 1380, 1650, 1890, 1560],
+                    borderColor: '#58a6ff',
+                    backgroundColor: 'rgba(88, 166, 255, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#58a6ff',
+                    pointBorderColor: '#0d1117',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#161b22',
+                        titleColor: '#f0f6fc',
+                        bodyColor: '#8b949e',
+                        borderColor: '#30363d',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return '$' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#21262d'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value;
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // 用户来源饼图
+        const sourceCtx = document.getElementById('sourceChart').getContext('2d');
+        const sourceChart = new Chart(sourceCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['自然搜索', '社交媒体', '广告投放', '推荐链接', '直接访问'],
+                datasets: [{
+                    data: [35, 28, 20, 12, 5],
+                    backgroundColor: [
+                        '#58a6ff',
+                        '#238636',
+                        '#d29922',
+                        '#a371f7',
+                        '#8b949e'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 模拟实时数据更新
+        function updateOnlineUsers() {
+            const baseValue = 2800;
+            const variation = Math.floor(Math.random() * 200) - 100;
+            const value = baseValue + variation;
+            document.getElementById('onlineUsers').textContent = value.toLocaleString();
+        }
+
+        // 刷新数据
+        function refreshData() {
+            updateOnlineUsers();
+            // 模拟数据刷新动画
+            const btn = document.querySelector('.refresh-btn');
+            btn.style.opacity = '0.6';
+            setTimeout(() => {
+                btn.style.opacity = '1';
+            }, 300);
+        }
+
+        // 每5秒更新一次在线人数
+        setInterval(updateOnlineUsers, 5000);
+
+        // 导航切换
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // 更新导航状态
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 切换模块内容
+                const module = this.getAttribute('data-module');
+                document.querySelectorAll('.module-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(module).classList.add('active');
+            });
+        });
+
+        // 图表时间切换按钮
+        document.querySelectorAll('.chart-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 模拟切换数据
+                if (this.textContent === '昨日') {
+                    revenueChart.data.datasets[0].data = [280, 150, 80, 100, 380, 580, 780, 980, 1180, 1420, 1680, 1380];
+                } else if (this.textContent === '7天') {
+                    revenueChart.data.datasets[0].data = [8200, 7800, 9500, 8800, 9200, 10500, 11200];
+                    revenueChart.data.labels = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+                } else {
+                    revenueChart.data.datasets[0].data = [320, 180, 95, 120, 450, 680, 920, 1150, 1380, 1650, 1890, 1560];
+                    revenueChart.data.labels = ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
+                }
+                revenueChart.update();
+            });
+        });
+    </script>
+</body>
+</html>

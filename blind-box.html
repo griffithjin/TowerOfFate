@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>命运塔·盲盒抽奖</title>
+    <style>
+        /* ===== CSS 变量定义 ===== */
+        :root {
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #0f0f1e;
+            --bg-tertiary: #1a1a2e;
+            --bg-card: #161625;
+            --border-color: #333;
+            --border-light: #444;
+            --text-primary: #fff;
+            --text-secondary: #888;
+            --text-muted: #666;
+            --gold: #FFD700;
+            --gold-dark: #FFA500;
+            --gold-light: #ffed4e;
+            --ssr: #ff6b6b;
+            --ssr-glow: #ff4757;
+            --sr: #a29bfe;
+            --sr-glow: #6c5ce7;
+            --r: #74b9ff;
+            --r-glow: #0984e3;
+            --green: #2ed573;
+            --red: #ff4757;
+            --stamina: #00cec9;
+            --coin: #ffa502;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: -apple-system, sans-serif; 
+            background: var(--bg-primary); 
+            color: var(--text-primary); 
+            min-height: 100vh; 
+            overflow-x: hidden;
+        }
+
+        /* ===== 顶部导航 ===== */
+        .header {
+            background: linear-gradient(90deg, #6b2c91, #4a148c);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--gold);
+        }
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .header-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(255,215,0,0.3);
+        }
+        .coin-display {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--coin);
+        }
+        .coin-icon { font-size: 16px; }
+
+        /* ===== 主内容区 ===== */
+        .main-content { padding: 16px; max-width: 480px; margin: 0 auto; }
+
+        /* ===== 盲盒展示区 ===== */
+        .box-section {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .box-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 60%);
+            animation: rotate 10s linear infinite;
+        }
+        @keyframes rotate { to { transform: rotate(360deg); } }
+
+        .blind-box {
+            font-size: 120px;
+            display: inline-block;
+            animation: boxFloat 2s ease-in-out infinite;
+            filter: drop-shadow(0 10px 30px rgba(255,215,0,0.4));
+            position: relative;
+            z-index: 1;
+        }
+        @keyframes boxFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.05); }
+        }
+        .blind-box.shaking {
+            animation: shake 0.5s ease-in-out infinite;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(0); }
+            25% { transform: translateX(-10px) rotate(-5deg); }
+            75% { transform: translateX(10px) rotate(5deg); }
+        }
+        .blind-box.opening {
+            animation: boxOpen 0.8s ease-out forwards;
+        }
+        @keyframes boxOpen {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); filter: brightness(2); }
+            100% { transform: scale(0) rotate(720deg); opacity: 0; }
+        }
+
+        .box-title {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--gold), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        .box-subtitle {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-top: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== 保底显示 ===== */
+        .pity-section {
+            background: linear-gradient(90deg, rgba(255,107,107,0.15), rgba(255,71,87,0.05));
+            border: 1px solid rgba(255,107,107,0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .pity-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .pity-label .icon { font-size: 18px; }
+        .pity-progress {
+            flex: 1;
+            margin: 0 15px;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .pity-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--ssr), var(--ssr-glow));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(255,107,107,0.5);
+        }
+        .pity-count {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--ssr);
+        }
+        .pity-count span { color: var(--text-muted); font-size: 12px; }
+
+        /* ===== 抽奖按钮区 ===== */
+        .draw-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .draw-btn {
+            flex: 1;
+            padding: 18px 12px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .draw-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .draw-btn-single {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+            box-shadow: 0 4px 15px rgba(255,215,0,0.3);
+        }
+        .draw-btn-single:active:not(:disabled) {
+            transform: scale(0.98);
+            box-shadow: 0 2px 10px rgba(255,215,0,0.5);
+        }
+        .draw-btn-ten {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.3);
+        }
+        .draw-btn-ten:active:not(:disabled) {
+            transform: scale(0.98);
+            box-shadow: 0 2px 10px rgba(255,107,107,0.5);
+        }
+        .draw-btn .price {
+            font-size: 14px;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            margin-top: 4px;
+        }
+        .discount-tag {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--green);
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        /* ===== 奖池展示 ===== */
+        .pool-section {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .pool-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .pool-title {
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pool-toggle {
+            font-size: 13px;
+            color: var(--gold);
+            background: rgba(255,215,0,0.1);
+            border: 1px solid rgba(255,215,0,0.3);
+            padding: 6px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        /* 概率展示 */
+        .rarity-stats {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .rarity-item {
+            flex: 1;
+            text-align: center;
+            padding: 12px 8px;
+            border-radius: 12px;
+            background: var(--bg-card);
+        }
+        .rarity-item.ssr { border: 1px solid rgba(255,107,107,0.3); }
+        .rarity-item.sr { border: 1px solid rgba(162,155,254,0.3); }
+        .rarity-item.r { border: 1px solid rgba(116,185,255,0.3); }
+        .rarity-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .rarity-name {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .rarity-item.ssr .rarity-name { color: var(--ssr); }
+        .rarity-item.sr .rarity-name { color: var(--sr); }
+        .rarity-item.r .rarity-name { color: var(--r); }
+        .rarity-rate {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* 奖池物品列表 */
+        .pool-items {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .pool-item {
+            aspect-ratio: 1;
+            background: var(--bg-card);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            position: relative;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+        .pool-item.ssr { border-color: rgba(255,107,107,0.5); box-shadow: 0 0 10px rgba(255,107,107,0.2); }
+        .pool-item.sr { border-color: rgba(162,155,254,0.5); box-shadow: 0 0 10px rgba(162,155,254,0.2); }
+        .pool-item.r { border-color: rgba(116,185,255,0.5); box-shadow: 0 0 10px rgba(116,185,255,0.2); }
+        .pool-item-icon {
+            font-size: 32px;
+            margin-bottom: 4px;
+        }
+        .pool-item-name {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-align: center;
+            line-height: 1.2;
+        }
+        .pool-item-tag {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            font-size: 9px;
+            padding: 1px 4px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .pool-item-tag.ssr { background: var(--ssr); color: #fff; }
+        .pool-item-tag.sr { background: var(--sr); color: #fff; }
+        .pool-item-tag.r { background: var(--r); color: #fff; }
+
+        /* ===== 抽奖结果弹窗 ===== */
+        .result-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .result-modal.active { display: flex; }
+        .result-content {
+            width: 100%;
+            max-width: 400px;
+            animation: modalIn 0.5s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .result-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, var(--gold), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .result-items {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .result-item {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-card));
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid transparent;
+            animation: itemIn 0.5s ease forwards;
+            opacity: 0;
+            transform: scale(0);
+        }
+        @keyframes itemIn {
+            to { opacity: 1; transform: scale(1); }
+        }
+        .result-item.ssr { 
+            border-color: var(--ssr); 
+            box-shadow: 0 0 20px rgba(255,107,107,0.5);
+            animation: itemIn 0.5s ease forwards, ssrGlow 2s ease-in-out infinite;
+        }
+        .result-item.sr { 
+            border-color: var(--sr); 
+            box-shadow: 0 0 15px rgba(162,155,254,0.4);
+        }
+        .result-item.r { 
+            border-color: var(--r); 
+            box-shadow: 0 0 10px rgba(116,185,255,0.3);
+        }
+        @keyframes ssrGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,107,107,0.5); }
+            50% { box-shadow: 0 0 30px rgba(255,107,107,0.8); }
+        }
+        .result-item-icon { font-size: 28px; margin-bottom: 2px; }
+        .result-item-name { font-size: 9px; color: var(--text-secondary); text-align: center; }
+        .result-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* ===== 单抽特殊效果 ===== */
+        .single-result {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+        .single-item {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-card));
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid transparent;
+            animation: singleItemIn 0.8s ease;
+            margin-bottom: 20px;
+        }
+        @keyframes singleItemIn {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+        .single-item.ssr { 
+            border-color: var(--ssr); 
+            box-shadow: 0 0 40px rgba(255,107,107,0.6);
+            animation: singleItemIn 0.8s ease, ssrGlow 2s ease-in-out infinite;
+        }
+        .single-item.sr { 
+            border-color: var(--sr); 
+            box-shadow: 0 0 30px rgba(162,155,254,0.5);
+        }
+        .single-item.r { 
+            border-color: var(--r); 
+            box-shadow: 0 0 20px rgba(116,185,255,0.4);
+        }
+        .single-item-icon { font-size: 70px; margin-bottom: 10px; }
+        .single-item-name { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
+        .single-item.ssr .single-item-name { color: var(--ssr); }
+        .single-item.sr .single-item-name { color: var(--sr); }
+        .single-item.r .single-item-name { color: var(--r); }
+        .single-item-rarity {
+            font-size: 14px;
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .single-item-rarity.ssr { background: rgba(255,107,107,0.2); color: var(--ssr); }
+        .single-item-rarity.sr { background: rgba(162,155,254,0.2); color: var(--sr); }
+        .single-item-rarity.r { background: rgba(116,185,255,0.2); color: var(--r); }
+
+        /* ===== 特效动画 ===== */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+        .particle {
+            position: absolute;
+            font-size: 20px;
+            animation: particleFall 1s ease-out forwards;
+        }
+        @keyframes particleFall {
+            0% { transform: translateY(0) rotate(0); opacity: 1; }
+            100% { transform: translateY(300px) rotate(360deg); opacity: 0; }
+        }
+
+        /* 闪光效果 */
+        .flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 998;
+        }
+        .flash.active {
+            animation: flashAnim 0.5s ease-out;
+        }
+        @keyframes flashAnim {
+            0% { opacity: 0.8; }
+            100% { opacity: 0; }
+        }
+
+        /* ===== 底部说明 ===== */
+        .footer-note {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 12px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header">
+        <button class="back-btn" onclick="location.href='index.html'">←</button>
+        <div class="header-title">🎁 命运盲盒</div>
+        <div class="coin-display">
+            <span class="coin-icon">🪙</span>
+            <span id="coin-count">9999</span>
+        </div>
+    </div>
+
+    <!-- 主内容 -->
+    <div class="main-content">
+        <!-- 盲盒展示区 -->
+        <div class="box-section">
+            <div class="blind-box" id="blind-box">🎁</div>
+            <div class="box-title">神秘盲盒</div>
+            <div class="box-subtitle">开启盲盒，获得稀有奖励</div>
+        </div>
+
+        <!-- 保底机制 -->
+        <div class="pity-section">
+            <div class="pity-label">
+                <span class="icon">🎯</span>
+                <span>SSR保底</span>
+            </div>
+            <div class="pity-progress">
+                <div class="pity-bar" id="pity-bar" style="width: 0%"></div>
+            </div>
+            <div class="pity-count">
+                <span id="pity-current">0</span><span>/50</span>
+            </div>
+        </div>
+
+        <!-- 抽奖按钮 -->
+        <div class="draw-section">
+            <button class="draw-btn draw-btn-single" id="btn-single" onclick="draw(1)">
+                <div>单抽</div>
+                <div class="price">🪙 100</div>
+            </button>
+            <button class="draw-btn draw-btn-ten" id="btn-ten" onclick="draw(10)">
+                <span class="discount-tag">9折</span>
+                <div>十连抽</div>
+                <div class="price">🪙 900</div>
+            </button>
+        </div>
+
+        <!-- 奖池展示 -->
+        <div class="pool-section">
+            <div class="pool-header">
+                <div class="pool-title">📦 奖池内容</div>
+                <button class="pool-toggle" onclick="togglePool()">收起 ▲</button>
+            </div>
+            
+            <!-- 概率统计 -->
+            <div class="rarity-stats">
+                <div class="rarity-item ssr">
+                    <div class="rarity-icon">🔴</div>
+                    <div class="rarity-name">SSR</div>
+                    <div class="rarity-rate">2%</div>
+                </div>
+                <div class="rarity-item sr">
+                    <div class="rarity-icon">🟣</div>
+                    <div class="rarity-name">SR</div>
+                    <div class="rarity-rate">18%</div>
+                </div>
+                <div class="rarity-item r">
+                    <div class="rarity-icon">🔵</div>
+                    <div class="rarity-name">R</div>
+                    <div class="rarity-rate">80%</div>
+                </div>
+            </div>
+
+            <!-- 奖池物品 -->
+            <div class="pool-items" id="pool-items">
+                <!-- SSR -->
+                <div class="pool-item ssr">
+                    <span class="pool-item-tag ssr">SSR</span>
+                    <div class="pool-item-icon">🏰</div>
+                    <div class="pool-item-name">圣家堂碎片</div>
+                </div>
+                <div class="pool-item ssr">
+                    <span class="pool-item-tag ssr">SSR</span>
+                    <div class="pool-item-icon">🗼</div>
+                    <div class="pool-item-name">埃菲尔碎片</div>
+                </div>
+                <div class="pool-item ssr">
+                    <span class="pool-item-tag ssr">SSR</span>
+                    <div class="pool-item-icon">🎆</div>
+                    <div class="pool-item-name">炫彩头像框</div>
+                </div>
+                <!-- SR -->
+                <div class="pool-item sr">
+                    <span class="pool-item-tag sr">SR</span>
+                    <div class="pool-item-icon">🌉</div>
+                    <div class="pool-item-name">金门桥碎片</div>
+                </div>
+                <div class="pool-item sr">
+                    <span class="pool-item-tag sr">SR</span>
+                    <div class="pool-item-icon">🗽</div>
+                    <div class="pool-item-name">自由女神碎片</div>
+                </div>
+                <div class="pool-item sr">
+                    <span class="pool-item-tag sr">SR</span>
+                    <div class="pool-item-icon">🎇</div>
+                    <div class="pool-item-name">华丽头像框</div>
+                </div>
+                <div class="pool-item sr">
+                    <span class="pool-item-tag sr">SR</span>
+                    <div class="pool-item-icon">⚡</div>
+                    <div class="pool-item-name">体力×50</div>
+                </div>
+                <!-- R -->
+                <div class="pool-item r">
+                    <span class="pool-item-tag r">R</span>
+                    <div class="pool-item-icon">🌆</div>
+                    <div class="pool-item-name">普通塔皮</div>
+                </div>
+                <div class="pool-item r">
+                    <span class="pool-item-tag r">R</span>
+                    <div class="pool-item-icon">🖼️</div>
+                    <div class="pool-item-name">普通头像框</div>
+                </div>
+                <div class="pool-item r">
+                    <span class="pool-item-tag r">R</span>
+                    <div class="pool-item-icon">🪙</div>
+                    <div class="pool-item-name">金币×200</div>
+                </div>
+                <div class="pool-item r">
+                    <span class="pool-item-tag r">R</span>
+                    <div class="pool-item-icon">🪙</div>
+                    <div class="pool-item-name">金币×100</div>
+                </div>
+                <div class="pool-item r">
+                    <span class="pool-item-tag r">R</span>
+                    <div class="pool-item-icon">⚡</div>
+                    <div class="pool-item-name">体力×20</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部说明 -->
+        <div class="footer-note">
+            每50抽必出SSR | 已获得物品自动转化为碎片
+        </div>
+    </div>
+
+    <!-- 闪光效果 -->
+    <div class="flash" id="flash"></div>
+
+    <!-- 抽奖结果弹窗 -->
+    <div class="result-modal" id="result-modal">
+        <div class="result-content" id="result-content">
+            <!-- 动态生成内容 -->
+        </div>
+    </div>
+
+    <script>
+        // ===== 游戏数据 =====
+        const GameData = {
+            coins: 9999,
+            pityCount: 0, // 当前保底计数
+            pityMax: 50,  // 保底阈值
+            
+            // 奖池定义
+            pool: {
+                ssr: [
+                    { id: 'ssr1', name: '圣家堂碎片', icon: '🏰', type: 'skin' },
+                    { id: 'ssr2', name: '埃菲尔碎片', icon: '🗼', type: 'skin' },
+                    { id: 'ssr3', name: '炫彩头像框', icon: '🎆', type: 'avatar' }
+                ],
+                sr: [
+                    { id: 'sr1', name: '金门桥碎片', icon: '🌉', type: 'skin' },
+                    { id: 'sr2', name: '自由女神碎片', icon: '🗽', type: 'skin' },
+                    { id: 'sr3', name: '华丽头像框', icon: '🎇', type: 'avatar' },
+                    { id: 'sr4', name: '体力×50', icon: '⚡', type: 'stamina' }
+                ],
+                r: [
+                    { id: 'r1', name: '普通塔皮', icon: '🌆', type: 'skin' },
+                    { id: 'r2', name: '普通头像框', icon: '🖼️', type: 'avatar' },
+                    { id: 'r3', name: '金币×200', icon: '🪙', type: 'coin' },
+                    { id: 'r4', name: '金币×100', icon: '🪙', type: 'coin' },
+                    { id: 'r5', name: '体力×20', icon: '⚡', type: 'stamina' }
+                ]
+            },
+            
+            // 概率配置
+            rates: {
+                ssr: 0.02,  // 2%
+                sr: 0.18,   // 18%
+                r: 0.80     // 80%
+            }
+        };
+
+        // ===== 抽奖逻辑 =====
+        function draw(count) {
+            const cost = count === 1 ? 100 : 900;
+            
+            // 检查金币
+            if (GameData.coins < cost) {
+                alert('金币不足！');
+                return;
+            }
+            
+            // 扣除金币
+            GameData.coins -= cost;
+            updateCoinDisplay();
+            
+            // 禁用按钮
+            document.getElementById('btn-single').disabled = true;
+            document.getElementById('btn-ten').disabled = true;
+            
+            // 播放动画
+            const box = document.getElementById('blind-box');
+            box.classList.add('shaking');
+            
+            setTimeout(() => {
+                box.classList.remove('shaking');
+                box.classList.add('opening');
+                
+                // 闪光效果
+                const flash = document.getElementById('flash');
+                flash.classList.add('active');
+                setTimeout(() => flash.classList.remove('active'), 500);
+                
+                // 生成结果
+                const results = generateResults(count);
+                
+                // 更新保底
+                updatePity(count, results);
+                
+                // 显示结果
+                setTimeout(() => {
+                    showResults(results, count);
+                    box.classList.remove('opening');
+                    document.getElementById('btn-single').disabled = false;
+                    document.getElementById('btn-ten').disabled = false;
+                }, 800);
+                
+            }, 500);
+        }
+
+        // 生成抽奖结果
+        function generateResults(count) {
+            const results = [];
+            
+            for (let i = 0; i < count; i++) {
+                // 检查保底
+                GameData.pityCount++;
+                
+                let rarity;
+                if (GameData.pityCount >= GameData.pityMax) {
+                    // 触发保底
+                    rarity = 'ssr';
+                    GameData.pityCount = 0;
+                } else {
+                    // 正常抽奖
+                    const rand = Math.random();
+                    if (rand < GameData.rates.ssr) {
+                        rarity = 'ssr';
+                        GameData.pityCount = 0; // 重置保底
+                    } else if (rand < GameData.rates.ssr + GameData.rates.sr) {
+                        rarity = 'sr';
+                    } else {
+                        rarity = 'r';
+                    }
+                }
+                
+                // 从对应稀有度中随机选择一个物品
+                const pool = GameData.pool[rarity];
+                const item = pool[Math.floor(Math.random() * pool.length)];
+                
+                results.push({ ...item, rarity });
+            }
+            
+            return results;
+        }
+
+        // 更新保底显示
+        function updatePity(count, results) {
+            const hasSSR = results.some(r => r.rarity === 'ssr');
+            const bar = document.getElementById('pity-bar');
+            const current = document.getElementById('pity-current');
+            
+            const percentage = (GameData.pityCount / GameData.pityMax) * 100;
+            bar.style.width = percentage + '%';
+            current.textContent = GameData.pityCount;
+            
+            // 保底接近时高亮
+            if (GameData.pityCount >= 40) {
+                bar.style.background = 'linear-gradient(90deg, #ff6b6b, #ff4757, #ff6b6b)';
+                bar.style.backgroundSize = '200% 100%';
+                bar.style.animation = 'shimmer 1s linear infinite';
+            }
+        }
+
+        // 显示结果
+        function showResults(results, count) {
+            const modal = document.getElementById('result-modal');
+            const content = document.getElementById('result-content');
+            
+            if (count === 1) {
+                // 单抽展示
+                const item = results[0];
+                content.innerHTML = `
+                    <div class="single-result">
+                        <div class="single-item ${item.rarity}">
+                            <div class="single-item-icon">${item.icon}</div>
+                            <div class="single-item-name">${item.name}</div>
+                            <div class="single-item-rarity ${item.rarity}">${item.rarity.toUpperCase()}</div>
+                        </div>
+                        <button class="result-btn" onclick="closeModal()">太棒了！</button>
+                    </div>
+                `;
+                
+                // SSR特效
+                if (item.rarity === 'ssr') {
+                    createParticles();
+                }
+            } else {
+                // 十连抽展示
+                let itemsHtml = '';
+                results.forEach((item, index) => {
+                    itemsHtml += `
+                        <div class="result-item ${item.rarity}" style="animation-delay: ${index * 0.1}s">
+                            <div class="result-item-icon">${item.icon}</div>
+                            <div class="result-item-name">${item.name}</div>
+                        </div>
+                    `;
+                });
+                
+                // 统计
+                const ssrCount = results.filter(r => r.rarity === 'ssr').length;
+                const srCount = results.filter(r => r.rarity === 'sr').length;
+                
+                content.innerHTML = `
+                    <div class="result-title">🎉 十连抽结果</div>
+                    <div class="result-items">${itemsHtml}</div>
+                    <div style="text-align: center; margin-bottom: 15px; color: var(--text-secondary); font-size: 14px;">
+                        ${ssrCount > 0 ? `<span style="color: var(--ssr)">SSR×${ssrCount}</span> ` : ''}
+                        ${srCount > 0 ? `<span style="color: var(--sr)">SR×${srCount}</span> ` : ''}
+                        R×${results.filter(r => r.rarity === 'r').length}
+                    </div>
+                    <button class="result-btn" onclick="closeModal()">收下奖励</button>
+                `;
+                
+                // SSR特效
+                if (ssrCount > 0) {
+                    createParticles();
+                }
+            }
+            
+            modal.classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            const modal = document.getElementById('result-modal');
+            modal.classList.remove('active');
+        }
+
+        // 创建粒子特效
+        function createParticles() {
+            const particles = document.createElement('div');
+            particles.className = 'particles';
+            document.body.appendChild(particles);
+            
+            const emojis = ['✨', '⭐', '🌟', '💫', '🎊', '🎉'];
+            
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = Math.random() * 50 + '%';
+                    particle.style.animationDelay = Math.random() * 0.5 + 's';
+                    particles.appendChild(particle);
+                    
+                    setTimeout(() => particle.remove(), 1000);
+                }, i * 50);
+            }
+            
+            setTimeout(() => particles.remove(), 3000);
+        }
+
+        // 更新金币显示
+        function updateCoinDisplay() {
+            document.getElementById('coin-count').textContent = GameData.coins;
+        }
+
+        // 切换奖池显示
+        function togglePool() {
+            const poolItems = document.getElementById('pool-items');
+            const btn = document.querySelector('.pool-toggle');
+            
+            if (poolItems.style.display === 'none') {
+                poolItems.style.display = 'grid';
+                btn.textContent = '收起 ▲';
+            } else {
+                poolItems.style.display = 'none';
+                btn.textContent = '展开 ▼';
+            }
+        }
+
+        // 初始化
+        updateCoinDisplay();
+    </script>
+</body>
+</html>

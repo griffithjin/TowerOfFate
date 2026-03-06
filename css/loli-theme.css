@@ -1,0 +1,386 @@
+/**
+ * 🎀 萝莉风主题 - Loli Theme
+ * 命运塔游戏UI风格之一
+ * 特点：粉色系、圆润可爱、星星爱心装饰
+ */
+
+/* ==================== 颜色变量 ==================== */
+:root {
+  /* 主色：粉色渐变 */
+  --loli-primary-start: #FFB6C1;
+  --loli-primary-end: #FFC0CB;
+  --loli-primary: #FFB6C1;
+  --loli-primary-light: #FFE4E9;
+  --loli-primary-dark: #FF69B4;
+  
+  /* 辅色 */
+  --loli-secondary-white: #FFFFFF;
+  --loli-secondary-lavender: #E6E6FA;
+  --loli-secondary-pink-soft: #FFF0F5;
+  
+  /* 文字颜色 */
+  --loli-text-primary: #8B4513;
+  --loli-text-secondary: #DDA0DD;
+  --loli-text-light: #FFFFFF;
+  
+  /* 装饰色 */
+  --loli-star-gold: #FFD700;
+  --loli-heart-red: #FF6B9D;
+  --loli-sparkle: #FFA0E0;
+  
+  /* 阴影 */
+  --loli-shadow-soft: 0 4px 15px rgba(255, 182, 193, 0.4);
+  --loli-shadow-glow: 0 0 20px rgba(255, 182, 193, 0.6);
+}
+
+/* ==================== 基础样式 ==================== */
+.loli-theme {
+  font-family: 'Comic Sans MS', '华文彩云', '圆体', 'Rounded Mplus 1c', cursive, sans-serif;
+  background: linear-gradient(135deg, var(--loli-primary-light) 0%, var(--loli-secondary-white) 50%, var(--loli-secondary-lavender) 100%);
+  min-height: 100vh;
+  color: var(--loli-text-primary);
+}
+
+/* ==================== 按钮样式 ==================== */
+.loli-btn {
+  background: linear-gradient(145deg, var(--loli-primary) 0%, var(--loli-primary-end) 100%);
+  border: none;
+  border-radius: 20px;
+  padding: 12px 28px;
+  color: var(--loli-text-light);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: var(--loli-shadow-soft);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.loli-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--loli-shadow-glow);
+  background: linear-gradient(145deg, var(--loli-primary-dark) 0%, var(--loli-primary) 100%);
+}
+
+.loli-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.loli-btn::before {
+  content: '⭐';
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+}
+
+.loli-btn::after {
+  content: '💕';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+}
+
+/* 小按钮 */
+.loli-btn-small {
+  padding: 8px 18px;
+  font-size: 14px;
+  border-radius: 15px;
+}
+
+/* 大按钮 */
+.loli-btn-large {
+  padding: 16px 36px;
+  font-size: 18px;
+  border-radius: 25px;
+}
+
+/* 透明按钮 */
+.loli-btn-outline {
+  background: transparent;
+  border: 2px solid var(--loli-primary);
+  color: var(--loli-primary-dark);
+}
+
+.loli-btn-outline:hover {
+  background: var(--loli-primary-light);
+}
+
+/* ==================== 卡片样式 ==================== */
+.loli-card {
+  background: linear-gradient(135deg, var(--loli-secondary-white) 0%, var(--loli-secondary-pink-soft) 100%);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--loli-shadow-soft);
+  border: 2px solid var(--loli-primary-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.loli-card::before {
+  content: '✨';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  opacity: 0.6;
+}
+
+.loli-card::after {
+  content: '💖';
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-size: 16px;
+  opacity: 0.5;
+}
+
+.loli-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--loli-shadow-glow);
+}
+
+/* 卡片标题 */
+.loli-card-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--loli-primary-dark);
+  margin-bottom: 12px;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(255, 182, 193, 0.3);
+}
+
+/* ==================== 背景样式 ==================== */
+.loli-bg-gradient {
+  background: linear-gradient(135deg, var(--loli-primary-light) 0%, var(--loli-secondary-white) 50%, var(--loli-secondary-lavender) 100%);
+  min-height: 100vh;
+}
+
+.loli-bg-pattern {
+  background-color: var(--loli-secondary-pink-soft);
+  background-image: 
+    radial-gradient(circle at 20% 80%, var(--loli-star-gold) 2px, transparent 2px),
+    radial-gradient(circle at 80% 20%, var(--loli-heart-red) 3px, transparent 3px),
+    radial-gradient(circle at 50% 50%, var(--loli-primary) 1px, transparent 1px);
+  background-size: 100px 100px, 150px 150px, 80px 80px;
+}
+
+/* 装饰性角落 */
+.loli-corner {
+  position: relative;
+}
+
+.loli-corner::before,
+.loli-corner::after {
+  content: '🌸';
+  position: absolute;
+  font-size: 24px;
+}
+
+.loli-corner::before {
+  top: -5px;
+  left: -5px;
+}
+
+.loli-corner::after {
+  bottom: -5px;
+  right: -5px;
+}
+
+/* ==================== 动画效果 ==================== */
+
+/* 闪烁动画 */
+@keyframes loli-twinkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.loli-twinkle {
+  animation: loli-twinkle 1.5s ease-in-out infinite;
+}
+
+/* 弹跳动画 */
+@keyframes loli-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.loli-bounce {
+  animation: loli-bounce 0.6s ease-in-out infinite;
+}
+
+/* 爱心漂浮 */
+@keyframes loli-float {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+}
+
+.loli-floating-heart {
+  position: fixed;
+  animation: loli-float 3s ease-out forwards;
+  pointer-events: none;
+}
+
+/* 渐入动画 */
+@keyframes loli-fadeIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.loli-fade-in {
+  animation: loli-fadeIn 0.5s ease-out;
+}
+
+/* 摇摆动画 */
+@keyframes loli-wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.loli-wiggle {
+  animation: loli-wiggle 0.5s ease-in-out infinite;
+}
+
+/* 光晕脉冲 */
+@keyframes loli-glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px var(--loli-primary); }
+  50% { box-shadow: 0 0 25px var(--loli-primary), 0 0 40px var(--loli-primary-light); }
+}
+
+.loli-glow-pulse {
+  animation: loli-glow-pulse 2s ease-in-out infinite;
+}
+
+/* ==================== 输入框样式 ==================== */
+.loli-input {
+  border: 2px solid var(--loli-primary-light);
+  border-radius: 15px;
+  padding: 10px 16px;
+  font-size: 14px;
+  background: var(--loli-secondary-white);
+  color: var(--loli-text-primary);
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.loli-input:focus {
+  border-color: var(--loli-primary);
+  box-shadow: var(--loli-shadow-glow);
+}
+
+/* ==================== 进度条 ==================== */
+.loli-progress {
+  width: 100%;
+  height: 12px;
+  background: var(--loli-secondary-lavender);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.loli-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--loli-primary) 0%, var(--loli-primary-dark) 100%);
+  border-radius: 10px;
+  transition: width 0.5s ease;
+  position: relative;
+}
+
+.loli-progress-bar::after {
+  content: '✨';
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+}
+
+/* ==================== 菜单样式 ==================== */
+.loli-menu {
+  background: linear-gradient(145deg, var(--loli-secondary-white) 0%, var(--loli-primary-light) 100%);
+  border-radius: 20px;
+  padding: 15px;
+  box-shadow: var(--loli-shadow-soft);
+}
+
+.loli-menu-item {
+  padding: 12px 20px;
+  margin: 5px 0;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.loli-menu-item:hover {
+  background: var(--loli-primary-light);
+  transform: translateX(5px);
+}
+
+.loli-menu-item::before {
+  content: '🎀';
+}
+
+/* ==================== 游戏特定元素 ==================== */
+.loli-tower {
+  background: linear-gradient(180deg, var(--loli-primary-light) 0%, var(--loli-secondary-lavender) 100%);
+  border-radius: 15px;
+  padding: 20px;
+  position: relative;
+}
+
+.loli-tower-floor {
+  background: var(--loli-secondary-white);
+  border: 2px solid var(--loli-primary);
+  border-radius: 12px;
+  padding: 10px;
+  margin: 8px 0;
+  box-shadow: var(--loli-shadow-soft);
+}
+
+.loli-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid var(--loli-primary);
+  box-shadow: var(--loli-shadow-glow);
+  background: var(--loli-secondary-pink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+}
+
+/* ==================== 装饰元素 ==================== */
+.loli-decoration {
+  position: absolute;
+  pointer-events: none;
+}
+
+.loli-star {
+  color: var(--loli-star-gold);
+  animation: loli-twinkle 1s ease-in-out infinite;
+}
+
+.loli-heart {
+  color: var(--loli-heart-red);
+  animation: loli-bounce 0.8s ease-in-out infinite;
+}
+
+.loli-ribbon {
+  position: relative;
+  display: inline-block;
+}
+
+.loli-ribbon::before {
+  content: '🎀';
+  position: absolute;
+  left: -25px;
+  top: 50%;
+  transform: translateY(-50%);
+}
