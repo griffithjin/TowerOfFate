@@ -29,12 +29,21 @@ const TOWER_BACKGROUNDS = [
     // 美洲
     { id: 'liberty', name: '自由女神像', country: '美国', file: 'statue-of-liberty.png', continent: 'america' },
     { id: 'empire', name: '帝国大厦', country: '美国', file: 'empire-state.png', continent: 'america' },
+    { id: 'cntower', name: 'CN塔', country: '加拿大', file: 'cn-tower.png', continent: 'america' },
+    { id: 'christ', name: '基督像', country: '巴西', file: 'christ-redeemer.png', continent: 'america' },
     
     // 大洋洲
     { id: 'sydney', name: '悉尼歌剧院', country: '澳大利亚', file: 'sydney-opera.png', continent: 'oceania' },
+    { id: 'skytower', name: '天空塔', country: '新西兰', file: 'sky-tower.png', continent: 'oceania' },
     
     // 非洲
-    { id: 'pyramids', name: '金字塔', country: '埃及', file: 'pyramids.png', continent: 'africa' }
+    { id: 'pyramids', name: '金字塔', country: '埃及', file: 'pyramids.png', continent: 'africa' },
+    { id: 'tablemountain', name: '桌山', country: '南非', file: 'table-mountain.png', continent: 'africa' },
+    
+    // 其他欧洲国家
+    { id: 'parthenon', name: '帕特农神庙', country: '希腊', file: 'parthenon.png', continent: 'europe' },
+    { id: 'fjord', name: '峡湾', country: '挪威', file: 'fjord.png', continent: 'europe' },
+    { id: 'aurora', name: '极光', country: '冰岛', file: 'aurora.png', continent: 'europe' }
 ];
 
 // 当前背景索引
