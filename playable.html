@@ -801,12 +801,37 @@
     </script>
     
     <!-- 塔背景切换系统 -->
-    <script src="tower-background.js"></script>
+    <script src="tower-background.js?v=2"></script>
     <script>
-        // 页面加载后初始化背景系统
-        document.addEventListener('DOMContentLoaded', function() {
+        // 页面加载后初始化背景系统 - 使用多重保障确保加载
+        function initBackgroundWithRetry(attempts = 0) {
             if (typeof initTowerBackground === 'function') {
+                console.log('初始化塔背景系统...');
                 initTowerBackground();
+            } else if (attempts < 10) {
+                // 如果脚本还未加载，延迟重试
+                setTimeout(() => initBackgroundWithRetry(attempts + 1), 200);
+            } else {
+                console.error('塔背景系统加载失败');
+            }
+        }
+        
+        // DOMContentLoaded事件
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initBackgroundWithRetry);
+        } else {
+            // DOM已经加载完成
+            initBackgroundWithRetry();
+        }
+        
+        // 备用：window.onload
+        window.addEventListener('load', () => {
+            const bf = document.querySelector('.battlefield');
+            if (bf && (!bf.style.backgroundImage || bf.style.backgroundImage.includes('linear-gradient'))) {
+                console.log('备用加载：手动设置背景');
+                bf.style.backgroundImage = "linear-gradient(180deg, rgba(135,206,235,0.3) 0%, rgba(135,206,235,0.1) 100%), url('https://raw.githubusercontent.com/griffithjin/toweroffate-v1/main/assets/towers/eiffel-tower.png')";
+                bf.style.backgroundSize = 'cover';
+                bf.style.backgroundPosition = 'center center';
             }
         });
     </script>
