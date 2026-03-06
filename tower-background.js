@@ -39,6 +39,24 @@ const TOWER_BACKGROUNDS = [
     // 非洲
     { id: 'pyramids', name: '金字塔', country: '埃及', file: 'pyramids.png', continent: 'africa' },
     { id: 'tablemountain', name: '桌山', country: '南非', file: 'table-mountain.png', continent: 'africa' },
+    { id: 'kilimanjaro', name: '乞力马扎罗', country: '肯尼亚', file: 'kilimanjaro.png', continent: 'africa' },
+    { id: 'serengeti', name: '塞伦盖蒂', country: '坦桑尼亚', file: 'serengeti.png', continent: 'africa' },
+    { id: 'chefchaouen', name: '蓝色小镇', country: '摩洛哥', file: 'chefchaouen.png', continent: 'africa' },
+    
+    // 南美洲
+    { id: 'machupicchu', name: '马丘比丘', country: '秘鲁', file: 'machu-picchu.png', continent: 'america' },
+    { id: 'obelisk', name: '方尖碑', country: '阿根廷', file: 'obelisk.png', continent: 'america' },
+    { id: 'easterisland', name: '复活节岛', country: '智利', file: 'easter-island.png', continent: 'america' },
+    { id: 'havana', name: '哈瓦那', country: '古巴', file: 'havana.png', continent: 'america' },
+    { id: 'dunnriver', name: '邓恩河瀑布', country: '牙买加', file: 'dunn-river.png', continent: 'america' },
+    { id: 'panamacanal', name: '巴拿马运河', country: '巴拿马', file: 'panama-canal.png', continent: 'america' },
+    { id: 'arenal', name: '阿雷纳尔火山', country: '哥斯达黎加', file: 'arenal.png', continent: 'america' },
+    
+    // 中东&中亚
+    { id: 'jerusalem', name: '耶路撒冷', country: '以色列', file: 'jerusalem.png', continent: 'asia' },
+    { id: 'petra', name: '佩特拉', country: '约旦', file: 'petra.png', continent: 'asia' },
+    { id: 'imamsquare', name: '伊玛目广场', country: '伊朗', file: 'imam-square.png', continent: 'asia' },
+    { id: 'steppe', name: '草原', country: '哈萨克斯坦', file: 'steppe.png', continent: 'asia' }
     
     // 其他欧洲国家
     { id: 'parthenon', name: '帕特农神庙', country: '希腊', file: 'parthenon.png', continent: 'europe' },
