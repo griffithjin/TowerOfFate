@@ -99,9 +99,9 @@ function applyTowerBackground(towerId) {
     
     const tower = TOWER_BACKGROUNDS.find(t => t.id === towerId);
     if (tower) {
-        // 添加过渡效果
+        // 添加过渡效果 - 使用与CSS相同的渐变叠加层
         battlefield.style.transition = 'background-image 0.5s ease-in-out';
-        battlefield.style.backgroundImage = `url('assets/towers/${tower.file}')`;
+        battlefield.style.backgroundImage = `linear-gradient(180deg, rgba(135,206,235,0.3) 0%, rgba(135,206,235,0.1) 100%), url('assets/towers/${tower.file}?v=2')`;
         battlefield.style.backgroundSize = 'cover';
         battlefield.style.backgroundPosition = 'center center';
         battlefield.style.backgroundRepeat = 'no-repeat';
