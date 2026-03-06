@@ -1,0 +1,254 @@
+/* solo_game_unified.css - 统一solo_game界面风格与主游戏一致 */
+
+/* 颜色变量 - 与index.html统一 */
+:root {
+    --gold-primary: #FFD700;
+    --gold-secondary: #FFA500;
+    --bg-dark: #0a0a1a;
+    --bg-mid: #1a1a3e;
+    --bg-light: #0d1b2a;
+    --card-red: #d00;
+    --card-black: #000;
+}
+
+/* 全局背景统一 */
+body {
+    background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%) !important;
+    font-family: 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* 按钮样式统一 */
+.game-btn, .btn-confirm, .btn-taunt {
+    padding: 12px 24px !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-size: 15px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    transition: all 0.3s !important;
+}
+
+.btn-confirm {
+    background: linear-gradient(45deg, #4CAF50, #8BC34A) !important;
+    color: #fff !important;
+}
+
+.btn-confirm:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4) !important;
+}
+
+.btn-taunt {
+    background: linear-gradient(45deg, #9c27b0, #e91e63) !important;
+    color: #fff !important;
+}
+
+.btn-taunt:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 20px rgba(156, 39, 176, 0.4) !important;
+}
+
+/* 守卫牌样式统一 */
+.guard-card-display {
+    width: 70px !important;
+    height: 95px !important;
+    background: linear-gradient(135deg, #2a2a4a, #1a1a3e) !important;
+    border: 3px solid var(--gold-primary) !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s !important;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3) !important;
+}
+
+.guard-card-display:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5) !important;
+}
+
+.guard-card-display.revealed {
+    background: linear-gradient(135deg, #fff, #f8f8f8) !important;
+}
+
+/* 守卫牌隐藏状态 */
+.guard-card-display:not(.revealed) {
+    background: linear-gradient(135deg, #1a1a3e, #0f3460) !important;
+}
+
+.guard-card-display:not(.revealed) .guard-shield {
+    font-size: 32px;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+}
+
+.guard-card-display:not(.revealed) .guard-text {
+    font-size: 18px;
+    color: var(--gold-primary);
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* 天命牌样式统一 - 与index一致 */
+.destiny-card-item {
+    background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,0,255,0.2)) !important;
+    border: 2px solid var(--gold-primary) !important;
+    border-radius: 10px !important;
+    padding: 8px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s !important;
+}
+
+.destiny-card-item:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4) !important;
+}
+
+.destiny-card-item .icon {
+    font-size: 20px !important;
+    margin-bottom: 4px !important;
+}
+
+.destiny-card-item .name {
+    color: var(--gold-primary) !important;
+    font-weight: bold !important;
+    font-size: 11px !important;
+}
+
+/* 手牌样式统一 */
+.hand-card-item {
+    width: 50px !important;
+    height: 70px !important;
+    background: linear-gradient(135deg, #fff, #f8f8f8) !important;
+    border-radius: 8px !important;
+    border: 2px solid transparent !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s !important;
+    color: #000 !important;
+}
+
+.hand-card-item:hover {
+    transform: translateY(-5px) !important;
+    border-color: var(--gold-primary) !important;
+    box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3) !important;
+}
+
+.hand-card-item.selected {
+    border-color: #4CAF50 !important;
+    transform: translateY(-10px) !important;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.5) !important;
+}
+
+/* 塔层样式统一 */
+.tower-level {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 215, 0, 0.3) !important;
+    border-radius: 5px !important;
+}
+
+.tower-level.current {
+    background: linear-gradient(90deg, rgba(255,215,0,0.3), rgba(255,107,107,0.3)) !important;
+    border-color: var(--gold-primary) !important;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;
+}
+
+/* 象限面板统一 */
+.quadrant {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 215, 0, 0.2) !important;
+    border-radius: 15px !important;
+}
+
+.quadrant-title {
+    color: var(--gold-primary) !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+}
+
+/* 头部样式统一 */
+.header {
+    border-bottom: 2px solid rgba(255, 215, 0, 0.3) !important;
+}
+
+.logo {
+    background: linear-gradient(45deg, #ffd700, #ff6b6b) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    font-weight: bold !important;
+}
+
+/* 对局记录样式统一 */
+.game-log {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(255, 215, 0, 0.2) !important;
+}
+
+.log-entry {
+    padding: 6px 10px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    font-size: 12px !important;
+}
+
+.log-entry.success {
+    color: #4CAF50 !important;
+}
+
+.log-entry.fail {
+    color: #f44336 !important;
+}
+
+.log-entry.destiny {
+    color: #9c27b0 !important;
+}
+
+/* 动画效果 */
+@keyframes guardReveal {
+    0% { 
+        transform: scale(0.8) rotateY(0deg);
+        box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+    }
+    50% { 
+        transform: scale(1.1) rotateY(90deg);
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    }
+    100% { 
+        transform: scale(1) rotateY(0deg);
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+}
+
+.guard-card-display.revealing {
+    animation: guardReveal 0.6s ease forwards;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+    .guard-card-display {
+        width: 55px !important;
+        height: 75px !important;
+    }
+    
+    .hand-card-item {
+        width: 40px !important;
+        height: 56px !important;
+    }
+    
+    .destiny-card-item {
+        padding: 5px !important;
+    }
+    
+    .destiny-card-item .icon {
+        font-size: 16px !important;
+    }
+    
+    .destiny-card-item .name {
+        font-size: 9px !important;
+    }
+}
