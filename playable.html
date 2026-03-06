@@ -81,12 +81,24 @@
             font-weight: bold;
         }
         
-        /* 战场区域 */
+        /* 战场区域 - 卡通化背景 */
         .battlefield {
             flex: 0 0 55%;
             display: flex;
             overflow: hidden;
-            background: linear-gradient(180deg, #FFD700 0%, #1a1a3e 8%, #0d1b2a 100%);
+            background: url('assets/towers/eiffel-tower.png') center center / cover no-repeat;
+            position: relative;
+        }
+        
+        .battlefield::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%);
+            pointer-events: none;
         }
         
         /* 左侧菜单 */
