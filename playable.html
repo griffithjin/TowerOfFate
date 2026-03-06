@@ -550,8 +550,8 @@
             grid.appendChild(createCell('守卫', 'grid-header'));
             grid.appendChild(createCell('激怒牌⚠️', 'grid-header', 'color:#ff4757'));
             
-            // 13层 - 从A(13层)到2(1层)
-            for(let i=0; i<13; i++) {
+            // 13层 - 从A(13层)到2(1层)，反向渲染让A显示在顶部
+            for(let i=12; i>=0; i--) {
                 const lv = LEVELS[i];
                 const isMyLevel = gameState.myPlayer.level === i;
                 
