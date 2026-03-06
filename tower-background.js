@@ -11,6 +11,10 @@ const TOWER_BACKGROUNDS = [
     { id: 'pisa', name: '比萨斜塔', country: '意大利', file: 'pisa-tower.png', continent: 'europe' },
     { id: 'bigben', name: '大本钟', country: '英国', file: 'big-ben.png', continent: 'europe' },
     { id: 'brandenburg', name: '勃兰登堡门', country: '德国', file: 'brandenburg-gate.png', continent: 'europe' },
+    { id: 'sagrada', name: '圣家堂', country: '西班牙', file: 'sagrada-familia.png', continent: 'europe' },
+    { id: 'windmill', name: '风车', country: '荷兰', file: 'windmill.png', continent: 'europe' },
+    { id: 'matterhorn', name: '马特洪峰', country: '瑞士', file: 'matterhorn.png', continent: 'europe' },
+    { id: 'stbasil', name: '圣瓦西里大教堂', country: '俄罗斯', file: 'st-basil.png', continent: 'europe' },
     
     // 亚洲
     { id: 'tokyo', name: '东京塔', country: '日本', file: 'tokyo-tower.png', continent: 'asia' },
@@ -18,6 +22,9 @@ const TOWER_BACKGROUNDS = [
     { id: 'tajmahal', name: '泰姬陵', country: '印度', file: 'taj-mahal.png', continent: 'asia' },
     { id: 'grandpalace', name: '大皇宫', country: '泰国', file: 'grand-palace.png', continent: 'asia' },
     { id: 'burjkhalifa', name: '哈利法塔', country: '阿联酋', file: 'burj-khalifa.png', continent: 'asia' },
+    { id: 'ntower', name: 'N塔', country: '韩国', file: 'n-tower.png', continent: 'asia' },
+    { id: 'marinabay', name: '滨海湾金沙', country: '新加坡', file: 'marina-bay.png', continent: 'asia' },
+    { id: 'bluemosque', name: '蓝色清真寺', country: '土耳其', file: 'blue-mosque.png', continent: 'asia' },
     
     // 美洲
     { id: 'liberty', name: '自由女神像', country: '美国', file: 'statue-of-liberty.png', continent: 'america' },
